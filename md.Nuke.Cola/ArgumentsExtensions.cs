@@ -4,12 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Nuke.Common;
 using Nuke.Common.Utilities;
+using Nuke.Common.Utilities.Collections;
 
-namespace md.Nuke.Cola;
+namespace Nuke.Cola;
 
-public class ArgumentsExtensions
+public static class ArgumentsExtensions
 {
-    public static string ProcessArgument(string? arg)
+    public static string? ProcessArgument(string? arg)
     {
         if(string.IsNullOrWhiteSpace(arg)) return arg;
 
@@ -21,8 +22,8 @@ public class ArgumentsExtensions
         return arg;
     }
 
-    public static IEnumerable<string> AsArguments(this IEnumerable<string>? args) =>
-        args?.Select(ProcessArgument) ?? Enumerable.Empty<string>();
+    public static IEnumerable<string?> AsArguments(this IEnumerable<string>? args) =>
+        args?.Select(ProcessArgument) ?? Enumerable.Empty<string?>();
 
     public static string AppendAsArguments(this IEnumerable<string>? input, bool leadingSpace = true) =>
         (input?.IsEmpty() ?? true)

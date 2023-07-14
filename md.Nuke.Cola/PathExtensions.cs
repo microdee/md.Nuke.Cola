@@ -8,19 +8,20 @@ using System.Reflection;
 using Nuke.Common;
 using Nuke.Common.Utilities;
 using Nuke.Common.Utilities.Collections;
+using Nuke.Common.IO;
 
-namespace md.Nuke.Cola;
+namespace Nuke.Cola;
 
-public class PathExtensions
+public static class PathExtensions
 {
-    public static IEnumerable<AbsolutePath> SubTree(this AbsolutePath origin, Func<AbsolutePath, bool> filter = null) =>
+    public static IEnumerable<AbsolutePath> SubTree(this AbsolutePath origin, Func<AbsolutePath, bool>? filter = null) =>
         origin.DescendantsAndSelf(d =>
             from sd in d.GlobDirectories("*")
             where filter?.Invoke(sd) ?? true
             select sd
         );
         
-    public static bool LookAroundFor(Func<string, bool> predicate, out AbsolutePath result, AbsolutePath? rootDirectory = null)
+    public static bool LookAroundFor(Func<string, bool> predicate, out AbsolutePath? result, Func<AbsolutePath, bool>? directoryFilter = null, AbsolutePath? rootDirectory = null)
     {
         result = null;
         rootDirectory ??= NukeBuild.RootDirectory;
@@ -38,7 +39,7 @@ public class PathExtensions
                 }
             }
 
-        foreach(var p in rootDirectory.SubTreeProject())
+        foreach(var p in rootDirectory.SubTree(directoryFilter))
             foreach(var f in Directory.EnumerateFiles(p))
             {
                 if(predicate(f))
@@ -50,7 +51,7 @@ public class PathExtensions
         return false;
     }
 
-    public static AbsolutePath GetVersionSubfolder(this AbsolutePath root, string version)
+    public static AbsolutePath? GetVersionSubfolder(this AbsolutePath root, string version)
     {
         if (Path.IsPathRooted(version))
         {
