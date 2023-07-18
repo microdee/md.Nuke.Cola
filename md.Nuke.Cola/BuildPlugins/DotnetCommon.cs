@@ -39,17 +39,19 @@ internal static class DotnetCommon
         return dllPath;
     }
 
-    internal static AbsolutePath CompileProject(AbsolutePath projectPath, AbsolutePath outputDirIn, AbsolutePath workingDir)
+    internal static AbsolutePath CompileProject(AbsolutePath projectPath, AbsolutePath outputDirIn)
     {
-        var project = ProjectModelTasks.ParseProject(projectPath);
-        var dllName = project.GetPropertyValue("AssemblyName") ?? projectPath.NameWithoutExtension;
+        var dllName = projectPath.NameWithoutExtension;
         var outputDir = outputDirIn / dllName;
         var dllPath = outputDir / (dllName + ".dll");
         outputDir.CreateOrCleanDirectory();
+
         DotNetTasks.DotNetBuild(_ => _
             .SetNoLogo(true)
             .SetProjectFile(projectPath)
             .SetOutputDirectory(outputDir)
+            .SetConfiguration("Debug")
+            .SetProcessWorkingDirectory(projectPath.Parent)
         );
         return dllPath;
     }

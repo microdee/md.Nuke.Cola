@@ -50,10 +50,12 @@ public static class Plugins
     public static int Execute<T>(MainExecute<T> defaultExecute) where T : NukeBuild, new()
     {
         BuildContext context = new(NukeBuild.TemporaryDirectory, NukeBuild.RootDirectory);
-        var engines = new []
+        var engines = new IProvidePlugins[]
         {
-            new CSharpScriptPluginProvider()
+            new CSharpScriptPluginProvider(),
+            new DotnetProjectPluginProvider()
         };
+        
         foreach(var engine in engines)
         {
             engine.InitializeEngine(context);

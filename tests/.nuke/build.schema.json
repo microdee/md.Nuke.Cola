@@ -66,6 +66,7 @@
             "enum": [
               "BuildPluginPoc",
               "PluginTest",
+              "ProjectTest",
               "SomeOtherTarget"
             ]
           }
@@ -78,6 +79,7 @@
             "enum": [
               "BuildPluginPoc",
               "PluginTest",
+              "ProjectTest",
               "SomeOtherTarget"
             ]
           }
