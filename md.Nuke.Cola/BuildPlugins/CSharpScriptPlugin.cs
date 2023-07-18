@@ -10,6 +10,9 @@ using Serilog;
 
 namespace Nuke.Cola.BuildPlugins;
 
+/// <summary>
+/// Encapsulates a C# script file (*.csx) which contains build interfaces.
+/// </summary>
 public class CSharpScriptPlugin : IHavePlugin
 {
     private List<Importable> _buildInterfaces = new();
@@ -23,17 +26,13 @@ public class CSharpScriptPlugin : IHavePlugin
         var compiledRoot = context.Temporary / "CSharpScriptOutput";
 
         var assembly = Assembly.LoadFrom(
-            DotnetScript.CompileDll(
+            DotnetCommon.CompileScript(
                 SourcePath,
                 compiledRoot,
                 context.Temporary
             )
         );
 
-        _buildInterfaces = assembly.GetTypes()
-            .Where(t => t.IsInterface)
-            .Where(t => t.GetInterfaces().Any(i => i.FullName == "Nuke.Common.INukeBuild"))
-            .Select(t => new Importable(t, SourcePath, true))
-            .ToList();
+        _buildInterfaces = assembly.GetBuildInterfaces(SourcePath, true).ToList();
     }
 }

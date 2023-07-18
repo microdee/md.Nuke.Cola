@@ -12,8 +12,14 @@ using Serilog;
 
 namespace Nuke.Cola.BuildPlugins;
 
+/// <summary>
+/// Delegate for the `Execute` entrypoint NUKE provides for build classes
+/// </summary>
 public delegate int MainExecute<T>(params Expression<Func<T, Target>>[] defaultTargetExpressions) where T : NukeBuild, new();
 
+/// <summary>
+/// This class contains the main entry point for builds supporting plugins.
+/// </summary>
 public static class Plugins
 {
     private const string OutputBuildClass = nameof(OutputBuildClass);
@@ -23,6 +29,24 @@ public static class Plugins
     private static string? GetCSharpName(Type type) =>
         type.Namespace == null ? type.Name : type.FullName;
 
+    /// <summary>
+    /// Use this instead of the regular Execute method in your main function if you want to support
+    /// build plugins.
+    /// </summary>
+    /// <param name="defaultExecute">
+    /// If no build plugins are found, the provided delegate will be executed instead
+    /// </param>
+    /// <typeparam name="T">The type of the main build class</typeparam>
+    /// <returns>The error code or 0 on success</returns>
+    /// <remarks>
+    /// If plugins are found they're collected into an intermediate C# script which defines a
+    /// build class inheriting from the provided main build class and implementing all the build
+    /// interfaces defined by each plugin. This however also means build interfaces cannot have
+    /// non-default-implemented members, so they behave more like composition in this case.
+    /// The main NUKE execute method is then called from within this intermediate class.
+    /// These plugins can then interact with the main build targets if they can reference to
+    /// the main build assembly, either directly or more elegantly through a Nuget package.
+    /// </remarks>
     public static int Execute<T>(MainExecute<T> defaultExecute) where T : NukeBuild, new()
     {
         BuildContext context = new(NukeBuild.TemporaryDirectory, NukeBuild.RootDirectory);
@@ -88,7 +112,7 @@ public static class Plugins
 
         Console.WriteLine("Preparing intermediate assembly");
         var intermediateAssembly = Assembly.LoadFrom(
-            DotnetScript.CompileDll(
+            DotnetCommon.CompileScript(
                 intermediateScriptPath,
                 intermediateAssembliesRoot,
                 context.Temporary

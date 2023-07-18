@@ -8,6 +8,10 @@ using Nuke.Common.Tools.DotNet;
 
 namespace Nuke.Cola.BuildPlugins;
 
+/// <summary>
+/// Gather build plugins defined as single file C# scripts following the
+/// file name format `*.nuke.csx`.
+/// </summary>
 public class CSharpScriptPluginProvider : IProvidePlugins
 {
     public IEnumerable<IHavePlugin> GatherPlugins(BuildContext context) =>
