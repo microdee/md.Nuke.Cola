@@ -63,7 +63,7 @@ public static class Plugins
 
         var sources = engines
             .SelectMany(e => e.GatherPlugins(context))
-            .ForEachLazy(p => Console.WriteLine($"Found build plugin at {p.SourcePath}"))
+            .ForEachLazy(p => Console.WriteLine($"Using plugin {p.SourcePath}"))
             .ToList();
 
         if (sources.IsEmpty())
@@ -85,7 +85,7 @@ public static class Plugins
             Environment.NewLine,
             assemblyPaths
                 .Select(p => p.ImportViaSource
-                    ? $"#load \"{p}\""
+                    ? $"\n// dll: {p.Interface.Assembly.Location}\n#load \"{p}\""
                     : $"#r \"{p}\""
                 )
         );
@@ -110,7 +110,7 @@ public static class Plugins
         var intermediateScriptPath = context.Temporary / "Intermediate.csx";
         File.WriteAllText(intermediateScriptPath, intermediateScriptSource);
         var intermediateAssembliesRoot = context.Temporary / "IntermediateAssemblies";
-        intermediateAssembliesRoot.CreateOrCleanDirectory();
+        // intermediateAssembliesRoot.CreateOrCleanDirectory();
 
         Console.WriteLine("Preparing intermediate assembly");
         var intermediateAssembly = Assembly.LoadFrom(

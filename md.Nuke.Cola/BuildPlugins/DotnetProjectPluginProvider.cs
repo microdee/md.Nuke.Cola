@@ -22,11 +22,5 @@ public class DotnetProjectPluginProvider : IProvidePlugins
                 SourcePath = f
             });
 
-    public void InitializeEngine(BuildContext context)
-    {
-        Console.WriteLine("Initializing .NET project build plugin support");
-        
-        var compiledRoot = context.Temporary / "DotnetProjectOutput";
-        compiledRoot.CreateOrCleanDirectory();
-    }
+    public void InitializeEngine(BuildContext context) { }
 }

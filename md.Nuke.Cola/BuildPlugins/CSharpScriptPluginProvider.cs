@@ -35,8 +35,5 @@ public class CSharpScriptPluginProvider : IProvidePlugins
             .SetGlobal(false)
             .SetProcessWorkingDirectory(context.Temporary)
         );
-        
-        var compiledRoot = context.Temporary / "CSharpScriptOutput";
-        compiledRoot.CreateOrCleanDirectory();
     }
 }

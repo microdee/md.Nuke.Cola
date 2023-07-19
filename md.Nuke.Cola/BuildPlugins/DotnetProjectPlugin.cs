@@ -15,7 +15,6 @@ public class DotnetProjectPlugin : IHavePlugin
 
     public void Compile(BuildContext context)
     {
-        Console.WriteLine($"Compiling build plugin project {SourcePath}");
         var compiledRoot = context.Temporary / "DotnetProjectOutput";
 
         var assembly = Assembly.LoadFrom(

@@ -1,12 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Nuke.Common.IO;
-using Nuke.Common.Tooling;
-using Nuke.Common.Tools.DotNet;
-using Serilog;
 
 namespace Nuke.Cola.BuildPlugins;
 
@@ -22,7 +15,6 @@ public class CSharpScriptPlugin : IHavePlugin
 
     public void Compile(BuildContext context)
     {
-        Console.WriteLine($"Compiling build plugin script {SourcePath}");
         var compiledRoot = context.Temporary / "CSharpScriptOutput";
 
         var assembly = Assembly.LoadFrom(

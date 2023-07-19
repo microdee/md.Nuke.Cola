@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="Nuke.Common" Version="7.0.2" />
+    <PackageReference Include="Standart.Hash.xxHash" Version="4.0.5" />
   </ItemGroup>
 
 </Project>

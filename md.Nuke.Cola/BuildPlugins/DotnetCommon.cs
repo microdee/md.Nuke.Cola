@@ -8,6 +8,7 @@ using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.MSBuild;
+using Standart.Hash.xxHash;
 
 namespace Nuke.Cola.BuildPlugins;
 
@@ -28,9 +29,18 @@ internal static class DotnetCommon
     /// <returns>The path of the newly created DLL</returns>
     internal static AbsolutePath CompileScript(AbsolutePath scriptPath, AbsolutePath outputDirIn, AbsolutePath workingDir)
     {
-        var dllName = Guid.NewGuid().ToString("N");
+        ulong hash = xxHash64.ComputeHash(File.ReadAllText(scriptPath));
+        var dllName = hash.ToString();
         var outputDir = outputDirIn / dllName;
         var dllPath = outputDir / (dllName + ".dll");
+
+        if (dllPath.FileExists())
+        {
+            return dllPath;
+        }
+
+        Console.WriteLine($"Compiling script {scriptPath}");
+
         outputDir.CreateOrCleanDirectory();
         DotNetTasks.DotNet(
             $"script publish \"{scriptPath}\" --dll -o {outputDir} -n {dllName}",
@@ -41,9 +51,23 @@ internal static class DotnetCommon
 
     internal static AbsolutePath CompileProject(AbsolutePath projectPath, AbsolutePath outputDirIn)
     {
+        ulong projectHash = xxHash64.ComputeHash(File.ReadAllText(projectPath));
+        ulong hash = projectPath.Parent.GlobFiles("**/*.cs")
+            .Aggregate(projectHash, (h, p) =>
+                h ^ xxHash64.ComputeHash(File.ReadAllText(p))
+            );
+
         var dllName = projectPath.NameWithoutExtension;
-        var outputDir = outputDirIn / dllName;
+        var outputDir = outputDirIn / $"{dllName}_{hash}";
         var dllPath = outputDir / (dllName + ".dll");
+
+        if (outputDir.DirectoryExists() && dllPath.FileExists())
+        {
+            return dllPath;
+        }
+
+        Console.WriteLine($"Compiling project {projectPath}");
+
         outputDir.CreateOrCleanDirectory();
 
         DotNetTasks.DotNetBuild(_ => _
