@@ -8,6 +8,7 @@ using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.MSBuild;
+using Nuke.Common.Utilities.Collections;
 using Standart.Hash.xxHash;
 
 namespace Nuke.Cola.BuildPlugins;
@@ -30,7 +31,7 @@ internal static class DotnetCommon
     internal static AbsolutePath CompileScript(AbsolutePath scriptPath, AbsolutePath outputDirIn, AbsolutePath workingDir)
     {
         ulong hash = xxHash64.ComputeHash(File.ReadAllText(scriptPath));
-        var dllName = hash.ToString();
+        var dllName = scriptPath.NameWithoutExtension + "_" + hash.ToString();
         var outputDir = outputDirIn / dllName;
         var dllPath = outputDir / (dllName + ".dll");
 
@@ -46,6 +47,12 @@ internal static class DotnetCommon
             $"script publish \"{scriptPath}\" --dll -o {outputDir} -n {dllName}",
             workingDirectory: workingDir
         );
+
+        outputDirIn
+            .GlobDirectories($"{scriptPath.NameWithoutExtension}_*")
+            .Where(p => !p.Name.Contains(hash.ToString()))
+            .ForEach(p => p.DeleteDirectory());
+
         return dllPath;
     }
 
@@ -77,6 +84,12 @@ internal static class DotnetCommon
             .SetConfiguration("Debug")
             .SetProcessWorkingDirectory(projectPath.Parent)
         );
+        
+        outputDirIn
+            .GlobDirectories($"{dllName}_*")
+            .Where(p => !p.Name.Contains(hash.ToString()))
+            .ForEach(p => p.DeleteDirectory());
+
         return dllPath;
     }
 
