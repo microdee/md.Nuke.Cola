@@ -30,9 +30,10 @@ internal static class DotnetCommon
     /// <returns>The path of the newly created DLL</returns>
     internal static AbsolutePath CompileScript(AbsolutePath scriptPath, AbsolutePath outputDirIn, AbsolutePath workingDir)
     {
+        uint pathHash = xxHash32.ComputeHash(scriptPath);
         ulong hash = xxHash64.ComputeHash(File.ReadAllText(scriptPath));
-        var dllName = scriptPath.NameWithoutExtension + "_" + hash.ToString();
-        var outputDir = outputDirIn / dllName;
+        var dllName = hash.ToString();
+        var outputDir = outputDirIn / (pathHash.ToString() + "_" + dllName);
         var dllPath = outputDir / (dllName + ".dll");
 
         if (dllPath.FileExists())
@@ -49,7 +50,7 @@ internal static class DotnetCommon
         );
 
         outputDirIn
-            .GlobDirectories($"{scriptPath.NameWithoutExtension}_*")
+            .GlobDirectories($"{pathHash}_*")
             .Where(p => !p.Name.Contains(hash.ToString()))
             .ForEach(p => p.DeleteDirectory());
 
