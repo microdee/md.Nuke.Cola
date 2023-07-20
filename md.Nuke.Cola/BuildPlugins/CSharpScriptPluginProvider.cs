@@ -23,13 +23,13 @@ public class CSharpScriptPluginProvider : IProvidePlugins
 
     public void InitializeEngine(BuildContext context)
     {
-        Console.WriteLine("Initializing C# Script build plugin support");
+        "Initializing C# Script build plugin support".Log();
         if (!(context.Temporary / ".config" / "dotnet-tools.json").FileExists())
         {
-            Console.WriteLine("Setting up local dotnet tool manifest");
+            "Setting up local dotnet tool manifest".Log();
             DotNetTasks.DotNet("new tool-manifest", context.Temporary);
         }
-        Console.WriteLine("Installing dotnet-script locally");
+        "Installing dotnet-script locally".Log();
         DotNetTasks.DotNetToolInstall(_ => _
             .SetPackageName("dotnet-script")
             .SetGlobal(false)

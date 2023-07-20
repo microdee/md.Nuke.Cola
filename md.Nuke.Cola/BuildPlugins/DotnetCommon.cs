@@ -41,7 +41,7 @@ internal static class DotnetCommon
             return dllPath;
         }
 
-        Console.WriteLine($"Compiling script {scriptPath}");
+        $"Compiling script {scriptPath}".Log();
 
         outputDir.CreateOrCleanDirectory();
         DotNetTasks.DotNet(
@@ -74,7 +74,7 @@ internal static class DotnetCommon
             return dllPath;
         }
 
-        Console.WriteLine($"Compiling project {projectPath}");
+        $"Compiling project {projectPath}".Log();
 
         outputDir.CreateOrCleanDirectory();
 
@@ -102,4 +102,12 @@ internal static class DotnetCommon
             .Where(t => t.IsInterface)
             .Where(t => t.GetInterfaces().Any(i => i.FullName == "Nuke.Common.INukeBuild"))
             .Select(t => new Importable(t, sourcePath, importViaSource));
+
+    internal static void Log(this string text)
+    {
+        if (!Environment.CommandLine.Contains(" :complete"))
+        {
+            Console.WriteLine(text);
+        }
+    }
 }

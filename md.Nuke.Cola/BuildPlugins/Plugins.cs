@@ -63,12 +63,12 @@ public static class Plugins
 
         var sources = engines
             .SelectMany(e => e.GatherPlugins(context))
-            .ForEachLazy(p => Console.WriteLine($"Using plugin {p.SourcePath}"))
+            .ForEachLazy(p => $"Using plugin {p.SourcePath}".Log())
             .ToList();
 
         if (sources.IsEmpty())
         {
-            Console.WriteLine($"No build plugins were found. Executing build from {typeof(T).Name}");
+            $"No build plugins were found. Executing build from {typeof(T).Name}".Log();
             return defaultExecute();
         }
 
@@ -112,7 +112,7 @@ public static class Plugins
         var intermediateAssembliesRoot = context.Temporary / "IntermediateAssemblies";
         // intermediateAssembliesRoot.CreateOrCleanDirectory();
 
-        Console.WriteLine("Preparing intermediate assembly");
+        "Preparing intermediate assembly".Log();
         var intermediateAssembly = Assembly.LoadFrom(
             DotnetCommon.CompileScript(
                 intermediateScriptPath,
