@@ -31,10 +31,8 @@ public class Build : NukeBuild
     
     [GitVersion]
     readonly GitVersion GitVersion;
-
-    Project GetSlnProject(string name) => Solution.GetAllProjects(name)?.SingleOrDefault();
     
-    ProjectRecord MainProject => new (GetSlnProject("md.Nuke.Cola") , true);
+    ProjectRecord MainProject => new (Solution.GetProject("md.Nuke.Cola") , true);
     ProjectRecord[] NukeUnreal => new [] { MainProject };
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]

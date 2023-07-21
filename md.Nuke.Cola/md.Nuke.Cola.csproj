@@ -14,7 +14,6 @@
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/microdee/md.Nuke.Cola</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/microdee/md.Nuke.Cola/blob/main/LICENSE</PackageLicenseUrl>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IncludeSource>true</IncludeSource>
     <IncludeSymbols>true</IncludeSymbols>
