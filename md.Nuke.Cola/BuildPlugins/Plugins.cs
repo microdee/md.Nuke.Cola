@@ -72,10 +72,7 @@ public static class Plugins
             return defaultExecute();
         }
 
-        foreach(var source in sources)
-        {
-            source.Compile(context);
-        }
+        sources.AsParallel().ForAll(s => s.Compile(context));
 
         var buildInterfaces = sources.SelectMany(s => s.BuildInterfaces);
         var assemblyPaths = buildInterfaces

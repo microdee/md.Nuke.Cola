@@ -24,6 +24,11 @@ public class CSharpScriptPluginProvider : IProvidePlugins
     public void InitializeEngine(BuildContext context)
     {
         "Initializing C# Script build plugin support".Log();
+        var lockFile = context.Temporary / ".config" / "dotnet-script.installed";
+        if (lockFile.FileExists())
+        {
+            return;
+        }
         if (!(context.Temporary / ".config" / "dotnet-tools.json").FileExists())
         {
             "Setting up local dotnet tool manifest".Log();
@@ -35,5 +40,6 @@ public class CSharpScriptPluginProvider : IProvidePlugins
             .SetGlobal(false)
             .SetProcessWorkingDirectory(context.Temporary)
         );
+        File.WriteAllText(lockFile, "installed");
     }
 }
