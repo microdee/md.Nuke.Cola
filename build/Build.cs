@@ -47,7 +47,7 @@ public class Build : NukeBuild, IPublishNugets
     public ProjectRecord[] PublishProjects => new ProjectRecord[] { MainProject };
 
     public NugetSource[] NugetSources => NugetSource.CombineFrom(
-        PublishTo.Select(p => p.ToString()).ToArray(),
+        PublishTo.Select(p => p.Source).ToArray(),
         NugetApiKeys
     ).ToArray();
 

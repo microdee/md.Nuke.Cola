@@ -57,7 +57,7 @@ public interface IPublishNugets : INukeBuild
                 foreach (var (source, apiKey) in NugetSources)
                 {
                     DotNetTasks.DotNetNuGetPush(s => s
-                        .SetTargetPath(outDirectory / nupkg)
+                        .SetTargetPath(nupkg)
                         .SetApiKey(apiKey)
                         .SetSource(source)
                     );
