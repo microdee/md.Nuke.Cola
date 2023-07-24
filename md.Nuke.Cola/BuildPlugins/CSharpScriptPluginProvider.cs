@@ -40,6 +40,15 @@ public class CSharpScriptPluginProvider : IProvidePlugins
             .SetGlobal(false)
             .SetProcessWorkingDirectory(context.Temporary)
         );
+        
+        "Initializing CSX support for VSCode".Log();
+        var templateScript = context.Root / "temp.csx";
+        DotNetTasks.DotNet(
+            $"script-init {templateScript.Name} --workingdirector \"{context.Root}\"",
+            context.Temporary
+        );
+        templateScript.DeleteFile();
+        
         File.WriteAllText(lockFile, "installed");
     }
 }
