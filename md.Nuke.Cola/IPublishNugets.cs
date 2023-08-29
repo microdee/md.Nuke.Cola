@@ -45,6 +45,7 @@ public interface IPublishNugets : INukeBuild
                 DotNetTasks.DotNetPack(_ => _
                     .SetProject(project)
                     .SetOutputDirectory(outDirectory)
+                    .EnableIncludeSymbols()
                 );
 
                 var packageId = project.GetProperty("PackageId");
