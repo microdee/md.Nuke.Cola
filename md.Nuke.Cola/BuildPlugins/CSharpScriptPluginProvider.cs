@@ -44,8 +44,8 @@ public class CSharpScriptPluginProvider : IProvidePlugins
         "Initializing CSX support for VSCode".Log();
         var templateScript = context.Root / "temp.csx";
         DotNetTasks.DotNet(
-            $"script-init {templateScript.Name} --workingdirector \"{context.Root}\"",
-            context.Temporary
+            $"script init {templateScript.Name} --workingdirector \"{context.Root}\"",
+            context.Root
         );
         templateScript.DeleteFile();
         
