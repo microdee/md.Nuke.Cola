@@ -77,6 +77,7 @@ public class Build : NukeBuild, IPublishNugets
 
     Target Compile => _ => _
         .DependsOn(Restore)
+        .DependentFor<IPublishNugets>(_ => _.PublishNuget)
         .Executes(() =>
         {
             foreach(var (project, _) in PublishProjects)
