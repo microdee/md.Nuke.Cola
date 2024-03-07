@@ -1,4 +1,4 @@
-#r "nuget: Nuke.Common, 7.0.2"
+#r "nuget: Nuke.Common, 8.0.0"
 #r "nuget: Serilog, 3.0.1"
 
 using Nuke.Common;
