@@ -89,6 +89,7 @@ public class Build : NukeBuild, IPublishNugets
                 DotNetBuild(s => s
                     .SetNoRestore(true)
                     .SetProjectFile(project)
+                    .SetConfiguration(Configuration)
                     .SetVersion(GitVersion.NuGetVersion)
                     .SetAssemblyVersion(GitVersion.MajorMinorPatch)
                 );
