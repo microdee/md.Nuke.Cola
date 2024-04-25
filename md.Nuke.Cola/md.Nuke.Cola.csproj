@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <RootNamespace>Nuke.Cola</RootNamespace>
     <LangVersion>11</LangVersion>
-    <Version>2.0.0</Version>
+    <Version>2.0.2</Version>
     <Authors>David Mórász</Authors>
     <Company>mcro.de</Company>
     <Description>Utilities for Nuke execution engine, including Tool argument propagation and Build Plugin discovery</Description>
@@ -23,6 +23,9 @@
   <ItemGroup>
     <PackageReference Include="EverythingSearchClient" Version="0.8.0.51" />
     <PackageReference Include="Nuke.Common" Version="8.0.0" />
+    <PackageReference Include="Silk.NET.Input" Version="2.21.0" />
+    <PackageReference Include="Silk.NET.OpenGL" Version="2.21.0" />
+    <PackageReference Include="Silk.NET.OpenGL.Extensions.ImGui" Version="2.21.0" />
     <PackageReference Include="Standart.Hash.xxHash" Version="4.0.5" />
   </ItemGroup>
 

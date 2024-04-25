@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
+using Nuke.Cola.BuildGui;
 using Nuke.Common;
 using Nuke.Common.IO;
 using Nuke.Common.Utilities;
@@ -119,6 +120,9 @@ public static class Plugins
         );
 
         var intermediateClass = intermediateAssembly.GetTypes().First(t => t.Name == OutputBuildClass);
+        
+        using var buildGui = new BuildGuiApp(intermediateClass).Run();
+
         return (int) intermediateClass?.GetMethod(ExecuteWithPlugins)?.Invoke(null, null)!;
     }
 }

@@ -23,7 +23,6 @@ This is originally developed for Unreal plugins where the main project's Nuke sc
 
 </details>
 
-
 Build plugins are discovered before the main entry point of Nuke, if the developer uses
 
 ```CSharp
