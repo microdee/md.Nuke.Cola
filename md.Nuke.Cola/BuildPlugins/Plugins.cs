@@ -120,8 +120,6 @@ public static class Plugins
         );
 
         var intermediateClass = intermediateAssembly.GetTypes().First(t => t.Name == OutputBuildClass);
-        
-        using var buildGui = new BuildGuiApp(intermediateClass).Run();
 
         return (int) intermediateClass?.GetMethod(ExecuteWithPlugins)?.Invoke(null, null)!;
     }

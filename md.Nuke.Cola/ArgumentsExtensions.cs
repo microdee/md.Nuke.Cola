@@ -29,4 +29,6 @@ public static class ArgumentsExtensions
         (input?.IsEmpty() ?? true)
             ? ""
             : (leadingSpace ? " " : "") + string.Join(' ', input?.Select(ProcessArgument) ?? Enumerable.Empty<string>());
+
+    public static Type ClearNullable(this Type type) => Nullable.GetUnderlyingType(type) ?? type;
 }

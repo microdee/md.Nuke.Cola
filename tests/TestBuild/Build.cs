@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using Nuke.Cola.BuildGui;
 using Nuke.Cola.BuildPlugins;
 using Nuke.Common;
 using Nuke.Common.CI;
@@ -18,7 +19,11 @@ public class Build : NukeBuild
 {
     public static int Main () => Plugins.Execute<Build>(Execute);
 
-    protected override void OnBuildCreated() => NoLogo = true;
+    protected override void OnBuildCreated()
+    {
+        NoLogo = true;
+        using var buildGui = new BuildGuiApp(this).Run();
+    }
 
     public Target BuildPluginPoc => _ => _
         .Executes(() =>

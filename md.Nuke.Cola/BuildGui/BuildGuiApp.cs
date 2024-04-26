@@ -23,7 +23,10 @@ public class BuildGuiContext
     public string ParametersFilter = "";
     public bool ShowAllParameters = false;
     public List<string> SelectedTargets = new();
+    public NukeBuild? BuildObject;
 }
+
+// This is pure wonder https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html
 
 public class BuildGuiApp : IDisposable
 {
@@ -37,19 +40,18 @@ public class BuildGuiApp : IDisposable
             {
                 _window?.Dispose();
             }
-
-            // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-            // TODO: set large fields to null
             disposedValue = true;
         }
     }
 
-    public BuildGuiApp(Type buildClass)
+    public BuildGuiApp(NukeBuild buildObject)
     {
-        _buildClass = buildClass;
+        _buildClass = buildObject.GetType();
+        _buildObject = buildObject;
         var root = ProcessBuildClass(_buildClass, null);
         _targetsRoot = root.Targets;
         _parametersRoot = root.Parameters;
+        _context.BuildObject = _buildObject;
     }
 
     private record BuildComponentGroup(string Name, GuiCategory Targets, GuiCategory Parameters);
@@ -103,7 +105,16 @@ public class BuildGuiApp : IDisposable
 
         foreach (var targetMember in targetMembers)
         {
+            // TODO: Take dependencies into account
+            // https://github.com/nuke-build/nuke/blob/6eb779618e22b0cdf1fa27538b305f750b698d88/source/Nuke.Build/Execution/Extensions/HandlePlanRequestsAttribute.cs#L52
+
             var name = targetMember.Name;
+            var instance = targetMember.GetValue<Target>(_buildObject);
+            var introspection = new TargetIntrospection();
+            instance.Invoke(introspection);
+            if (introspection.IsUnlisted) continue;
+            var description = introspection.DescriptionStorage;
+
             var item = new GuiItem(name, ctx =>
             {
                 if (string.IsNullOrWhiteSpace(ctx.TargetsFilter) || name.ContainsOrdinalIgnoreCase(ctx.TargetsFilter))
@@ -119,6 +130,10 @@ public class BuildGuiApp : IDisposable
                         {
                             ctx.SelectedTargets.Add(name);
                         }
+                    }
+                    if (!string.IsNullOrWhiteSpace(description))
+                    {
+                        ImGui.SetItemTooltip(description);
                     }
                 }
             });
@@ -263,6 +278,7 @@ public class BuildGuiApp : IDisposable
     private GL? _gl;
 
     private Type _buildClass;
+    private NukeBuild _buildObject;
 
     public void Dispose()
     {
