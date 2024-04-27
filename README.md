@@ -36,7 +36,10 @@ instead of the traditional
 public static int Main () => Execute<Build>(x => x.Compile);
 ```
 
-Note that currently it is not yet implemented to support an explicit default target, so when Nuke is executed without arguments, it will just print the help text.
+#### NOTES!
+---
+* Your main Build class needs to be `public` for this to work.
+* Currently it is not yet implemented to support an explicit default target, so when Nuke is executed without arguments, it will just print the help text.
 
 There are two kinds of plugins discovered this way:
 
