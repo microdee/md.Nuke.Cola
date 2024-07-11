@@ -149,12 +149,31 @@ public class BuildGuiApp : IDisposable
 
         foreach (var parameterMember in parameterMembers)
         {
-            var name = parameterMember.Name;
+            var paramAttr = parameterMember.GetCustomAttribute<ParameterAttribute>()!;
+            var name = paramAttr.Name ?? parameterMember.Name;
+            var editor = ParameterEditor.MakeEditor(parameterMember);
             var item = new GuiItem(name, ctx =>
             {
                 if (string.IsNullOrWhiteSpace(ctx.ParametersFilter) || name.ContainsOrdinalIgnoreCase(ctx.ParametersFilter))
                 {
-                    ImGui.Text(name);
+                    if (editor != null)
+                    {
+                        editor.Draw(parameterMember, name, ctx);
+                    }
+                    else
+                    {
+                        ImGui.Text(name);
+                        ImGui.SameLine();
+                        
+                        ImGui.TextDisabled("(!)");
+                        if (ImGui.BeginItemTooltip())
+                        {
+                            ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35.0f);
+                            ImGui.TextUnformatted("No editor was specified for this parameter");
+                            ImGui.PopTextWrapPos();
+                            ImGui.EndTooltip();
+                        }
+                    }
                 }
             });
             buildCompoent.Parameters.Items.Add(item);

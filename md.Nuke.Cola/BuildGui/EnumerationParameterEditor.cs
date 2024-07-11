@@ -13,6 +13,12 @@ public class EnumerationParameterEditor : IParameterEditor
 
     string[]? Entries = null;
     int Selected = 0;
+    bool Enabled = false;
+
+    public object Clone()
+    {
+        return new EnumerationParameterEditor();
+    }
 
     public bool Supported(MemberInfo member, Type type)
     {
@@ -21,12 +27,7 @@ public class EnumerationParameterEditor : IParameterEditor
 
     public void Draw(MemberInfo member, string name, BuildGuiContext context)
     {
-        if (Entries == null)
-        {
-
-        }
-
-        ImGui.Combo(name, ref Selected, Entries, Entries?.Length ?? 0);
+        ImGui.Text($"TODO Enumeration: {name}");
     }
 
     private void GenerateEntries(MemberInfo member, Type type)
@@ -42,7 +43,5 @@ public class EnumerationParameterEditor : IParameterEditor
 
     }
 
-    public string Result => string.IsNullOrWhiteSpace(Value) ? (Default ?? "") : Value;
+    public string? Result => Enabled ? (string.IsNullOrWhiteSpace(Value) ? (Default ?? "") : Value) : null;
 }
-
-// TODO: rest of the types
