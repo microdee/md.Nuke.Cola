@@ -24,6 +24,8 @@ public class BuildGuiContext
     public bool ShowAllParameters = false;
     public List<string> SelectedTargets = new();
     public NukeBuild? BuildObject;
+
+    public float ParameterColumnSize = 250;
 }
 
 // This is pure wonder https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html
@@ -206,6 +208,8 @@ public class BuildGuiApp : IDisposable
         }
     }
 
+    float _targetsColumnWidth = 0;
+
     public BuildGuiApp Run()
     {
         _window = Window.Create(WindowOptions.Default);
@@ -242,8 +246,9 @@ public class BuildGuiApp : IDisposable
                         | ImGuiWindowFlags.NoNavFocus
                     ))
                     {
-                        var targetWidth = mainVP.Size.X * 0.4f;
-                        ImGui.BeginChild("TargetsChild", new Vector2(targetWidth, 0), true);
+                        if (_targetsColumnWidth <= 0)
+                            _targetsColumnWidth = mainVP.Size.X * 0.4f;
+                        ImGui.BeginChild("TargetsChild", new Vector2(_targetsColumnWidth, 0), true);
                         {
                             ImGui.SeparatorText("Targets");
                             ImGui.InputText("Filter", ref _context.TargetsFilter, 256);
@@ -258,6 +263,17 @@ public class BuildGuiApp : IDisposable
                             ImGui.EndChild();
                         }
                         ImGui.EndChild();
+                        ImGui.SameLine();
+                        const float resizeHandle = 6;
+                        ImGui.Button(this.GuiLabel(suffix: "resizer"), new(resizeHandle, ImGui.GetContentRegionAvail().Y));
+                        if (ImGui.IsItemHovered())
+                        {
+                            ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeEW);
+                        }
+                        if (ImGui.IsItemActive())
+                        {
+                            _targetsColumnWidth += ImGui.GetIO().MouseDelta.X;
+                        }
                         ImGui.SameLine();
                         ImGui.BeginChild("ParametersChild", new Vector2(0, 0), true);
                         {

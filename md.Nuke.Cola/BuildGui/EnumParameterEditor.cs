@@ -10,31 +10,24 @@ public class EnumParameterEditor : IParameterEditor
 {
     string Value = "";
     string? Default;
-    bool IsCollection = false;
+    bool? IsCollection;
 
     bool Enabled = false;
 
-    public object Clone()
-    {
-        return new EnumParameterEditor()
-        {
-            IsCollection = IsCollection
-        };
-    }
-
     TextContextWindow EnumSelector = new();
 
-    public bool Supported(MemberInfo member, Type type)
+    public bool Supported(MemberInfo member)
     {
+        var type = member.GetMemberType();
         var clearType = type.GetInnerType().ClearNullable();
-        IsCollection = type.IsCollectionLike();
         return clearType.IsEnum;
     }
 
     public void Draw(MemberInfo member, string name, BuildGuiContext context)
     {
-        this.PrefixCheckBox(ref Enabled);
-        if (IsCollection)
+        this.BeginParameterRow(ref Enabled, name, context);
+
+        if (IsCollection ??= member.GetMemberType().IsCollectionOrArray())
         {
             if (Default == null)
             {
@@ -46,28 +39,41 @@ public class EnumParameterEditor : IParameterEditor
             }
             var lineCount = Math.Max(Value.AsSpan().Count('\n'), 1);
             ImGui.InputTextMultiline(
-                name, ref Value, 1024 * 16,
+                this.GuiLabel(suffix: "value"), ref Value, 1024 * 16,
                 new(-1.0f, ImGui.GetTextLineHeight() * lineCount),
                 ImGuiInputTextFlags.CallbackEdit,
                 EnumSelector.InputTextCallback()
             );
-            EnumSelector.Window(() =>
-            {
-                ImGui.Text("Lorem Ipsum dolor sit amet");
-            });
         }
         else
         {
             Default ??= member.GetValue(context.BuildObject).ToString();
             if (Default == null)
             {
-                ImGui.InputText(name, ref Value, 512);
+                ImGui.InputText(
+                    this.GuiLabel(suffix: "value"), ref Value, 512,
+                    ImGuiInputTextFlags.CallbackAlways,
+                    EnumSelector.InputTextCallback()
+                );
             }
             else
             {
-                ImGui.InputTextWithHint(name, Default, ref Value, 512);
+                ImGui.InputTextWithHint(
+                    this.GuiLabel(suffix: "value"), Default, ref Value, 512,
+                    ImGuiInputTextFlags.CallbackAlways,
+                    EnumSelector.InputTextCallback()
+                );
             }
         }
+        if (ImGui.IsItemActive())
+        {
+            EnumSelector.Window(() =>
+            {
+                ImGui.Text("Lorem Ipsum dolor sit amet");
+            });
+        }
+        
+        this.EndParameterRow();
     }
 
     public string? Result => Enabled ? (string.IsNullOrWhiteSpace(Value) ? Default : Value) : null;

@@ -9,9 +9,9 @@ using Nuke.Common.Utilities;
 
 namespace Nuke.Cola.BuildGui;
 
-public interface IParameterEditor : ICloneable
+public interface IParameterEditor
 {
-    bool Supported(MemberInfo member, Type type);
+    bool Supported(MemberInfo member);
     void Draw(MemberInfo member, string name, BuildGuiContext context);
 
     string? Result { get; }
@@ -28,10 +28,36 @@ public static class ParameterEditor
         return string.Join("", result);
     }
 
-    public static void PrefixCheckBox(this object self, ref bool value, string name = "_enable")
+    public static void BeginParameterRow(this object self, ref bool value, string name, BuildGuiContext ctx)
     {
-        ImGui.Checkbox(self.GuiLabel(suffix: name), ref value);
-        ImGui.SameLine();
+        const float resizeHandle = 6;
+        var initOffset = ImGui.GetCursorPos();
+        var columnSize = ctx.ParameterColumnSize - initOffset.X;
+        ImGui.BeginGroup();
+        {
+            ImGui.Checkbox(self.GuiLabel(name, "prefix_enable"), ref value);
+        }
+        ImGui.EndGroup();
+
+        ImGui.SetCursorPos(new(initOffset.X + columnSize - resizeHandle, initOffset.Y));
+        ImGui.Button(self.GuiLabel(suffix: "resizer"), new(resizeHandle, 0));
+        if (ImGui.IsItemHovered())
+        {
+            ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeEW);
+        }
+        if (ImGui.IsItemActive())
+        {
+            ctx.ParameterColumnSize += ImGui.GetIO().MouseDelta.X;
+        }
+        ImGui.SetCursorPos(new(initOffset.X + columnSize + 1, initOffset.Y));
+        var rightColSize = ImGui.GetContentRegionMax().X - columnSize;
+        ImGui.SetNextItemWidth(rightColSize);
+        ImGui.BeginGroup();
+    }
+
+    public static void EndParameterRow(this object self)
+    {
+        ImGui.EndGroup();
     }
 
     public static Type GetInnerType(this Type type)
@@ -46,6 +72,8 @@ public static class ParameterEditor
         }
         return type;
     }
+
+    public static bool IsCollectionOrArray(this Type type) => type.IsArray || type.IsCollectionLike();
 
     private static HashSet<Type> _parameterEditors = new();
     private static List<IParameterEditor> _defaultParameterEditors = new();
@@ -67,9 +95,9 @@ public static class ParameterEditor
     {
         foreach(var defaultEditor in _defaultParameterEditors)
         {
-            if (defaultEditor.Supported(member, member.GetMemberType()))
+            if (defaultEditor.Supported(member))
             {
-                return defaultEditor.Clone() as IParameterEditor;
+                return Activator.CreateInstance(defaultEditor.GetType()) as IParameterEditor;
             }
         }
         return null;

@@ -11,22 +11,18 @@ public class IntParameterEditor : IParameterEditor
     int? Default;
     bool Enabled = false;
 
-    public object Clone()
+    public bool Supported(MemberInfo member)
     {
-        return new IntParameterEditor();
-    }
-
-    public bool Supported(MemberInfo member, Type type)
-    {
-        var clearType = type.ClearNullable();
+        var clearType = member.GetMemberType().ClearNullable();
         return clearType == typeof(int) || clearType == typeof(short) || clearType == typeof(long);
     }
 
     public void Draw(MemberInfo member, string name, BuildGuiContext context)
     {
-        this.PrefixCheckBox(ref Enabled);
+        ImGui.Checkbox(this.GuiLabel(name), ref Enabled);
+        ImGui.SameLine();
         Default ??= member.GetValue<int>(context.BuildObject);
-        ImGui.InputInt(name, ref Value);
+        ImGui.InputInt(this.GuiLabel(suffix: "value"), ref Value);
     }
 
     public string? Result => Enabled ? Value.ToString() : null;

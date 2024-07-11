@@ -10,14 +10,9 @@ public class BoolParameterEditor : IParameterEditor
     bool Value;
     bool? Default;
 
-    public object Clone()
+    public bool Supported(MemberInfo member)
     {
-        return new BoolParameterEditor();
-    }
-
-    public bool Supported(MemberInfo member, Type type)
-    {
-        var clearType = type.ClearNullable();
+        var clearType = member.GetMemberType().ClearNullable();
         return clearType == typeof(bool);
     }
 

@@ -9,33 +9,24 @@ public class StringParameterEditor : IParameterEditor
 {
     string Value = "";
     string? Default;
-    bool IsCollection = false;
+    bool? IsCollection;
     bool Enabled = false;
-    TextContextWindow TempWindow = new();
 
-    public object Clone()
+    public bool Supported(MemberInfo member)
     {
-        return new StringParameterEditor()
-        {
-            IsCollection = IsCollection
-        };
-    }
-
-    public bool Supported(MemberInfo member, Type type)
-    {
+        var type = member.GetMemberType();
         if (type.IsArray)
         {
-            IsCollection = true;
             return type.GetElementType() == typeof(string);
         }
-        IsCollection = type.IsAssignableTo(typeof(IEnumerable<string>));
-        return type == typeof(string) || IsCollection;
+        return type.GetInnerType() == typeof(string);
     }
 
     public void Draw(MemberInfo member, string name, BuildGuiContext context)
     {
-        this.PrefixCheckBox(ref Enabled);
-        if (IsCollection)
+        this.BeginParameterRow(ref Enabled, name, context);
+
+        if (IsCollection ??= member.GetMemberType().IsCollectionOrArray())
         {
             if (Default == null)
             {
@@ -43,30 +34,25 @@ public class StringParameterEditor : IParameterEditor
                 Default = collection != null ? string.Join('\n', collection) : "";
                 Value = Default;
             }
-            var lineCount = Math.Max(Value.AsSpan().Count('\n'), 1);
-            ImGui.InputTextMultiline(
-                name, ref Value, 1024 * 16,
-                new(-1.0f, ImGui.GetTextLineHeight() * lineCount),
-                ImGuiInputTextFlags.CallbackEdit,
-                TempWindow.InputTextCallback()
-            );
-            TempWindow.Window(() =>
-            {
-                ImGui.Text("Lorem Ipsum dolor sit amet");
-            });
+            var lineCount = Value.AsSpan().Count('\n') + 1;
+            var padding = ImGui.GetTextLineHeightWithSpacing() - ImGui.GetTextLineHeight(); 
+            var height = ImGui.GetTextLineHeight() * lineCount + padding * 2;
+            ImGui.InputTextMultiline(this.GuiLabel(suffix: "value"), ref Value, 1024 * 16, new(0.0f, height));
         }
         else
         {
             Default ??= member.GetValue<string>(context.BuildObject);
             if (Default == null)
             {
-                ImGui.InputText(name, ref Value, 512);
+                ImGui.InputText(this.GuiLabel(suffix: "value"), ref Value, 512);
             }
             else
             {
-                ImGui.InputTextWithHint(name, Default, ref Value, 512);
+                ImGui.InputTextWithHint(this.GuiLabel(suffix: "value"), Default, ref Value, 512);
             }
         }
+
+        this.EndParameterRow();
     }
 
     public string? Result

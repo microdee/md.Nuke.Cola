@@ -15,14 +15,9 @@ public class EnumerationParameterEditor : IParameterEditor
     int Selected = 0;
     bool Enabled = false;
 
-    public object Clone()
+    public bool Supported(MemberInfo member)
     {
-        return new EnumerationParameterEditor();
-    }
-
-    public bool Supported(MemberInfo member, Type type)
-    {
-        return type.IsAssignableTo(typeof(Enumeration));
+        return member.GetMemberType().IsAssignableTo(typeof(Enumeration));
     }
 
     public void Draw(MemberInfo member, string name, BuildGuiContext context)

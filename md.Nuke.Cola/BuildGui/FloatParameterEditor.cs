@@ -11,22 +11,18 @@ public class FloatParameterEditor : IParameterEditor
     double? Default;
     bool Enabled = false;
 
-    public object Clone()
+    public bool Supported(MemberInfo member)
     {
-        return new FloatParameterEditor();
-    }
-
-    public bool Supported(MemberInfo member, Type type)
-    {
-        var clearType = type.ClearNullable();
+        var clearType = member.GetMemberType().ClearNullable();
         return clearType == typeof(float) || clearType == typeof(double) || clearType == typeof(decimal);
     }
 
     public void Draw(MemberInfo member, string name, BuildGuiContext context)
     {
-        this.PrefixCheckBox(ref Enabled);
+        ImGui.Checkbox(this.GuiLabel(name), ref Enabled);
+        ImGui.SameLine();
         Default ??= member.GetValue<double>(context.BuildObject);
-        ImGui.InputDouble(name, ref Value);
+        ImGui.InputDouble(this.GuiLabel(suffix: "value"), ref Value);
     }
 
     public string? Result => Enabled ? Value.ToString() : null;
