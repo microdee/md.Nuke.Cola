@@ -73,7 +73,7 @@ public class EnumParameterEditor : IParameterEditor
             });
         }
         
-        this.EndParameterRow();
+        this.EndParameterRow(context);
     }
 
     public string? Result => Enabled ? (string.IsNullOrWhiteSpace(Value) ? Default : Value) : null;

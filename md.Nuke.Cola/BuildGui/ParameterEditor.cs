@@ -30,7 +30,6 @@ public static class ParameterEditor
 
     public static void BeginParameterRow(this object self, ref bool value, string name, BuildGuiContext ctx)
     {
-        const float resizeHandle = 6;
         var initOffset = ImGui.GetCursorPos();
         var columnSize = ctx.ParameterColumnSize - initOffset.X;
         ImGui.BeginGroup();
@@ -39,8 +38,19 @@ public static class ParameterEditor
         }
         ImGui.EndGroup();
 
-        ImGui.SetCursorPos(new(initOffset.X + columnSize - resizeHandle, initOffset.Y));
-        ImGui.Button(self.GuiLabel(suffix: "resizer"), new(resizeHandle, 0));
+        ImGui.SetCursorPos(new(initOffset.X + columnSize, initOffset.Y));
+        var rightColSize = ImGui.GetContentRegionMax().X - columnSize;
+        ImGui.SetNextItemWidth(rightColSize);
+        ImGui.BeginGroup();
+    }
+
+    public static void EndParameterRow(this object self, BuildGuiContext ctx)
+    {
+        ImGui.EndGroup();
+        var groupRectMin = ImGui.GetItemRectMin();
+        var groupRectSize = ImGui.GetItemRectSize();
+        ImGui.SetCursorScreenPos(new(groupRectMin.X - BuildGuiContext.ResizeHandle - 2, groupRectMin.Y));
+        ImGui.Button(self.GuiLabel(suffix: "resizer"), new(BuildGuiContext.ResizeHandle, groupRectSize.Y));
         if (ImGui.IsItemHovered())
         {
             ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeEW);
@@ -49,15 +59,6 @@ public static class ParameterEditor
         {
             ctx.ParameterColumnSize += ImGui.GetIO().MouseDelta.X;
         }
-        ImGui.SetCursorPos(new(initOffset.X + columnSize + 1, initOffset.Y));
-        var rightColSize = ImGui.GetContentRegionMax().X - columnSize;
-        ImGui.SetNextItemWidth(rightColSize);
-        ImGui.BeginGroup();
-    }
-
-    public static void EndParameterRow(this object self)
-    {
-        ImGui.EndGroup();
     }
 
     public static Type GetInnerType(this Type type)

@@ -19,6 +19,8 @@ namespace Nuke.Cola.BuildGui;
 
 public class BuildGuiContext
 {
+    public const float ResizeHandle = 6;
+
     public string TargetsFilter = "";
     public string ParametersFilter = "";
     public bool ShowAllParameters = false;
@@ -264,8 +266,7 @@ public class BuildGuiApp : IDisposable
                         }
                         ImGui.EndChild();
                         ImGui.SameLine();
-                        const float resizeHandle = 6;
-                        ImGui.Button(this.GuiLabel(suffix: "resizer"), new(resizeHandle, ImGui.GetContentRegionAvail().Y));
+                        ImGui.Button(this.GuiLabel(suffix: "resizer"), new(BuildGuiContext.ResizeHandle, ImGui.GetContentRegionAvail().Y));
                         if (ImGui.IsItemHovered())
                         {
                             ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeEW);

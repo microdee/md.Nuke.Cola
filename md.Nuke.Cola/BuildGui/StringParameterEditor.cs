@@ -52,7 +52,7 @@ public class StringParameterEditor : IParameterEditor
             }
         }
 
-        this.EndParameterRow();
+        this.EndParameterRow(context);
     }
 
     public string? Result
