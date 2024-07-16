@@ -8,18 +8,17 @@ namespace Nuke.Cola.BuildGui;
 
 public class EnumerationParameterEditor : EnumLikeParameterEditor
 {
-    public override bool Supported(MemberInfo member)
+    public override bool Supported(ParameterInfo param)
     {
-        var type = member.GetMemberType();
-        var clearType = type.GetInnerType().ClearNullable();
+        var clearType = param.InnerParamType.ClearNullable();
         return clearType.IsAssignableTo(typeof(Enumeration))
             && clearType.HasCustomAttribute<TypeConverterAttribute>();
     }
 
-    protected override string[] GetEntries(MemberInfo member, string name, BuildGuiContext context) =>
-        member.GetMemberType().GetInnerType()
+    protected override string[] GetEntries(ParameterInfo param, BuildGuiContext context) =>
+        param.InnerParamType
             .GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
-            .Where(f => f.GetMemberType().IsAssignableTo(member.GetMemberType().GetInnerType()))
+            .Where(f => f.GetMemberType().IsAssignableTo(param.InnerParamType))
             .Select(f => f.Name)
             .ToArray();
 }

@@ -154,19 +154,25 @@ public class BuildGuiApp : IDisposable
         foreach (var parameterMember in parameterMembers)
         {
             var paramAttr = parameterMember.GetCustomAttribute<ParameterAttribute>()!;
-            var name = paramAttr.Name ?? parameterMember.Name;
-            var editor = ParameterEditor.MakeEditor(parameterMember);
-            var item = new GuiItem(name, ctx =>
+            var info = new ParameterInfo(
+                paramAttr.Name ?? parameterMember.Name,
+                paramAttr.Description,
+                parameterMember,
+                parameterMember.GetMemberType(),
+                parameterMember.GetMemberType().GetInnerType()
+            );
+            var editor = ParameterEditor.MakeEditor(info);
+            var item = new GuiItem(info.Name, ctx =>
             {
-                if (string.IsNullOrWhiteSpace(ctx.ParametersFilter) || name.ContainsOrdinalIgnoreCase(ctx.ParametersFilter))
+                if (string.IsNullOrWhiteSpace(ctx.ParametersFilter) || info.Name.ContainsOrdinalIgnoreCase(ctx.ParametersFilter))
                 {
                     if (editor != null)
                     {
-                        editor.Draw(parameterMember, name, ctx);
+                        editor.Draw(info, ctx);
                     }
                     else
                     {
-                        ImGui.Text(name);
+                        ImGui.Text($"{info.Name} ({info.RawParamType})");
                         ImGui.SameLine();
                         
                         ImGui.TextDisabled("(!)");
@@ -293,6 +299,8 @@ public class BuildGuiApp : IDisposable
                     ImGui.End();
                 }
                 ImGui.PopStyleVar(2);
+
+                ImGui.ShowMetricsWindow();
 
                 _controller.Render();
             }

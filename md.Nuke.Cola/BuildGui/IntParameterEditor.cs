@@ -11,18 +11,18 @@ public class IntParameterEditor : IParameterEditor
     int? Default;
     bool Enabled = false;
 
-    public bool Supported(MemberInfo member)
+    public bool Supported(ParameterInfo param)
     {
-        var clearType = member.GetMemberType().ClearNullable();
+        var clearType = param.RawParamType.ClearNullable();
         return clearType == typeof(int) || clearType == typeof(short) || clearType == typeof(long);
     }
 
-    public void Draw(MemberInfo member, string name, BuildGuiContext context)
+    public void Draw(ParameterInfo param, BuildGuiContext context)
     {
-        ImGui.Checkbox(this.GuiLabel(name), ref Enabled);
-        ImGui.SameLine();
-        Default ??= member.GetValue<int>(context.BuildObject);
+        this.BeginParameterRow(ref Enabled, param, context);
+        Default ??= param.Member.GetValue<int>(context.BuildObject);
         ImGui.InputInt(this.GuiLabel(suffix: "value"), ref Value);
+        this.EndParameterRow(context);
     }
 
     public string? Result => Enabled ? Value.ToString() : null;

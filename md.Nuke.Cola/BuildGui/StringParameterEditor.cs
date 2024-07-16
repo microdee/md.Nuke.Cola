@@ -7,13 +7,6 @@ namespace Nuke.Cola.BuildGui;
 
 public class StringParameterEditor : TextInputParameterEditor
 {
-    public override bool Supported(MemberInfo member)
-    {
-        var type = member.GetMemberType();
-        if (type.IsArray)
-        {
-            return type.GetElementType() == typeof(string);
-        }
-        return type.GetInnerType() == typeof(string);
-    }
+    public override bool Supported(ParameterInfo param) =>
+        param.InnerParamType.ClearNullable() == typeof(string);
 }

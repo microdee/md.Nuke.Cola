@@ -32,21 +32,21 @@ public abstract class TextInputParameterEditor : IParameterEditor
         }
     }
 
-    public abstract bool Supported(MemberInfo member);
+    public abstract bool Supported(ParameterInfo param);
 
     protected virtual void InputTextCallback(ImGuiInputTextCallbackDataPtr data, TextContextWindow.CalculatedState state) {}
 
     protected virtual void SuggestionBody() {}
 
-    public virtual void Draw(MemberInfo member, string name, BuildGuiContext context)
+    public virtual void Draw(ParameterInfo param, BuildGuiContext context)
     {
-        this.BeginParameterRow(ref Enabled, name, context);
+        this.BeginParameterRow(ref Enabled, param, context);
 
-        if (IsCollection ??= member.GetMemberType().IsCollectionOrArray())
+        if (IsCollection ??= param.RawParamType.IsCollectionOrArray())
         {
             if (Default == null)
             {
-                if (member.GetValue(context.BuildObject) is IEnumerable<object> collection)
+                if (param.Member.GetValue(context.BuildObject) is IEnumerable<object> collection)
                 {
                     Default = collection != null ? string.Join('\n', collection) : "";
                     Value = Default ?? "";
@@ -64,7 +64,7 @@ public abstract class TextInputParameterEditor : IParameterEditor
         }
         else
         {
-            Default ??= member.GetValue(context.BuildObject)?.ToString();
+            Default ??= param.Member.GetValue(context.BuildObject)?.ToString();
             if (Default == null)
             {
                 ImGui.InputText(

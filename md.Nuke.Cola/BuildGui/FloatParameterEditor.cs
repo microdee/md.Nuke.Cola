@@ -11,18 +11,18 @@ public class FloatParameterEditor : IParameterEditor
     double? Default;
     bool Enabled = false;
 
-    public bool Supported(MemberInfo member)
+    public bool Supported(ParameterInfo param)
     {
-        var clearType = member.GetMemberType().ClearNullable();
+        var clearType = param.RawParamType.ClearNullable();
         return clearType == typeof(float) || clearType == typeof(double) || clearType == typeof(decimal);
     }
 
-    public void Draw(MemberInfo member, string name, BuildGuiContext context)
+    public void Draw(ParameterInfo param, BuildGuiContext context)
     {
-        ImGui.Checkbox(this.GuiLabel(name), ref Enabled);
-        ImGui.SameLine();
-        Default ??= member.GetValue<double>(context.BuildObject);
+        this.BeginParameterRow(ref Enabled, param, context);
+        Default ??= param.Member.GetValue<double>(context.BuildObject);
         ImGui.InputDouble(this.GuiLabel(suffix: "value"), ref Value);
+        this.EndParameterRow(context);
     }
 
     public string? Result => Enabled ? Value.ToString() : null;

@@ -12,7 +12,7 @@ public abstract class EnumLikeParameterEditor : TextInputParameterEditor
 
     public override bool HasSuggestions => true;
 
-    protected abstract string[] GetEntries(MemberInfo member, string name, BuildGuiContext context);
+    protected abstract string[] GetEntries(ParameterInfo param, BuildGuiContext context);
 
     protected override void SuggestionBody()
     {
@@ -39,9 +39,9 @@ public abstract class EnumLikeParameterEditor : TextInputParameterEditor
             }
     }
 
-    public override void Draw(MemberInfo member, string name, BuildGuiContext context)
+    public override void Draw(ParameterInfo param, BuildGuiContext context)
     {
-        EnumEntries ??= GetEntries(member, name, context);
-        base.Draw(member, name, context);
+        EnumEntries ??= GetEntries(param, context);
+        base.Draw(param, context);
     }
 }

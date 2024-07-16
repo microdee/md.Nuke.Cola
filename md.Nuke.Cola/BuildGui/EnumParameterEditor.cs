@@ -9,13 +9,9 @@ namespace Nuke.Cola.BuildGui;
 
 public class EnumParameterEditor : EnumLikeParameterEditor
 {
-    public override bool Supported(MemberInfo member)
-    {
-        var type = member.GetMemberType();
-        var clearType = type.GetInnerType().ClearNullable();
-        return clearType.IsEnum;
-    }
+    public override bool Supported(ParameterInfo param) =>
+        param.InnerParamType.ClearNullable().IsEnum;
     
-    protected override string[] GetEntries(MemberInfo member, string name, BuildGuiContext context) =>
-        member.GetMemberType().GetInnerType().GetEnumNames();
+    protected override string[] GetEntries(ParameterInfo param, BuildGuiContext context) =>
+        param.InnerParamType.GetEnumNames();
 }

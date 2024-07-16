@@ -9,10 +9,21 @@ using Nuke.Common.Utilities;
 
 namespace Nuke.Cola.BuildGui;
 
+public record ParameterInfo(
+    string Name,
+    string Description,
+    MemberInfo Member,
+    Type RawParamType,
+    Type InnerParamType,
+    string Separator = "",
+    bool List = true
+    // TODO: ValueProvider Type / Member
+);
+
 public interface IParameterEditor
 {
-    bool Supported(MemberInfo member);
-    void Draw(MemberInfo member, string name, BuildGuiContext context);
+    bool Supported(ParameterInfo param);
+    void Draw(ParameterInfo param, BuildGuiContext context);
 
     string? Result { get; }
 }
@@ -28,13 +39,14 @@ public static class ParameterEditor
         return string.Join("", result);
     }
 
-    public static void BeginParameterRow(this object self, ref bool value, string name, BuildGuiContext ctx)
+    public static void BeginParameterRow(this object self, ref bool value, ParameterInfo param, BuildGuiContext ctx)
     {
         var initOffset = ImGui.GetCursorPos();
         var columnSize = ctx.ParameterColumnSize - initOffset.X;
         ImGui.BeginGroup();
         {
-            ImGui.Checkbox(self.GuiLabel(name, "prefix_enable"), ref value);
+            ImGui.Checkbox(self.GuiLabel(param.Name, "prefix_enable"), ref value);
+            ImGui.SetItemTooltip(param.Description);
         }
         ImGui.EndGroup();
 
@@ -96,11 +108,11 @@ public static class ParameterEditor
         .ToList();
     }
 
-    public static IParameterEditor? MakeEditor(MemberInfo member)
+    public static IParameterEditor? MakeEditor(ParameterInfo param)
     {
         foreach(var defaultEditor in _defaultParameterEditors)
         {
-            if (defaultEditor.Supported(member))
+            if (defaultEditor.Supported(param))
             {
                 return Activator.CreateInstance(defaultEditor.GetType()) as IParameterEditor;
             }

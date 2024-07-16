@@ -10,16 +10,17 @@ public class BoolParameterEditor : IParameterEditor
     bool Value;
     bool? Default;
 
-    public bool Supported(MemberInfo member)
+    public bool Supported(ParameterInfo param)
     {
-        var clearType = member.GetMemberType().ClearNullable();
+        var clearType = param.RawParamType.ClearNullable();
         return clearType == typeof(bool);
     }
 
-    public void Draw(MemberInfo member, string name, BuildGuiContext context)
+    public void Draw(ParameterInfo param, BuildGuiContext context)
     {
-        Default ??= member.GetValue<bool>(context.BuildObject);
-        ImGui.Checkbox(name, ref Value);
+        Default ??= param.Member.GetValue<bool>(context.BuildObject);
+        ImGui.Checkbox(param.Name, ref Value);
+        ImGui.SetItemTooltip(param.Description);
     }
 
     public string? Result => Value ? "" : null;
