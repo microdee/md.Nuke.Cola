@@ -31,4 +31,11 @@ public static class TextExtensions
         var after = input[endIndex..^0];
         return before + insert + after;
     }
+
+    public static string InsertEdit(this string input, string insert, Range range) =>
+        InsertEdit(
+            input, insert,
+            range.Start.GetOffset(input.Length),
+            range.End.GetOffset(input.Length)
+        );
 }

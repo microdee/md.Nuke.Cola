@@ -27,6 +27,11 @@ public class BuildGuiContext
     public List<string> SelectedTargets = new();
     public NukeBuild? BuildObject;
 
+    public IWindow? Window;
+    public ImGuiController? ImGuiController;
+    public IInputContext? InputContext;
+    public GL? Gl;
+
     public float ParameterColumnSize = 250;
 }
 
@@ -226,6 +231,11 @@ public class BuildGuiApp : IDisposable
             _gl = _window.CreateOpenGL();
             _inputContext = _window.CreateInput();
             _controller = new(_gl, _window, _inputContext);
+            
+            _context.Window = _window;
+            _context.InputContext = _inputContext;
+            _context.ImGuiController = _controller;
+            _context.Gl = _gl;
         };
         _window.FramebufferResize += s => _gl?.Viewport(s);
         _window.Render += delta =>

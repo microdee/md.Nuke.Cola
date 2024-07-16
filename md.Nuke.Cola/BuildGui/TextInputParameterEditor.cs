@@ -17,7 +17,7 @@ public abstract class TextInputParameterEditor : IParameterEditor
     protected bool? IsCollection;   
     protected bool Enabled = false;
     
-    protected TextContextWindow EnumSelector = new();
+    protected TextContextWindow TextContext = new();
     public virtual bool HasSuggestions => false;
 
     public virtual string? Result
@@ -36,7 +36,9 @@ public abstract class TextInputParameterEditor : IParameterEditor
 
     protected virtual void InputTextCallback(ImGuiInputTextCallbackDataPtr data, TextContextWindow.CalculatedState state) {}
 
-    protected virtual void SuggestionBody() {}
+    protected virtual void SuggestionBody(ParameterInfo param, BuildGuiContext context) {}
+    protected virtual void PostTextInput(ParameterInfo param, BuildGuiContext context) {}
+    protected virtual void ExtraUI(ParameterInfo param, BuildGuiContext context) {}
 
     public virtual void Draw(ParameterInfo param, BuildGuiContext context)
     {
@@ -59,7 +61,7 @@ public abstract class TextInputParameterEditor : IParameterEditor
                 this.GuiLabel(suffix: "value"), ref Value, 1024 * 16,
                 new(-1.0f, size.Y + 10),
                 ImGuiInputTextFlags.CallbackAlways,
-                EnumSelector.InputTextCallback(InputTextCallback)
+                TextContext.InputTextCallback(InputTextCallback)
             );
         }
         else
@@ -70,7 +72,7 @@ public abstract class TextInputParameterEditor : IParameterEditor
                 ImGui.InputText(
                     this.GuiLabel(suffix: "value"), ref Value, 512,
                     ImGuiInputTextFlags.CallbackAlways,
-                    EnumSelector.InputTextCallback(InputTextCallback)
+                    TextContext.InputTextCallback(InputTextCallback)
                 );
             }
             else
@@ -78,16 +80,20 @@ public abstract class TextInputParameterEditor : IParameterEditor
                 ImGui.InputTextWithHint(
                     this.GuiLabel(suffix: "value"), Default, ref Value, 512,
                     ImGuiInputTextFlags.CallbackAlways,
-                    EnumSelector.InputTextCallback(InputTextCallback)
+                    TextContext.InputTextCallback(InputTextCallback)
                 );
             }
         }
 
+        PostTextInput(param, context);
+
         if (HasSuggestions)
         {
-            EnumSelector.ShouldBeOpen = ImGui.IsItemActive();
-            EnumSelector.Window(SuggestionBody);
+            TextContext.ShouldBeOpen = ImGui.IsItemActive();
+            TextContext.Window(() => SuggestionBody(param, context));
         }
+
+        ExtraUI(param, context);
         
         this.EndParameterRow(context);
     }

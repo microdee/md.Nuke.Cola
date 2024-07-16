@@ -102,6 +102,32 @@ public class TextContextWindow
             ImGui.End();
         }
     }
+
+    public Range GetCurrentLineRange(string value)
+    {
+        var safeLastLineIndex = string.IsNullOrEmpty(value) || State.LastLineIndex == 0
+            ? 0
+            : Math.Min(State.LastLineIndex + 1, value.Length - 1);
+            
+        var nextLineIndex = value.IndexOf('\n', safeLastLineIndex);
+        nextLineIndex = nextLineIndex < 0 ? value.Length : nextLineIndex;
+        return new(safeLastLineIndex, nextLineIndex);
+    }
+
+    public string GetCurrentLine(string value) => value[GetCurrentLineRange(value)];
+
+    public void SetCurrentLine(ref string value, string input)
+    {
+        var currentLine = GetCurrentLineRange(value);
+        if (currentLine.End.GetOffset(value.Length) >= value.Length - 1 && !string.IsNullOrEmpty(value))
+        {
+            value += input;
+        }
+        else
+        {
+            value = value.InsertEdit(input, currentLine);
+        }
+    }
 }
 
 public static class TextContextHelpers

@@ -14,27 +14,14 @@ public abstract class EnumLikeParameterEditor : TextInputParameterEditor
 
     protected abstract string[] GetEntries(ParameterInfo param, BuildGuiContext context);
 
-    protected override void SuggestionBody()
+    protected override void SuggestionBody(ParameterInfo param, BuildGuiContext context)
     {
         if (EnumEntries != null)
             foreach(var entry in EnumEntries)
             {
                 if (ImGui.Selectable(entry, false))
                 {
-                    var safeLastLineIndex = string.IsNullOrEmpty(Value) || EnumSelector.State.LastLineIndex == 0
-                        ? 0
-                        : Math.Min(EnumSelector.State.LastLineIndex + 1, Value.Length - 1);
-
-                    var nextLineIndex = Value.IndexOf('\n', safeLastLineIndex);
-                    if (safeLastLineIndex == Value.Length - 1 && !string.IsNullOrEmpty(Value))
-                    {
-                        Value += entry;
-                    }
-                    else
-                    {
-                        nextLineIndex = nextLineIndex < 0 ? Value.Length : nextLineIndex;
-                        Value = Value.InsertEdit(entry, safeLastLineIndex, nextLineIndex);
-                    }
+                    TextContext.SetCurrentLine(ref Value, entry);
                 }
             }
     }
