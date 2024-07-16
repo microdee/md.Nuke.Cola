@@ -38,8 +38,9 @@ public static class ParameterEditor
         }
         ImGui.EndGroup();
 
+        // TODO: right column incorrect width
         ImGui.SetCursorPos(new(initOffset.X + columnSize, initOffset.Y));
-        var rightColSize = ImGui.GetContentRegionMax().X - columnSize;
+        var rightColSize = ImGui.GetContentRegionAvail().X;
         ImGui.SetNextItemWidth(rightColSize);
         ImGui.BeginGroup();
     }
@@ -82,7 +83,10 @@ public static class ParameterEditor
     static ParameterEditor()
     {
         _parameterEditors = Assembly.GetCallingAssembly().GetTypes()
-            .Where(t => t.IsAssignableTo(typeof(IParameterEditor)) && !t.IsInterface)
+            .Where(t => t.IsAssignableTo(typeof(IParameterEditor))
+                && !t.IsInterface
+                && !t.IsAbstract
+            )
             .ToHashSet();
 
         _defaultParameterEditors = _parameterEditors.Select(t =>

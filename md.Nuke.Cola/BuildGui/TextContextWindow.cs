@@ -11,68 +11,96 @@ namespace Nuke.Cola.BuildGui;
 
 public class TextContextWindow
 {
-    public bool Open;
-    Vector2 _textSizeUntilCaret = new();
-    Vector2 _lastLineTextSize = new();
-    int _caretPos = 0;
-    bool _extraLine = false;
-    public unsafe ImGuiInputTextCallback InputTextCallback(Action<ImGuiInputTextCallbackDataPtr>? onCallbackData = null)
+    public record Options(bool FollowHorizontalCaret = false);
+    public class CalculatedState
+    {
+        public bool ShouldBeOpen = false;
+        public bool IsOpen = false;
+        public Vector2 TextSizeUntilCaret = new();
+        public Vector2 LastLineTextSize = new();
+        public int LastLineIndex = 0;
+        public int CaretPos = 0;
+        public int SafeCaretPos = 0;
+        public bool IsNewLine = false;
+    }
+    public CalculatedState State = new();
+    public bool ShouldBeOpen
+    {
+        get => State.ShouldBeOpen;
+        set => State.ShouldBeOpen = value;
+    }
+
+    public unsafe ImGuiInputTextCallback InputTextCallback(Action<ImGuiInputTextCallbackDataPtr, CalculatedState>? onCallbackData = null)
     {
         return new(dataPtr =>
         {
             ImGuiInputTextCallbackDataPtr data = dataPtr;
             var text = data.GetBuffer();
+            State.CaretPos = data.CursorPos;
             ImGuiNative.igCalcTextSize(
-                (Vector2*)Unsafe.AsPointer(ref _textSizeUntilCaret),
+                (Vector2*)Unsafe.AsPointer(ref State.TextSizeUntilCaret),
                 dataPtr->Buf,
-                dataPtr->Buf + data.CursorPos,
+                dataPtr->Buf + State.CaretPos,
                 (byte)0, -1
             );
-            _caretPos = data.CursorPos;
-            var safeCaret = Math.Min(Math.Max(_caretPos - 1, 0), text.Length - 1);
-            _extraLine = string.IsNullOrEmpty(text) ? false : text[safeCaret] == '\n';
-            var lastLineIndex = Math.Max(text.Substring(0, _caretPos).LastIndexOf('\n'), 0);
+            State.SafeCaretPos = Math.Min(Math.Max(State.CaretPos - 1, 0), text.Length - 1);
+            State.IsNewLine = !string.IsNullOrEmpty(text) && text[State.SafeCaretPos] == '\n';
+            State.LastLineIndex = Math.Max(text[..State.CaretPos].LastIndexOf('\n'), 0);
             
             ImGuiNative.igCalcTextSize(
-                (Vector2*)Unsafe.AsPointer(ref _lastLineTextSize),
-                dataPtr->Buf + lastLineIndex,
-                dataPtr->Buf + data.CursorPos,
+                (Vector2*)Unsafe.AsPointer(ref State.LastLineTextSize),
+                dataPtr->Buf + State.LastLineIndex,
+                dataPtr->Buf + State.CaretPos,
                 (byte)0, -1
             );
 
-            var lastLine = text.Substring(lastLineIndex, _caretPos - lastLineIndex);
+            var lastLine = text[State.LastLineIndex..State.CaretPos];
             
-            onCallbackData?.Invoke(data);
+            onCallbackData?.Invoke(data, State);
             return 0;
         });
     }
 
-    public void Window(Action windowBody)
+    public void Window(Action windowBody, Options? options = null)
     {
-        var position = ImGui.GetItemRectMin();
-        position.Y += _textSizeUntilCaret.Y + ImGui.GetTextLineHeight();
-        position.Y += _extraLine ? ImGui.GetTextLineHeight() : 0;
-        position.X += _lastLineTextSize.X;
+        options ??= new();
 
-        ImGui.SetNextWindowPos(position);
-        if (ImGui.Begin(this.GuiLabel(suffix: "window"), ref Open,
-            ImGuiWindowFlags.AlwaysAutoResize
-            | ImGuiWindowFlags.NoTitleBar
-            | ImGuiWindowFlags.NoResize
-            | ImGuiWindowFlags.NoMove
-            | ImGuiWindowFlags.NoScrollbar
-            | ImGuiWindowFlags.NoCollapse
-            | ImGuiWindowFlags.NoSavedSettings
-            | ImGuiWindowFlags.NoFocusOnAppearing
-            | ImGuiWindowFlags.NoDecoration
-            | ImGuiWindowFlags.NoDocking
-        )) {
-            ImGui.InputFloat2("Text Size", ref _textSizeUntilCaret);
-            ImGui.Text($"_caretPos: {_caretPos}");
-            ImGui.Text($"_xOffset: {_lastLineTextSize.X}");
-            windowBody();
+        var position = ImGui.GetItemRectMin();
+        position.Y += State.TextSizeUntilCaret.Y + ImGui.GetTextLineHeight();
+        position.Y += State.IsNewLine ? ImGui.GetTextLineHeight() : 0;
+        if (options.FollowHorizontalCaret)
+        {
+            position.X += State.LastLineTextSize.X;
         }
-        ImGui.End();
+
+        if (State.ShouldBeOpen && !State.IsOpen)
+        {
+            State.IsOpen = true;
+        }
+
+        if (State.IsOpen)
+        {
+            ImGui.SetNextWindowPos(position);
+            if (ImGui.Begin(this.GuiLabel(suffix: "window"), ref State.IsOpen,
+                ImGuiWindowFlags.AlwaysAutoResize
+                | ImGuiWindowFlags.NoTitleBar
+                | ImGuiWindowFlags.NoResize
+                | ImGuiWindowFlags.NoMove
+                | ImGuiWindowFlags.NoScrollbar
+                | ImGuiWindowFlags.NoCollapse
+                | ImGuiWindowFlags.NoSavedSettings
+                | ImGuiWindowFlags.NoFocusOnAppearing
+                | ImGuiWindowFlags.NoDecoration
+                | ImGuiWindowFlags.NoDocking
+            )) {
+                windowBody();
+                if (!State.ShouldBeOpen && State.IsOpen && !(ImGui.IsWindowFocused() || ImGui.IsWindowHovered()))
+                {
+                    State.IsOpen = false;
+                }
+            }
+            ImGui.End();
+        }
     }
 }
 
