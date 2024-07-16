@@ -119,7 +119,7 @@ public class TextContextWindow
     public void SetCurrentLine(ref string value, string input)
     {
         var currentLine = GetCurrentLineRange(value);
-        if (currentLine.End.GetOffset(value.Length) >= value.Length - 1 && !string.IsNullOrEmpty(value))
+        if (currentLine.End.GetOffset(value.Length) >= value.Length - 1 && !string.IsNullOrEmpty(value) && value.EndsWith('\n'))
         {
             value += input;
         }
