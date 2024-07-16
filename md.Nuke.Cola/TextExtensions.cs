@@ -24,4 +24,11 @@ public static class TextExtensions
         var groups = pattern.Matches(input)?.FirstOrDefault()?.Groups;
         return i => groups?[i]?.Value;
     }
+
+    public static string InsertEdit(this string input, string insert, int startIndex, int endIndex)
+    {
+        var before = input[0..startIndex];
+        var after = input[endIndex..^0];
+        return before + insert + after;
+    }
 }
