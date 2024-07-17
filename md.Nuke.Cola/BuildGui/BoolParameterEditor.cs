@@ -20,7 +20,7 @@ public class BoolParameterEditor : IParameterEditor
     {
         Default ??= param.Member.GetValue<bool>(context.BuildObject);
         ImGui.Checkbox(param.Name, ref Value);
-        ImGui.SetItemTooltip(param.Description);
+        ImGui.SetItemTooltip(param.ParamAttr.Description);
     }
 
     public string? Result => Value ? "" : null;

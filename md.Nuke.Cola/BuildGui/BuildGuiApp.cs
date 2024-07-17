@@ -161,10 +161,10 @@ public class BuildGuiApp : IDisposable
             var paramAttr = parameterMember.GetCustomAttribute<ParameterAttribute>()!;
             var info = new ParameterInfo(
                 paramAttr.Name ?? parameterMember.Name,
-                paramAttr.Description,
                 parameterMember,
                 parameterMember.GetMemberType(),
-                parameterMember.GetMemberType().GetInnerType()
+                parameterMember.GetMemberType().GetInnerType(),
+                paramAttr
             );
             var editor = ParameterEditor.MakeEditor(info);
             var item = new GuiItem(info.Name, ctx =>
@@ -231,7 +231,7 @@ public class BuildGuiApp : IDisposable
             _gl = _window.CreateOpenGL();
             _inputContext = _window.CreateInput();
             _controller = new(_gl, _window, _inputContext);
-            
+
             _context.Window = _window;
             _context.InputContext = _inputContext;
             _context.ImGuiController = _controller;

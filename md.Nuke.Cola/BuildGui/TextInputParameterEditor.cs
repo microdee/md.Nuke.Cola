@@ -16,6 +16,9 @@ public abstract class TextInputParameterEditor : IParameterEditor
     protected string? Default;
     protected bool? IsCollection;   
     protected bool Enabled = false;
+
+    protected ParameterInfo? CachedParam;
+    protected BuildGuiContext? CachedContext;
     
     protected TextContextWindow TextContext = new();
     public virtual bool HasSuggestions => false;
@@ -42,6 +45,8 @@ public abstract class TextInputParameterEditor : IParameterEditor
 
     public virtual void Draw(ParameterInfo param, BuildGuiContext context)
     {
+        CachedParam = param;
+        CachedContext = context;
         this.BeginParameterRow(ref Enabled, param, context);
 
         if (IsCollection ??= param.RawParamType.IsCollectionOrArray())
@@ -59,7 +64,7 @@ public abstract class TextInputParameterEditor : IParameterEditor
             size.Y += Value.EndsWith('\n') ? ImGui.GetTextLineHeight() : 0;
             ImGui.InputTextMultiline(
                 this.GuiLabel(suffix: "value"), ref Value, 1024 * 16,
-                new(-1.0f, size.Y + 10),
+                new(-1.0f, size.Y + 6),
                 ImGuiInputTextFlags.CallbackAlways,
                 TextContext.InputTextCallback(InputTextCallback)
             );

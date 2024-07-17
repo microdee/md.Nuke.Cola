@@ -28,6 +28,7 @@
     <PackageReference Include="Silk.NET.OpenGL" Version="2.21.0" />
     <PackageReference Include="Silk.NET.OpenGL.Extensions.ImGui" Version="2.21.0" />
     <PackageReference Include="Standart.Hash.xxHash" Version="4.0.5" />
+    <PackageReference Include="NativeFileDialogExtendedSharp" Version="0.1.0" />
   </ItemGroup>
 
 </Project>

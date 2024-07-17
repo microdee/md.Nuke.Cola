@@ -5,19 +5,17 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using ImGuiNET;
+using Nuke.Common;
 using Nuke.Common.Utilities;
 
 namespace Nuke.Cola.BuildGui;
 
 public record ParameterInfo(
     string Name,
-    string Description,
     MemberInfo Member,
     Type RawParamType,
     Type InnerParamType,
-    string Separator = "",
-    bool List = true
-    // TODO: ValueProvider Type / Member
+    ParameterAttribute ParamAttr
 );
 
 public interface IParameterEditor
@@ -46,7 +44,7 @@ public static class ParameterEditor
         ImGui.BeginGroup();
         {
             ImGui.Checkbox(self.GuiLabel(param.Name, "prefix_enable"), ref value);
-            ImGui.SetItemTooltip(param.Description);
+            ImGui.SetItemTooltip(param.ParamAttr.Description);
         }
         ImGui.EndGroup();
 
@@ -90,7 +88,7 @@ public static class ParameterEditor
     public static bool IsCollectionOrArray(this Type type) => type.IsArray || type.IsCollectionLike();
 
     private static HashSet<Type> _parameterEditors = new();
-    private static List<IParameterEditor> _defaultParameterEditors = new();
+    private static Dictionary<Type, IParameterEditor> _defaultParameterEditors = new();
 
     static ParameterEditor()
     {
@@ -101,16 +99,21 @@ public static class ParameterEditor
             )
             .ToHashSet();
 
-        _defaultParameterEditors = _parameterEditors.Select(t =>
-        {
-            return (IParameterEditor)Activator.CreateInstance(t)!;
-        })
-        .ToList();
+        _defaultParameterEditors = _parameterEditors
+            .Select(t =>
+            {
+                return (IParameterEditor)Activator.CreateInstance(t)!;
+            })
+            .ToDictionary(o => o.GetType());
     }
+
+    public static T GetDefaultEditor<T>() where T : IParameterEditor => (T) _defaultParameterEditors[typeof(T)];
+
+    public static T? TryGetDefaultEditor<T>() where T : class, IParameterEditor => _defaultParameterEditors[typeof(T)] as T;
 
     public static IParameterEditor? MakeEditor(ParameterInfo param)
     {
-        foreach(var defaultEditor in _defaultParameterEditors)
+        foreach(var defaultEditor in _defaultParameterEditors.Values)
         {
             if (defaultEditor.Supported(param))
             {

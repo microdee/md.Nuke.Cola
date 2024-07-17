@@ -20,7 +20,7 @@ public class IntParameterEditor : IParameterEditor
     public void Draw(ParameterInfo param, BuildGuiContext context)
     {
         this.BeginParameterRow(ref Enabled, param, context);
-        Default ??= param.Member.GetValue<int>(context.BuildObject);
+        //Default ??= param.Member.GetValue<int>(context.BuildObject);
         ImGui.InputInt(this.GuiLabel(suffix: "value"), ref Value);
         this.EndParameterRow(context);
     }
