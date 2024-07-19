@@ -5,14 +5,30 @@
             // Use IntelliSense to find out which attributes exist for C# debugging
             // Use hover for the description of the existing attributes
             // For further information visit https://github.com/dotnet/vscode-csharp/blob/main/debugger-launchjson.md
-            "name": ".NET Core Launch (console)",
+            "name": "Run Local Test",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build",
+            "preLaunchTask": "build_localTest",
             // If you have changed target frameworks, make sure to update the program path.
             "program": "${workspaceFolder}/tests/TestBuild/bin/Debug/TestBuild.dll",
             "args": [],
             "cwd": "${workspaceFolder}/tests",
+            // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
+            // Use IntelliSense to find out which attributes exist for C# debugging
+            // Use hover for the description of the existing attributes
+            // For further information visit https://github.com/dotnet/vscode-csharp/blob/main/debugger-launchjson.md
+            "name": "Run Unreal Test",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build_nukeUnrealTest",
+            // If you have changed target frameworks, make sure to update the program path.
+            "program": "D:/projects/Nuke.Unreal/tests/UE_5.3/Packaging/Nuke.Targets/bin/Debug/Nuke.Targets.dll",
+            "args": [],
+            "cwd": "D:/projects/Nuke.Unreal/tests/UE_5.3/Packaging",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "internalConsole",
             "stopAtEntry": false

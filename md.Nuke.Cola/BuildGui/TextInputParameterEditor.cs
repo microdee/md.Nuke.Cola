@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using ImGuiNET;
 using Nuke.Common.Tooling;
 using Nuke.Common.Utilities;
+using Serilog;
 
 namespace Nuke.Cola.BuildGui;
 
@@ -53,10 +54,18 @@ public abstract class TextInputParameterEditor : IParameterEditor
         {
             if (Default == null)
             {
-                if (param.Member.GetValue(context.BuildObject) is IEnumerable<object> collection)
+                try
                 {
-                    Default = collection != null ? string.Join('\n', collection) : "";
-                    Value = Default ?? "";
+                    if (param.Member.GetValue(context.BuildObject) is IEnumerable<object> collection)
+                    {
+                        Default = collection != null ? string.Join('\n', collection) : "";
+                        Value = Default ?? "";
+                    }
+                }
+                catch(Exception e)
+                {
+                    Log.Warning(e, "Getting the default value of {0} threw an exception.", param.Name);
+                    Value = Default = "";
                 }
             }
 
@@ -71,7 +80,15 @@ public abstract class TextInputParameterEditor : IParameterEditor
         }
         else
         {
-            Default ??= param.Member.GetValue(context.BuildObject)?.ToString();
+            try
+            {
+                Default ??= param.Member.GetValue(context.BuildObject)?.ToString() ?? "";
+            }
+            catch(Exception e)
+            {
+                Log.Warning(e, "Getting the default value of {0} threw an exception.", param.Name);
+                Value = Default = "";
+            }
             if (Default == null)
             {
                 ImGui.InputText(

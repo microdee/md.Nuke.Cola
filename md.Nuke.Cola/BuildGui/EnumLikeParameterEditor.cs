@@ -12,12 +12,20 @@ public abstract class EnumLikeParameterEditor : TextInputParameterEditor
 
     public override bool HasSuggestions => true;
 
+    protected virtual bool Filter => (EnumEntries?.Length ?? 0) > 9;
+
     protected abstract string[] GetEntries(ParameterInfo param, BuildGuiContext context);
 
     protected override void SuggestionBody(ParameterInfo param, BuildGuiContext context)
     {
         if (EnumEntries != null)
-            foreach(var entry in EnumEntries)
+        {
+            var currentLine = Filter ? TextContext.GetCurrentLine(Value) : "";
+            var entries = Filter
+                ? EnumEntries.Where(e => e.ContainsOrdinalIgnoreCase(currentLine))
+                : EnumEntries;
+            
+            foreach(var entry in entries)
             {
                 if (IsCollection ?? false)
                 {
@@ -38,6 +46,7 @@ public abstract class EnumLikeParameterEditor : TextInputParameterEditor
                     TextContext.SetCurrentLine(ref Value, entry);
                 }
             }
+        }
     }
 
     public override void Draw(ParameterInfo param, BuildGuiContext context)
