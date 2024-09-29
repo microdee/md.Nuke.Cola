@@ -1,0 +1,5 @@
+link:
+  - dir: Private/SharedSubfolder
+  - dir: Public/SharedSubfolder
+copy:
+  - file: "**/*_Origin.*"

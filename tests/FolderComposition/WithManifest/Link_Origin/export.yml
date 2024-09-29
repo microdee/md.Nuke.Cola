@@ -1,0 +1,3 @@
+link:
+  - dir: "Foo/Bar"
+  - file: "Wizzard/**/*"

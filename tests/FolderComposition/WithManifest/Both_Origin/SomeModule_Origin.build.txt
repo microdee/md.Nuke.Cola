@@ -1,0 +1,14 @@
+using Stuff.Origin;
+
+public class Stuff_Origin : ModuleRules
+{
+    public Stuff_Origin()
+    {
+        PublicModuleDependency.AddRange(new []
+        {
+            "Library_Origin",
+            "Mcro_Origin",
+            "OtherStuff_Origin"
+        });
+    }
+}
