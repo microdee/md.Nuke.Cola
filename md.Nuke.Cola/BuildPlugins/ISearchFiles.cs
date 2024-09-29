@@ -13,17 +13,18 @@ namespace Nuke.Cola.BuildPlugins;
 /// <summary>
 /// Simple interface for swapping file search engines
 /// </summary>
-public interface ISearchFiles
+public interface ISearchFileSystem
 {
-    IEnumerable<AbsolutePath> Glob(AbsolutePath root, string pattern);
+    IEnumerable<AbsolutePath> GlobFiles(AbsolutePath root, string pattern);
+    IEnumerable<AbsolutePath> GlobDirectories(AbsolutePath root, string pattern);
     int Priority { get; }
 }
 
-public static class SearchFiles
+public static class SearchFileSystem
 {
-    private static ISearchFiles? _current;
+    private static ISearchFileSystem? _current;
 
-    public static ISearchFiles Get()
+    private static ISearchFileSystem GetGlobbing()
     {
         if (_current != null) return _current!;
         if (EnvironmentInfo.IsWin && SearchClient.IsEverythingAvailable())
@@ -36,10 +37,17 @@ public static class SearchFiles
         }
         return _current;
     }
+
+    public static IEnumerable<AbsolutePath> SearchFiles(this AbsolutePath root, string pattern) =>
+        GetGlobbing().GlobFiles(root, pattern);
+
+    public static IEnumerable<AbsolutePath> SearchDirectories(this AbsolutePath root, string pattern) =>
+        GetGlobbing().GlobDirectories(root, pattern);
 }
 
-public class NukeGlobbing : ISearchFiles
+public class NukeGlobbing : ISearchFileSystem
 {
-    public IEnumerable<AbsolutePath> Glob(AbsolutePath root, string pattern) => root.GlobFiles(pattern);
+    public IEnumerable<AbsolutePath> GlobFiles(AbsolutePath root, string pattern) => root.GlobFiles(pattern);
+    public IEnumerable<AbsolutePath> GlobDirectories(AbsolutePath root, string pattern) => root.GlobDirectories(pattern);
     public int Priority => int.MaxValue;
 }

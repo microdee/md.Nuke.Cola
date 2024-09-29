@@ -9,18 +9,25 @@ using Nuke.Common.IO;
 namespace Nuke.Cola.BuildPlugins;
 
 [SupportedOSPlatform("windows")]
-public class EverythingGlobbing : ISearchFiles
+public class EverythingGlobbing : ISearchFileSystem
 {
-    SearchClient _everything = new();
+    readonly SearchClient _everything = new();
 
     public int Priority => 0;
 
-    public IEnumerable<AbsolutePath> Glob(AbsolutePath root, string pattern)
+    private Result Glob(AbsolutePath root, string pattern)
     {
         var absolutePattern = (root / pattern).ToString();
-        var result = _everything.Search(absolutePattern, SearchClient.SearchFlags.MatchPath, SearchClient.BehaviorWhenBusy.WaitOrContinue);
-        return result.Items
+        return _everything.Search(absolutePattern, SearchClient.SearchFlags.MatchPath, SearchClient.BehaviorWhenBusy.WaitOrContinue);
+    }
+
+    public IEnumerable<AbsolutePath> GlobFiles(AbsolutePath root, string pattern) =>
+        Glob(root, pattern).Items
             .Where(i => i.Flags == Result.ItemFlags.None)
             .Select(i => ((AbsolutePath) i.Path) / i.Name);
-    }
+
+    public IEnumerable<AbsolutePath> GlobDirectories(AbsolutePath root, string pattern) =>
+        Glob(root, pattern).Items
+            .Where(i => i.Flags == Result.ItemFlags.Folder)
+            .Select(i => ((AbsolutePath) i.Path) / i.Name);
 }

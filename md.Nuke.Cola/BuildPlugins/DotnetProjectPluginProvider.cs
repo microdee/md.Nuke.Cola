@@ -16,7 +16,7 @@ namespace Nuke.Cola.BuildPlugins;
 public class DotnetProjectPluginProvider : IProvidePlugins
 {
     public IEnumerable<IHavePlugin> GatherPlugins(BuildContext context) =>
-        SearchFiles.Get().Glob(context.Root, "**/*.Nuke.csproj")
+        context.Root.SearchFiles("**/*.Nuke.csproj")
             .Select(f => new DotnetProjectPlugin
             {
                 SourcePath = f
