@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using EverythingSearchClient;
 using Nuke.Common;
 using Nuke.Common.IO;
 
 #pragma warning disable CA1416 // Validate platform compatibility
 
-namespace Nuke.Cola.BuildPlugins;
+namespace Nuke.Cola.Search;
 
 /// <summary>
 /// Simple interface for swapping file search engines
@@ -27,7 +23,7 @@ public static class SearchFileSystem
     private static ISearchFileSystem GetGlobbing()
     {
         if (_current != null) return _current!;
-        if (EnvironmentInfo.IsWin && SearchClient.IsEverythingAvailable())
+        if (EnvironmentInfo.IsWin && SearchClient.IsEverythingAvailable() && false)
         {
             _current = new EverythingGlobbing();
         }

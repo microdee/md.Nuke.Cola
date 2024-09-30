@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using EverythingSearchClient;
 using Nuke.Common.IO;
 
-namespace Nuke.Cola.BuildPlugins;
+namespace Nuke.Cola.Search;
 
 [SupportedOSPlatform("windows")]
 public class EverythingGlobbing : ISearchFileSystem
@@ -18,7 +18,19 @@ public class EverythingGlobbing : ISearchFileSystem
     private Result Glob(AbsolutePath root, string pattern)
     {
         var absolutePattern = (root / pattern).ToString();
-        return _everything.Search(absolutePattern, SearchClient.SearchFlags.MatchPath, SearchClient.BehaviorWhenBusy.WaitOrContinue);
+
+        // Nuke globbing **/ includes starting directory of recursion however Everything only starts
+        // recursion with subdirectories. In order to emulate Nuke globbing we repeat the pattern
+        // **/ excluded
+        var processedPattern = absolutePattern.Contains("**/") || absolutePattern.Contains("**\\")
+            ? absolutePattern + "|" + absolutePattern.Replace("**/", "").Replace("**\\", "")
+            : absolutePattern;
+
+        return _everything.Search(
+            processedPattern,
+            SearchClient.SearchFlags.MatchPath | SearchClient.SearchFlags.MatchWholeWord,
+            SearchClient.BehaviorWhenBusy.WaitOrContinue
+        );
     }
 
     public IEnumerable<AbsolutePath> GlobFiles(AbsolutePath root, string pattern) =>
