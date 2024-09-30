@@ -1,3 +1,4 @@
 copy:
   - dir: "Foo/Bar_Origin"
-  - file: "Wizzard/**/*"
+  - file: "Foo/Foo.bar"
+  - file: "Wizzard/**"

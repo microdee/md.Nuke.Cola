@@ -65,6 +65,7 @@
             "type": "string",
             "enum": [
               "BuildPluginPoc",
+              "ImportTestFolders",
               "PluginTest",
               "ProjectTest",
               "SomeOtherTarget"
@@ -78,6 +79,7 @@
             "type": "string",
             "enum": [
               "BuildPluginPoc",
+              "ImportTestFolders",
               "PluginTest",
               "ProjectTest",
               "SomeOtherTarget"

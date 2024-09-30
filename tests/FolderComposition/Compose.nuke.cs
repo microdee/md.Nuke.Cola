@@ -4,8 +4,11 @@ using Nuke.Common;
 using Nuke.Common.IO;
 using Nuke.Cola;
 using Nuke.Cola.FolderComposition;
+using System;
+using Nuke.Cola.BuildPlugins;
 
-public partial class Build
+[ImplicitBuildInterface]
+public interface IImportTestFolders : INukeBuild
 {
     Target ImportTestFolders => _ => _
         .Executes(() => 

@@ -14,7 +14,7 @@ using static Nuke.Common.EnvironmentInfo;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.PathConstruction;
 
-public partial class Build : NukeBuild
+public class Build : NukeBuild
 {
     public static int Main () => Plugins.Execute<Build>(Execute);
 
