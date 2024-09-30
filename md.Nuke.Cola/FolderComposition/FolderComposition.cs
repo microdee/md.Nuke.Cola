@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using GlobExpressions;
-using Nuke.Cola.BuildPlugins;
+using Nuke.Cola.Search;
 using Nuke.Common;
 using Nuke.Common.IO;
 using Nuke.Common.Utilities.Collections;
@@ -48,8 +48,17 @@ public static class FolderComposition
         return result;
     }
 
-    private static AbsolutePath ProcessSuffixPath(this AbsolutePath target, ImportFolderSuffixes suffixes, string leads = "_.:")
-        => target.Parent / target.Name.ProcessSuffix(suffixes, leads);
+    private static AbsolutePath ProcessSuffixPath(
+        this AbsolutePath target,
+        ImportFolderSuffixes suffixes,
+        AbsolutePath? until = null,
+        string leads = "_.:"
+    ) {
+        if (until == null)
+            return target.Parent / target.Name.ProcessSuffix(suffixes, leads);
+        var relative = until.GetRelativePathTo(target).ToString();
+        return until / relative.ProcessSuffix(suffixes, leads);
+    }
 
     private static void ProcessSuffixContent(this AbsolutePath target, ImportFolderSuffixes suffixes, string leads = "_.:")
     {
@@ -61,19 +70,19 @@ public static class FolderComposition
         }
     }
 
-    public static void ImportFolders(this NukeBuild self, ImportFolderSuffixes suffixes, params ImportFolderItem[] imports)
-        => imports.ForEach(import => ImportFolder(self, suffixes, import));
+    public static void ImportFolders(this INukeBuild self, ImportFolderSuffixes suffixes, params ImportFolderItem[] imports)
+        => imports.ForEach(i => ImportFolder(self, suffixes, i));
 
-    public static void ImportFolder(this NukeBuild self, ImportFolderSuffixes suffixes, ImportFolderItem import)
+    public static void ImportFolder(this INukeBuild self, ImportFolderSuffixes suffixes, ImportFolderItem import)
     {
         var manifestPath = (import.From / "export.yml").ExistingFile()
             ?? import.From / "export.yaml";
 
-        var to = import.ToParent.ProcessSuffixPath(suffixes);
+        var to = import.ToParent / import.From.Name.ProcessSuffix(suffixes);
         
         if (!manifestPath.FileExists())
         {
-            if (!to.DirectoryExists()) Directory.CreateSymbolicLink(to, import.From);
+            to.LinksDirectory(import.From);
             return;
         }
 
@@ -95,15 +104,15 @@ public static class FolderComposition
                     import.From.SearchDirectories(glob.Directory!)
                         .ForEach(p =>
                         {
-                            var dst = to / p.GetRelativePathTo(import.From);
-                            handleDirectories(p, to.ProcessSuffixPath(suffixes));
+                            var dst = to / import.From.GetRelativePathTo(p);
+                            handleDirectories(p, dst.ProcessSuffixPath(suffixes, to));
                         });
                 else
                     import.From.SearchFiles(glob.File!)
                         .ForEach(p =>
                         {
-                            var dst = to / p.GetRelativePathTo(import.From);
-                            handleFiles(p, to.ProcessSuffixPath(suffixes));
+                            var dst = to / import.From.GetRelativePathTo(p);
+                            handleFiles(p, dst.ProcessSuffixPath(suffixes, to));
                         });
             }
         }
@@ -121,8 +130,8 @@ public static class FolderComposition
 
         FileSystemTask(
             instructions.Link,
-            (src, dst) => Directory.CreateSymbolicLink(dst, src),
-            (src, dst) => File.CreateSymbolicLink(dst, src)
+            (src, dst) => dst.LinksDirectory(src),
+            (src, dst) => dst.LinksFile(src)
         );
     }
 }
