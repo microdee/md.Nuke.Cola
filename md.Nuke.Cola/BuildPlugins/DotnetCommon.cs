@@ -97,7 +97,7 @@ internal static class DotnetCommon
     /// <summary>
     /// Get the build interfaces of an input assembly inheriting Nuke.Common.INukeBuild
     /// </summary>
-    internal static IEnumerable<Importable> GetBuildInterfaces(this Assembly assembly, AbsolutePath sourcePath, bool importViaSource = false) =>
+    internal static IEnumerable<Importable> GetBuildInterfaces(this Assembly assembly, AbsolutePath? sourcePath = null, bool importViaSource = false) =>
         assembly.GetTypes()
             .Where(t => t.IsInterface)
             .Where(t => t.GetInterfaces().Any(i => i.FullName == "Nuke.Common.INukeBuild"))

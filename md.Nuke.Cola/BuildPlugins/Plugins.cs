@@ -52,6 +52,7 @@ public static class Plugins
         BuildContext context = new(NukeBuild.TemporaryDirectory, NukeBuild.RootDirectory);
         var engines = new IProvidePlugins[]
         {
+            new ImplicitBuildInterfacePluginProvider(),
             new CSharpScriptPluginProvider(),
             new DotnetProjectPluginProvider()
         };
@@ -81,6 +82,7 @@ public static class Plugins
         var dllRefs = string.Join(
             Environment.NewLine,
             assemblyPaths
+                .Where(p => p.Source != null)
                 .Select(p => p.ImportViaSource
                     ? $"\n// dll: {p.Interface.Assembly.Location}\n#load \"{p}\""
                     : $"#r \"{p}\""
