@@ -3,3 +3,4 @@ link:
   - dir: Public/SharedSubfolder
 copy:
   - file: "**/*_Origin.*"
+    procContent: true

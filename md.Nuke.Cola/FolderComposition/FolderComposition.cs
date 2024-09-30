@@ -17,20 +17,26 @@ public record ImportFolderSuffixes(string To, string From = "Origin")
     public static implicit operator ImportFolderSuffixes (string from)
         => new(from);
 
-    public static implicit operator ImportFolderSuffixes (ValueTuple<string, string> from)
-        => new(from.Item1, from.Item2);
+    public static implicit operator ImportFolderSuffixes ((string to, string from) from)
+        => new(from.to, from.from);
 
-    public static implicit operator ValueTuple<string, string> (ImportFolderSuffixes from)
+    public static implicit operator (string, string) (ImportFolderSuffixes from)
         => (from.To, from.From);
 }
 
-public record ImportFolderItem(AbsolutePath From, AbsolutePath ToParent)
+public record ImportFolderItem(AbsolutePath From, AbsolutePath ToParent, ExportManifest? Manifest = null)
 {
-    public static implicit operator ImportFolderItem (ValueTuple<AbsolutePath, AbsolutePath> from)
-        => new(from.Item1, from.Item2);
+    public static implicit operator ImportFolderItem ((AbsolutePath from, AbsolutePath toParent) from)
+        => new(from.from, from.toParent);
 
-    public static implicit operator ValueTuple<AbsolutePath, AbsolutePath> (ImportFolderItem from)
+    public static implicit operator ImportFolderItem ((AbsolutePath from, AbsolutePath toParent, ExportManifest manifest) from)
+        => new(from.from, from.toParent, from.manifest);
+
+    public static implicit operator (AbsolutePath, AbsolutePath) (ImportFolderItem from)
         => (from.From, from.ToParent);
+
+    public static implicit operator (AbsolutePath, AbsolutePath, ExportManifest?) (ImportFolderItem from)
+        => (from.From, from.ToParent, from.Manifest);
 }
 
 public static class FolderComposition
@@ -79,21 +85,21 @@ public static class FolderComposition
             ?? import.From / "export.yaml";
 
         var to = import.ToParent / import.From.Name.ProcessSuffix(suffixes);
+
+        var instructions = import.Manifest ?? manifestPath.ExistingFile()?.ReadYaml<ExportManifest>();
         
-        if (!manifestPath.FileExists())
+        if (instructions == null)
         {
             to.LinksDirectory(import.From);
             return;
         }
 
-        var instructions = manifestPath.ReadYaml<ExportManifest>();
-
         if (!to.DirectoryExists()) to.CreateDirectory();
 
         void FileSystemTask(
             IEnumerable<FileOrDirectory> list,
-            Action<AbsolutePath, AbsolutePath> handleDirectories,
-            Action<AbsolutePath, AbsolutePath> handleFiles
+            Action<AbsolutePath, AbsolutePath, FileOrDirectory> handleDirectories,
+            Action<AbsolutePath, AbsolutePath, FileOrDirectory> handleFiles
         ) {
             foreach (var glob in list)
             {
@@ -105,33 +111,34 @@ public static class FolderComposition
                         .ForEach(p =>
                         {
                             var dst = to / import.From.GetRelativePathTo(p);
-                            handleDirectories(p, dst.ProcessSuffixPath(suffixes, to));
+                            handleDirectories(p, dst.ProcessSuffixPath(suffixes, to), glob);
                         });
                 else
                     import.From.SearchFiles(glob.File!)
                         .ForEach(p =>
                         {
                             var dst = to / import.From.GetRelativePathTo(p);
-                            handleFiles(p, dst.ProcessSuffixPath(suffixes, to));
+                            handleFiles(p, dst.ProcessSuffixPath(suffixes, to), glob);
                         });
             }
         }
 
         FileSystemTask(
             instructions.Copy,
-            (src, dst) => FileSystemTasks.CopyDirectoryRecursively(
+            (src, dst, glob) => FileSystemTasks.CopyDirectoryRecursively(
                 src, dst, DirectoryExistsPolicy.Merge, FileExistsPolicy.Overwrite
             ),
-            (src, dst) => {
+            (src, dst, glob) => {
                 FileSystemTasks.CopyFile(src, dst, FileExistsPolicy.Overwrite);
-                dst.ProcessSuffixContent(suffixes);
+                if (glob.ProcessContent)
+                    dst.ProcessSuffixContent(suffixes);
             }
         );
 
         FileSystemTask(
             instructions.Link,
-            (src, dst) => dst.LinksDirectory(src),
-            (src, dst) => dst.LinksFile(src)
+            (src, dst, glob) => dst.LinksDirectory(src),
+            (src, dst, glob) => dst.LinksFile(src)
         );
     }
 }

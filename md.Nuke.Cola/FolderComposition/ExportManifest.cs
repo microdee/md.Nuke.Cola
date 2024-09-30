@@ -10,6 +10,9 @@ public class FileOrDirectory
     [YamlMember]
     public string? File;
 
+    [YamlMember(Alias = "procContent")]
+    public bool ProcessContent = false;
+
     [YamlMember(Alias = "dir")]
     public string? Directory;
 }

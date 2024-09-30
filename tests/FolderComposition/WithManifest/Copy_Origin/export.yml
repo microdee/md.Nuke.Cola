@@ -2,3 +2,4 @@ copy:
   - dir: "Foo/Bar_Origin"
   - file: "Foo/Foo.bar"
   - file: "Wizzard/**"
+    procContent: true
