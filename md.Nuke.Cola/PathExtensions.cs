@@ -10,6 +10,7 @@ using Nuke.Common.Utilities;
 using Nuke.Common.Utilities.Collections;
 using Nuke.Common.IO;
 using Serilog;
+using Nuke.Common.Tooling;
 
 namespace Nuke.Cola;
 
@@ -72,8 +73,10 @@ public static class PathExtensions
 
         if (!link.Parent.DirectoryExists())
             link.Parent.CreateDirectory();
+
+        var realRelative = link.Parent.GetRelativePathTo(real);
         
-        return createLink(link, real);
+        return createLink(link, realRelative);
     }
 
     /// <summary>
