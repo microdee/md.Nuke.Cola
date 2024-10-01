@@ -224,51 +224,7 @@ Folder composition allows couple of more things:
 
 </details>
 
-For example given the following file/folder structure of a hypothetical shared library (which for some cursed reason cannot just be submitted to a package manager infrastructure (khmUnreal-pluginskhm)):
-
-```
-ThirdParty
-├───FolderOnly_Origin
-│       SomeFile_B.txt
-├───Target
-├───Unassuming
-│       SomeFile_A.txt
-└───WithManifest
-    ├───Both_Origin
-    │   │   export.yml
-    │   │   SomeModule_Origin.build.txt
-    │   ├───ExcludedFolder
-    │   │       SomeFile_Excluded.txt
-    │   ├───Private
-    │   │   │   ModuleFile_Origin.cpp.txt
-    │   │   └───SharedSubfolder
-    │   │           SomeFile.cpp.txt
-    │   └───Public
-    │       └───SharedSubfolder
-    │               SomeFile.h.txt
-    ├───Copy_Origin
-    │   │   export.yml
-    │   ├───Foo
-    │   │   │   Foo.bar
-    │   │   └───Bar_Origin
-    │   │           A.txt
-    │   └───Wizzard
-    │       │   B.txt
-    │       └───Ech
-    │               C_Origin.txt
-    └───Link_Origin
-        │   export.yml
-        ├───Foo
-        │   │   Foo.bar
-        │   └───Bar_Origin
-        │           A.txt
-        └───Wizzard
-            │   B.txt
-            └───Ech
-                    C.txt
-```
-
-The project requiring this made up library can import it via:
+For example the following target:
 
 ```CSharp
 [ImplicitBuildInterface]
@@ -292,43 +248,51 @@ public interface IImportTestFolders : INukeBuild
 }
 ```
 
-Which will result in the following imported file/folder structure (as seen in `tests`)
+will process/import the file/folder structure on the left to the file/folder structure on the right.
 
 ```
-Target
-├───FolderOnly_Test <symlink>
-├───Unassuming <symlink>
-└───WithManifest
-    ├───Both_Test
-    │   │   SomeModule_Test.build.txt
-    │   ├───Private
-    │   │   │   ModuleFile_Test.cpp.txt
-    │   │   └───SharedSubfolder <symlink>
-    │   └───Public
-    │       └───SharedSubfolder <symlink>
-    ├───Copy_Test
-    │   ├───Foo
-    │   │   │   Foo.bar
-    │   │   └───Bar_Test
-    │   │           A.txt
-    │   │           B.txt
-    │   └───Wizzard
-    │       │   A.txt
-    │       │   B.txt
-    │       │   C.txt
-    │       └───Ech_Test
-    │               A_Test.txt
-    │               B_Test.txt
-    │               C_Test.txt
-    └───Link_Test
-        ├───Foo
-        │   └───Bar_Test <symlink>
-        └───Wizzard
-            └───Ech_Test
-                    A_Test.txt <symlink>
-                    B_Test.txt <symlink>
-                    C_Test.txt <symlink>
+ThirdParty                                  ->  Target
+├───FolderOnly_Origin                       ->  ├───FolderOnly_Test <symlink>
+│       SomeFile_B.txt                          │       *
+├───Unassuming                              ->  ├───Unassuming <symlink>
+│       SomeFile_A.txt                          │       *
+└───WithManifest                            ->  └───WithManifest
+    ├───Both_Origin                         ->      ├───Both_Test
+    │   │   export.yml                              │   │   -
+    │   │   SomeModule_Origin.build.txt     ->      │   │   SomeModule_Test.build.txt
+    │   ├───ExcludedFolder                          │   │   -
+    │   │       SomeFile_Excluded.txt               │   │       -
+    │   ├───Private                         ->      │   ├───Private
+    │   │   │   ModuleFile_Origin.cpp.txt   ->      │   │   │   ModuleFile_Test.cpp.txt
+    │   │   └───SharedSubfolder             ->      │   │   └───SharedSubfolder <symlink>
+    │   │           SomeFile.cpp.txt                │   │           *
+    │   └───Public                          ->      │   └───Public
+    │       └───SharedSubfolder             ->      │       └───SharedSubfolder <symlink>
+    │               SomeFile.h.txt                  │               *
+    ├───Copy_Origin                         ->      ├───Copy_Test
+    │   │   export.yml                              │   │   -
+    │   ├───Foo                             ->      │   ├───Foo
+    │   │   │   Foo.bar                     ->      │   │   │   Foo.bar
+    │   │   └───Bar_Origin                  ->      │   │   └───Bar_Test
+    │   │           A.txt                   ->      │   │           A.txt
+    │   └───Wizzard                         ->      │   └───Wizzard
+    │       │   B.txt                       ->      │       │   B.txt
+    │       └───Ech                         ->      │       └───Ech_Test
+    │               C_Origin.txt            ->      │               C_Test.txt
+    └───Link_Origin                         ->      └───Link_Test
+        │   export.yml                                  │   -
+        ├───Foo                             ->          ├───Foo
+        │   │   Foo.bar                     ->          │   │   Foo.bar
+        │   └───Bar_Origin                  ->          │   └───Bar_Test <symlink>
+        │           A.txt                               │           *
+        └───Wizzard                         ->          └───Wizzard
+            │   B_Origin.txt                ->              │   B_Test.txt <symlink>
+            └───Ech_Origin                  ->              └───Ech_Test
+                    C_Origin.txt            ->                      C_Test.txt <symlink>
 ```
+
+> [!NOTE]
+> The resulting file/folder structure is also controlled by the `export.yml` files which content is not explicitly spelled out here, and is discussed further below.
 
 To break it down:
 
