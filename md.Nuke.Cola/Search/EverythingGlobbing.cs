@@ -33,13 +33,13 @@ public class EverythingGlobbing : ISearchFileSystem
         );
     }
 
-    public IEnumerable<AbsolutePath> GlobFiles(AbsolutePath root, string pattern) =>
-        Glob(root, pattern).Items
+    public IEnumerable<AbsolutePath> GlobFiles(AbsolutePath root, string pattern)
+        => Glob(root, pattern).Items
             .Where(i => i.Flags == Result.ItemFlags.None)
             .Select(i => ((AbsolutePath) i.Path) / i.Name);
 
-    public IEnumerable<AbsolutePath> GlobDirectories(AbsolutePath root, string pattern) =>
-        Glob(root, pattern).Items
+    public IEnumerable<AbsolutePath> GlobDirectories(AbsolutePath root, string pattern)
+        => Glob(root, pattern).Items
             .Where(i => i.Flags == Result.ItemFlags.Folder)
             .Select(i => ((AbsolutePath) i.Path) / i.Name);
 }

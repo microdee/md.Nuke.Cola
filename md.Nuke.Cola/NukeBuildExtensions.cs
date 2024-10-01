@@ -12,6 +12,9 @@ namespace Nuke.Cola;
 
 public static class NukeBuildExtensions
 {
+    /// <summary>
+    /// Use this to get the containing folder of the current/calling script file
+    /// </summary>
     public static AbsolutePath ScriptFolder(this INukeBuild self, [CallerFilePath] string? script = null)
         => ((AbsolutePath) script!).Parent;
 }

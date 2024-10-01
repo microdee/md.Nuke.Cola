@@ -22,11 +22,11 @@ public static class ArgumentsExtensions
         return arg;
     }
 
-    public static IEnumerable<string?> AsArguments(this IEnumerable<string>? args) =>
-        args?.Select(ProcessArgument) ?? Enumerable.Empty<string?>();
+    public static IEnumerable<string?> AsArguments(this IEnumerable<string>? args)
+        => args?.Select(ProcessArgument) ?? Enumerable.Empty<string?>();
 
-    public static string AppendAsArguments(this IEnumerable<string>? input, bool leadingSpace = true) =>
-        (input?.IsEmpty() ?? true)
+    public static string AppendAsArguments(this IEnumerable<string>? input, bool leadingSpace = true)
+        => (input?.IsEmpty() ?? true)
             ? ""
             : (leadingSpace ? " " : "") + string.Join(' ', input?.Select(ProcessArgument) ?? Enumerable.Empty<string>());
 }

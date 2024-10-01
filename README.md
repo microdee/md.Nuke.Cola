@@ -1,6 +1,5 @@
 - [Nuke.Cola](#nukecola)
   - [Build Plugins](#build-plugins)
-      - [NOTES!](#notes)
     - [`[ImplicitBuildInterface]` plugins](#implicitbuildinterface-plugins)
     - [`*.nuke.csx` C# script plugins](#nukecsx-c-script-plugins)
     - [`*.Nuke.csproj` C# project plugins](#nukecsproj-c-project-plugins)
@@ -41,10 +40,9 @@ public static int Main () => Execute<Build>(x => x.Compile);
 
 </details>
 
-#### NOTES!
----
-* Your main Build class needs to be `public` for this to work.
-* Currently it is not yet implemented to support an explicit default target, so when Nuke is executed without arguments, it will just print the help text.
+> [!NOTE]
+> * Your main Build class needs to be `public` for this to work.
+> * Currently it is not yet implemented to support an explicit default target, so when Nuke is executed without arguments, it will just print the help text.
 
 The following kinds of plugins discovered this way:
 
@@ -206,7 +204,8 @@ then add `Nuke.Cola` Nuget package (and your own project's specific shared build
 
 and then you can proceed as with any other dotnet class library.
 
-Note that unlike scripts, each C# project build plugin needs to be named uniquely in one project.
+> [!NOTE]
+> Unlike scripts, each C# project build plugin needs to be named uniquely in one project.
 
 ## Folder Composition
 
@@ -360,7 +359,7 @@ Copying folders recursively have the same folder name processing but doesn't tou
 
 When copying files (including when they're globbed) their content can be also processed for suffixes if `procContent` is set to true. Copying an entire folder recursively but with all the file/folder names processed can be done by simply doing recursive globbing `-file: "MyFolder/**"`. The reasoning behind this design is suggesting performance implications, that each file is individually treated.
 
-<details><summary><b>NOTE</b> about string values in YAML containing \*</summary>
+<details><summary><b>NOTE</b> about string values in YAML containing *</summary>
 
 `*` in YAML has special meaning. Therefore string values containing `*` needs to be single or double quoted. Therefore
 

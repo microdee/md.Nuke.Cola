@@ -34,16 +34,40 @@ public static class SearchFileSystem
         return _current;
     }
 
-    public static IEnumerable<AbsolutePath> SearchFiles(this AbsolutePath root, string pattern) =>
-        GetGlobbing().GlobFiles(root, pattern);
+    /// <summary>
+    /// Very similar to GlobFiles but uses different engines for better performance depenging on
+    /// user's setup and platform.
+    /// </summary>
+    /// <remarks>
+    /// As of time of writing the following engines available:
+    /// 
+    /// * Nuke built in Globbing
+    /// * Voidtools Everything if installed on the system
+    /// </remarks>
+    public static IEnumerable<AbsolutePath> SearchFiles(this AbsolutePath root, string pattern)
+        => GetGlobbing().GlobFiles(root, pattern);
 
-    public static IEnumerable<AbsolutePath> SearchDirectories(this AbsolutePath root, string pattern) =>
-        GetGlobbing().GlobDirectories(root, pattern);
+
+    /// <summary>
+    /// Very similar to GlobDirectories but uses different engines for better performance depenging on
+    /// user's setup and platform.
+    /// </summary>
+    /// <remarks>
+    /// As of time of writing the following engines available:
+    /// 
+    /// * Nuke built in Globbing
+    /// * Voidtools Everything if installed on the system
+    /// </remarks>
+    public static IEnumerable<AbsolutePath> SearchDirectories(this AbsolutePath root, string pattern)
+        => GetGlobbing().GlobDirectories(root, pattern);
 }
 
 public class NukeGlobbing : ISearchFileSystem
 {
-    public IEnumerable<AbsolutePath> GlobFiles(AbsolutePath root, string pattern) => root.GlobFiles(pattern);
-    public IEnumerable<AbsolutePath> GlobDirectories(AbsolutePath root, string pattern) => root.GlobDirectories(pattern);
+    public IEnumerable<AbsolutePath> GlobFiles(AbsolutePath root, string pattern)
+        => root.GlobFiles(pattern);
+    public IEnumerable<AbsolutePath> GlobDirectories(AbsolutePath root, string pattern)
+        => root.GlobDirectories(pattern);
+        
     public int Priority => int.MaxValue;
 }

@@ -15,8 +15,8 @@ namespace Nuke.Cola.BuildPlugins;
 /// </summary>
 public class CSharpScriptPluginProvider : IProvidePlugins
 {
-    public IEnumerable<IHavePlugin> GatherPlugins(BuildContext context) =>
-        context.Root.SearchFiles("**/*.nuke.csx")
+    public IEnumerable<IHavePlugin> GatherPlugins(BuildContext context)
+        => context.Root.SearchFiles("**/*.nuke.csx")
             .Select(f => new CSharpScriptPlugin
             {
                 SourcePath = f

@@ -15,12 +15,18 @@ namespace Nuke.Cola;
 
 public static class PathExtensions
 {
+    /// <summary>
+    /// Shorthand for deleting both file or folder, we don't care
+    /// </summary>
     public static void Delete(this AbsolutePath path)
     {
         if (path.FileExists()) path.DeleteFile();
         if (path.DirectoryExists()) path.DeleteDirectory();
     }
 
+    /// <summary>
+    /// Shorthand for getting a FileSystemInfo both of a file or folder, we don't care
+    /// </summary>
     public static FileSystemInfo? AsInfo(this AbsolutePath path)
     {
         if (path.FileExists())
@@ -30,6 +36,11 @@ public static class PathExtensions
         return null;
     }
 
+    /// <summary>
+    /// If the given path happens to be a symlink then return its info, return null otherwise.
+    /// </summary>
+    /// <param name="link"></param>
+    /// <returns></returns>
     public static FileSystemInfo? AsLinkInfo(this AbsolutePath link)
     {
         var info = link.AsInfo();
@@ -65,6 +76,11 @@ public static class PathExtensions
         return createLink(link, real);
     }
 
+    /// <summary>
+    /// Create a new symlink at this location referring to another file
+    /// </summary>
+    /// <param name="link">The location of the link</param>
+    /// <param name="real">The location of the real item</param>
     public static FileSystemInfo LinksFile(this AbsolutePath link, AbsolutePath real)
         => LinkBoilerplate(
             link, real,
@@ -72,9 +88,19 @@ public static class PathExtensions
             File.CreateSymbolicLink
         );
 
+    /// <summary>
+    /// Create a new symlink referring to this file at given location
+    /// </summary>
+    /// <param name="real">The location of the real item</param>
+    /// <param name="link">The location of the link</param>
     public static FileSystemInfo LinkedByFile(this AbsolutePath real, AbsolutePath link)
         => LinksFile(link, real);
 
+    /// <summary>
+    /// Create a new symlink at this location referring to another folder
+    /// </summary>
+    /// <param name="link">The location of the link</param>
+    /// <param name="real">The location of the real item</param>
     public static FileSystemInfo LinksDirectory(this AbsolutePath link, AbsolutePath real)
         => LinkBoilerplate(
             link, real,
@@ -82,9 +108,20 @@ public static class PathExtensions
             Directory.CreateSymbolicLink
         );
 
+    /// <summary>
+    /// Create a new symlink referring to this folder at given location
+    /// </summary>
+    /// <param name="real">The location of the real item</param>
+    /// <param name="link">The location of the link</param>
     public static FileSystemInfo LinkedByDirectory(this AbsolutePath real, AbsolutePath link)
         => LinksDirectory(link, real);
-    
+
+
+    /// <summary>
+    /// Create a new symlink at this location referring to given item
+    /// </summary>
+    /// <param name="link">The location of the link</param>
+    /// <param name="real">The location of the real item</param>
     public static FileSystemInfo Links(this AbsolutePath link, AbsolutePath real)
     {
         Assert.True(real.FileExists() || real.DirectoryExists());
@@ -92,6 +129,11 @@ public static class PathExtensions
         return link.LinksDirectory(real);
     }
 
+    /// <summary>
+    /// Create a new symlink referring to this item at given location
+    /// </summary>
+    /// <param name="real">The location of the real item</param>
+    /// <param name="link">The location of the link</param>
     public static FileSystemInfo LinkedBy(this AbsolutePath real, AbsolutePath link)
         => Links(link, real);
 

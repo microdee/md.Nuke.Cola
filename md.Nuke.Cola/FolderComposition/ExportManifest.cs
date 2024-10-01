@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 using Nuke.Common.IO;
 using YamlDotNet.Serialization;
 
+/// <summary>
+/// A union provided for denoting wether we want to link/copy a file or a directory.
+/// It is undefined behavior when both File and Directory is set to non-null value.
+/// </summary>
 public class FileOrDirectory
 {
     [YamlMember]
@@ -17,6 +21,10 @@ public class FileOrDirectory
     public string? Directory;
 }
 
+/// <summary>
+/// Controls how a folder should be exported for composition.
+/// It is meant to be used with export.yml YAML files.
+/// </summary>
 public class ExportManifest
 {
     [YamlMember]
