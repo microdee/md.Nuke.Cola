@@ -23,6 +23,9 @@ public record NugetSource(string Source, string ApiKey)
     }
 }
 
+/// <summary>
+/// Boilerplate for publishing a dotnet project for Nuget
+/// </summary>
 public interface IPublishNugets : INukeBuild
 {
     string VersionForNuget { get; }

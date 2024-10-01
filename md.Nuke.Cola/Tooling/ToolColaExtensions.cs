@@ -15,8 +15,8 @@ public static class ToolColaExtensions
     /// </summary>
     /// <param name="tool"></param>
     /// <param name="args"></param>
-    public static IReadOnlyCollection<Output> ExecuteWith(this Tool tool, ToolArguments args) =>
-        tool(
+    public static IReadOnlyCollection<Output> ExecuteWith(this Tool tool, ToolArguments args)
+        => tool(
             $"{args.Arguments:nq}",
             args.WorkingDirectory,
             args.EnvironmentVariables,
@@ -43,8 +43,8 @@ public static class ToolColaExtensions
     /// <item><term>Logger / ExitHandler </term><description>A + B is invoked</description></item>
     /// </list>
     /// </remarks>
-    public static Tool With(this Tool tool, ToolArguments args) =>
-        new PropagateToolExecution(tool, args).Execute;
+    public static Tool With(this Tool tool, ToolArguments args)
+        => new PropagateToolExecution(tool, args).Execute;
 
     /// <summary>
     /// Set individual Tool launching parameters and propagate the delegate further
@@ -97,8 +97,8 @@ public static class ToolColaExtensions
     /// <param name="tool"></param>
     /// <param name="filter"></param>
     /// <param name="normalOutputLogger"></param>
-    public static Tool WithSemanticLogging(this Tool tool, Func<string, bool>? filter = null, Action<OutputType, string>? normalOutputLogger = null) =>
-        tool.With(logger: (t, l) =>
+    public static Tool WithSemanticLogging(this Tool tool, Func<string, bool>? filter = null, Action<OutputType, string>? normalOutputLogger = null)
+        => tool.With(logger: (t, l) =>
         {
             if (!(filter?.Invoke(l) ?? true)) return;
 

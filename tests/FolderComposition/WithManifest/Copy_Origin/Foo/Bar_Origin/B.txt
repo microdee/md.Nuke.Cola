@@ -1,0 +1,2 @@
+foobar.Origin
+not replacing Origin here is correct

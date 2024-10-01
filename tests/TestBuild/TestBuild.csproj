@@ -15,6 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="../**/*.nuke.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\md.Nuke.Cola\md.Nuke.Cola.csproj" />
   </ItemGroup>
 

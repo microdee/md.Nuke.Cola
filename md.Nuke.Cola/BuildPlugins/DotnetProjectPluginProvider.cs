@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Nuke.Cola.Search;
 using Nuke.Common.IO;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
@@ -15,8 +16,8 @@ namespace Nuke.Cola.BuildPlugins;
 /// </summary>
 public class DotnetProjectPluginProvider : IProvidePlugins
 {
-    public IEnumerable<IHavePlugin> GatherPlugins(BuildContext context) =>
-        SearchFiles.Get().Glob(context.Root, "**/*.Nuke.csproj")
+    public IEnumerable<IHavePlugin> GatherPlugins(BuildContext context)
+        => context.Root.SearchFiles("**/*.Nuke.csproj")
             .Select(f => new DotnetProjectPlugin
             {
                 SourcePath = f

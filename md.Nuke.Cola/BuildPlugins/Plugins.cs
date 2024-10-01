@@ -26,8 +26,8 @@ public static class Plugins
 
     private const string ExecuteWithPlugins = nameof(ExecuteWithPlugins);
 
-    private static string? GetCSharpName(Type type) =>
-        type.Namespace == null ? type.Name : type.FullName;
+    private static string? GetCSharpName(Type type)
+        => type.Namespace == null ? type.Name : type.FullName;
 
     /// <summary>
     /// Use this instead of the regular Execute method in your main function if you want to support
@@ -43,6 +43,7 @@ public static class Plugins
     /// build class inheriting from the provided main build class and implementing all the build
     /// interfaces defined by each plugin. This however also means build interfaces cannot have
     /// non-default-implemented members, so they behave more like composition in this case.
+    /// 
     /// The main NUKE execute method is then called from within this intermediate class.
     /// These plugins can then interact with the main build targets if they can reference to
     /// the main build assembly, either directly or more elegantly through a Nuget package.
@@ -52,6 +53,7 @@ public static class Plugins
         BuildContext context = new(NukeBuild.TemporaryDirectory, NukeBuild.RootDirectory);
         var engines = new IProvidePlugins[]
         {
+            new ImplicitBuildInterfacePluginProvider(),
             new CSharpScriptPluginProvider(),
             new DotnetProjectPluginProvider()
         };
@@ -81,6 +83,7 @@ public static class Plugins
         var dllRefs = string.Join(
             Environment.NewLine,
             assemblyPaths
+                .Where(p => p.Source != null)
                 .Select(p => p.ImportViaSource
                     ? $"\n// dll: {p.Interface.Assembly.Location}\n#load \"{p}\""
                     : $"#r \"{p}\""
