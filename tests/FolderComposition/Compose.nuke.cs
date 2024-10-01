@@ -22,6 +22,19 @@ public interface IImportTestFolders : INukeBuild
                 , (root / "WithManifest" / "Both_Origin", target / "WithManifest")
                 , (root / "WithManifest" / "Copy_Origin", target / "WithManifest")
                 , (root / "WithManifest" / "Link_Origin", target / "WithManifest")
+                , (root / "ScriptControlled", target, new ExportManifest
+                {
+                    Link = {
+                        new() { Directory = "Private/SharedSubfolder"},
+                        new() { Directory = "Public/SharedSubfolder"},
+                    },
+                    Copy = {
+                        new() {
+                            File = "**/*_Origin.*",
+                            ProcessContent = true
+                        }
+                    }
+                })
             );
         });
 }
