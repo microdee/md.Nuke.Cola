@@ -72,8 +72,10 @@ public static class PathExtensions
 
         if (!link.Parent.DirectoryExists())
             link.Parent.CreateDirectory();
+
+        var realRelative = link.Parent.GetRelativePathTo(real);
         
-        return createLink(link, real);
+        return createLink(link, realRelative);
     }
 
     /// <summary>
