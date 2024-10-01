@@ -10,7 +10,6 @@ using Nuke.Common.Utilities;
 using Nuke.Common.Utilities.Collections;
 using Nuke.Common.IO;
 using Serilog;
-using Nuke.Common.Tooling;
 
 namespace Nuke.Cola;
 
