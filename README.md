@@ -310,6 +310,8 @@ Folders can dictate the intricacies of how they're shared this way with a simple
 link:
   - dir: Private/SharedSubfolder
   - dir: Public/SharedSubfolder
+  - dir: Some/Deep/Folder/For/Some/Reason
+    as: MyNiceFolder
 copy:
   - file: "**/*_Origin.*"
     procContent: true
@@ -322,6 +324,15 @@ When linking files, globbed files are individually symlinked with suffix process
 Copying folders recursively have the same folder name processing but doesn't touch its contents (not even file/folder name processing)
 
 When copying files (including when they're globbed) their content can be also processed for suffixes if `procContent` is set to true. Copying an entire folder recursively but with all the file/folder names processed can be done by simply doing recursive globbing `-file: "MyFolder/**"`. The reasoning behind this design is suggesting performance implications, that each file is individually treated.
+
+The destination relative path and name can also be overridden with `as:`. This works with globbing as well where the captures of `*` and `**` can be referred to as `$N` where N is the 1 based index of the wildcards. For example
+
+```yaml
+- file: Flatten/**/*.txt
+  as: Flatten/$2.txt
+```
+
+Where all the files inside the recursive structure of subfolder `Flatten` is copied/linked into a single-level subfolder. `$2` in `as:` indicates it uses the second wildcard (the one at `*.txt`).
 
 <details><summary><b>NOTE</b> about string values in YAML containing *</summary>
 
