@@ -38,4 +38,16 @@ public static class TextExtensions
         var groups = pattern.Matches(input)?.FirstOrDefault()?.Groups;
         return i => groups?[i]?.Value;
     }
+
+    /// <summary>
+    /// Converts a glob expression into a Regex expression with captures
+    /// </summary>
+    /// <param name="glob"></param>
+    /// <returns></returns>
+    public static string GlobToRegex(this string glob) => Regex.Escape(glob)
+        .Replace("/", @"\/")
+        .Replace(@"\*", "*")
+        .ReplaceRegex(@"(?<PRE>[^\*]|^)\*(?<POST>[^\*])", m => $@"{m.Groups["PRE"]}([^\/]*){m.Groups["POST"]}")
+        .ReplaceRegex(@"^\*\*", m => @"^(.*)")
+        .ReplaceRegex(@"(?:\\\\|\\\/)\*\*", m => @"[\\\/]?(.*)");
 }

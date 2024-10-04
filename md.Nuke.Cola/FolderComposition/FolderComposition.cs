@@ -174,16 +174,16 @@ public static class FolderComposition
                 
                 if (string.IsNullOrWhiteSpace(glob.File))
                     import.From.SearchDirectories(glob.Directory!)
-                        .ForEach(p =>
+                        .ForEach((p, i) =>
                         {
-                            var dst = to / import.From.GetRelativePathTo(p);
+                            var dst = glob.GetDestination(import.From, to, p, i);
                             handleDirectories(p, dst.ProcessSuffixPath(suffixes, to), glob);
                         });
                 else
                     import.From.SearchFiles(glob.File!)
-                        .ForEach(p =>
+                        .ForEach((p, i) =>
                         {
-                            var dst = to / import.From.GetRelativePathTo(p);
+                            var dst = glob.GetDestination(import.From, to, p, i);
                             handleFiles(p, dst.ProcessSuffixPath(suffixes, to), glob);
                         });
             }
