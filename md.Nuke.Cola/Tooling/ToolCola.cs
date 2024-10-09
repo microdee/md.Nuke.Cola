@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Nuke.Common;
 using Nuke.Common.Tooling;
 using Nuke.Common.Utilities;
 using Serilog;
 
 namespace Nuke.Cola.Tooling;
 
-public static class ToolColaExtensions
+public static class ToolCola
 {
     /// <summary>
     /// Execute a tool with the arguments provided by the input record.
@@ -124,4 +126,88 @@ public static class ToolColaExtensions
                 }
             }
         });
+
+    /// <summary>
+    /// Attempt to update PATH of this process from user's environment variables
+    /// </summary>
+    public static void UpdatePathEnvVar()
+    {
+        if (!EnvironmentInfo.IsWin) return;
+        var processPaths = EnvironmentInfo.Paths;
+        var userPaths = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.User)!.Split(';');
+        var machinePaths = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Machine)!.Split(';');
+
+        var result = processPaths.Union(userPaths).Union(machinePaths).JoinSemicolon();
+        Environment.SetEnvironmentVariable("PATH", result);
+    }
+
+    /// <summary>
+    /// Get a tool which should be in PATH, and provide an optional way to set it up automatically if it wasn't
+    /// </summary>
+    /// <returns>The Tool or an error if it wasn't in PATH and the setup had failed</returns>
+    public static ValueOrError<Tool> GetPathTool(string tool, Action? setup = null)
+        => ErrorHandling.TryGet(() => ToolResolver.GetPathTool(tool))
+            .Else(setup != null, () =>
+            {
+                Log.Warning($"{tool} was not installed, but it's OK we're installing it now.");
+                setup!();
+                UpdatePathEnvVar();
+                return ToolResolver.GetPathTool(tool);
+            });
+
+    /// <summary>
+    /// Try a different setup method for a Tool which may failed its installation
+    /// </summary>
+    /// <param name="result">Result of the previous attempt</param>
+    /// <param name="condition">Only attempt this method of setup when condition is met</param>
+    /// <param name="tool">The name of the tool</param>
+    /// <param name="setup">Setup the tool for the caller</param>
+    /// <returns>The Tool or an error if it this or previous setup attempts have failed</returns>
+    public static ValueOrError<Tool> ElseTrySetup(this ValueOrError<Tool> result, bool condition, string tool, Action setup)
+        => result.Else(condition, () =>
+        {
+            setup();
+            UpdatePathEnvVar();
+            return ToolResolver.GetPathTool(tool);
+        });
+        
+    /// <summary>
+    /// Try a different setup method for a Tool which may failed its installation
+    /// </summary>
+    /// <param name="result">Result of the previous attempt</param>
+    /// <param name="tool">The name of the tool</param>
+    /// <param name="setup">Setup the tool for the caller</param>
+    /// <returns>The Tool or an error if it this or previous setup attempts have failed</returns>
+    public static ValueOrError<Tool> ElseTrySetup(this ValueOrError<Tool> result, string tool, Action setup)
+        => result.ElseTrySetup(true, tool, setup);
+
+    /// <summary>
+    /// Use a common tool and attempt to fetch it from popular program managers if it's not installed
+    /// yet for the user  Optionally provide a manual setup or provide another tool which this one
+    /// is bundled with (like `pip` comes with `python` or `npm` comew with `node`)
+    /// </summary>
+    /// <param name="tool">The name of the tool</param>
+    /// <param name="version">Use a specific version or the latest if this is left null</param>
+    /// <param name="wingetId">Use a fully qualified ID for Windows Winget if necessary</param>
+    /// <param name="manualSetup">If specified try this manual setup first</param>
+    /// <param name="comesWith">
+    /// This tool should come bundled with another one. Like `comesWith: () => PythonTasks.Python`.
+    /// </param>
+    /// <returns>The Tool or an error if none of the sources managed to set it up</returns>
+    public static ValueOrError<Tool> Use(
+        string tool,
+        string? version = null,
+        string? wingetId = null,
+        Action? manualSetup = null,
+        Func<Tool>? comesWith = null
+    ) => GetPathTool(tool, manualSetup)
+            .ElseTrySetup(comesWith != null, tool, () => comesWith!())
+            .ElseTrySetup(EnvironmentInfo.IsWin, tool, () =>
+                WingetTasks.Winget($"install {wingetId ?? tool} {version.PrependNonEmpty("-v "):nq}")
+            )
+            .ElseTrySetup(EnvironmentInfo.IsOsx, tool, () =>
+                ToolResolver.GetPathTool("brew")($"install {tool}{version.PrependNonEmpty("@")}")
+            )
+            // TODO: linux
+        ;
 }
