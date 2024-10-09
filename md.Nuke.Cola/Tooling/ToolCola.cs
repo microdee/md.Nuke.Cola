@@ -208,6 +208,14 @@ public static class ToolCola
             .ElseTrySetup(EnvironmentInfo.IsOsx, tool, () =>
                 ToolResolver.GetPathTool("brew")($"install {tool}{version.PrependNonEmpty("@")}")
             )
-            // TODO: linux
+            .ElseTrySetup(EnvironmentInfo.IsLinux, tool, () =>
+                ToolResolver.GetPathTool("apt")($"install {tool}{version.PrependNonEmpty("=")}")
+            )
+            .ElseTrySetup(EnvironmentInfo.IsLinux, tool, () =>
+                ToolResolver.GetPathTool("yum")($"install {tool}{version.PrependNonEmpty("=")}")
+            )
+            .ElseTrySetup(EnvironmentInfo.IsLinux, tool, () =>
+                ToolResolver.GetPathTool("pacman")($"-Sy {tool}{version.PrependNonEmpty("=")}")
+            )
         ;
 }
