@@ -6,23 +6,74 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Nuke.Common.Tooling;
 using Nuke.Common.Utilities;
+using Nuke.Common.Utilities.Collections;
 
 namespace Nuke.Cola.Tooling;
 
+/// <summary>
+/// A structured representation of the data `xrepo info` prints out about a package.
+/// `xrepo info` uses a bespoke format which expresses data relationship with indentation. One item
+/// can have multiple items associated with it if they're indented further inside. It's almost like
+/// YAML but it differs ever so slightly. Items can have a key optionally if they have : after a
+/// single first word these are named items and accessible with a string indexer. Value only items
+/// are accessible only through an integer indexer. All items are iterated upon via the IEnumerable
+/// interface.
+/// </summary>
 public class XRepoItem : IEnumerable<XRepoItem>
 {
+    /// <summary>
+    /// Kind of the info item represented
+    /// </summary>
     public enum Kind
     {
+        /// <summary>
+        /// The main item containing all other items output by `xrepo info`.
+        /// It has no key and no value
+        /// </summary>
         Root,
+
+        /// <summary>
+        /// Represents data abpuut a package (require(myPackage)). It has Key only.
+        /// </summary>
         Package,
+
+        /// <summary>
+        /// An item which has only a key and no value ( -> mykey:)
+        /// </summary>
         Key,
+
+        /// <summary>
+        /// An item which has both a key and a value ( -> mykey: foobar)
+        /// </summary>
         Property,
+
+        /// <summary>
+        /// An item which doesn't have a key associated usually a list of stuff ( -> foobar)
+        /// </summary>
         Value,
+
+        /// <summary>
+        /// If for any cursed reason an item couldn't be parsed while it was passing the IsItemLine
+        /// check. This indicates a bug in the code.
+        /// </summary>
         Invalid
     }
 
+    /// <summary>
+    /// To help distinguish items from each other
+    /// </summary>
     public required Kind ItemKind { init; get; }
+
+    /// <summary>
+    /// This item specifies a value which is arbitrary text either after `key:` or the entire line if
+    /// key was not present.
+    /// </summary>
     public string? Value { init; get; }
+
+    /// <summary>
+    /// This item specifies a key which is a short identifier at the beginning of the line like `mykey:`
+    /// </summary>
+    /// <value></value>
     public string? Key { init; get; }
 
     private List<XRepoItem> _unnamedItems = [];
@@ -40,7 +91,14 @@ public class XRepoItem : IEnumerable<XRepoItem>
         foreach (var item in _namedItems.Values) yield return item;
     }
 
+    /// <summary>
+    /// Get one unnamed sub-item, return null if out-of-bounds
+    /// </summary>
     public XRepoItem? this[int i] => i >= 0 && i < _unnamedItems.Count ? _unnamedItems[i] : null;
+
+    /// <summary>
+    /// Get one named sub-item, return null if doesn't exist
+    /// </summary>
     public XRepoItem? this[string i] => _namedItems.TryGetValue(i, out var output) ? output : null;
 
     private const int MinimumIndent = 4;
@@ -55,7 +113,7 @@ public class XRepoItem : IEnumerable<XRepoItem>
 
     private static int GetIndent(string line) => line.TakeWhile(c => c == ' ').Count();
 
-    public static XRepoItem Parse(ref List<string> infoOutput, ref int i)
+    private static XRepoItem Parse(ref List<string> infoOutput, ref int i)
     {
         var line = infoOutput[i];
         int indent = GetIndent(line);
@@ -104,6 +162,9 @@ public class XRepoItem : IEnumerable<XRepoItem>
         return result;
     }
 
+    /// <summary>
+    /// Parse the xrepo info structure from a Tool output
+    /// </summary>
     public static XRepoItem Parse(IReadOnlyCollection<Output> toolOutput)
     {
         var infoOutput = toolOutput
@@ -111,8 +172,8 @@ public class XRepoItem : IEnumerable<XRepoItem>
             .Select(o => o.Text)
             .ToList();
         var result = new XRepoItem { ItemKind = Kind.Root };
-
-        int i = 0;
+        int i = infoOutput.FindIndex(0, IsItemLine) + 1;
+        
         string line = "";
         while(i < infoOutput.Count && IsWithinCurrentItem(line, MinimumIndent))
         {

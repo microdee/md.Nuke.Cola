@@ -10,6 +10,10 @@ using static Nuke.Cola.Cola;
 
 namespace Nuke.Cola.Tooling;
 
+/// <summary>
+/// XMake is a versatile build tool for many languages https://xmake.io/#/?id=supported-languages
+/// scriptable in Lua
+/// </summary>
 public static class XMakeTasks
 {
     internal static void Setup()
@@ -23,7 +27,13 @@ public static class XMakeTasks
             ProcessTasks.StartShell("curl -fsSL https://xmake.io/shget.text | bash").AssertWaitForExit();
     }
 
+    /// <summary>
+    /// Get XMake or an error if setup has failed.
+    /// </summary>
     public static ValueOrError<Tool> EnsureXMake => ToolCola.GetPathTool("xmake", Setup);
 
+    /// <summary>
+    /// Get XMake. It throws an exception if setup has failed.
+    /// </summary>
     public static Tool XMake => EnsureXMake.Get();
 }

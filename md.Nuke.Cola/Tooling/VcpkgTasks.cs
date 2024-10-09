@@ -10,9 +10,19 @@ using Serilog;
 
 namespace Nuke.Cola.Vcpkg;
 
+/// <summary>
+/// Wrapper class for VCPKG a C++ package manager by Microsoft
+/// </summary>
 public class VcpkgTasks
 {
+    /// <summary>
+    /// Set this property if your project already has an instance of VCPKG placed somewhere inside the project
+    /// </summary>
     public static AbsolutePath? VcpkgPathOverride { private get; set; }
+
+    /// <summary>
+    /// Path to a place where a local VCPKG instance can be found / should be set up.
+    /// </summary>
     public static AbsolutePath VcpkgPathInProject => VcpkgPathOverride ?? NukeBuild.TemporaryDirectory / "vcpkg";
 
     internal static void Setup()
@@ -27,6 +37,9 @@ public class VcpkgTasks
         ToolResolver.GetTool(bootstrapPath)("");
     }
 
+    /// <summary>
+    /// Get an instance of VCPKG or an error if setup has failed.
+    /// </summary>
     public static ValueOrError<Tool> EnsureVcpkg { get
     {
         var vcpkgPath = EnvironmentInfo.Platform == PlatformFamily.Windows
@@ -46,5 +59,8 @@ public class VcpkgTasks
             .Get();
     }}
 
+    /// <summary>
+    /// Get an instance of VCPKG. It throws an exception if setup has failed.
+    /// </summary>
     public static Tool Vcpkg => EnsureVcpkg.Get();
 }
