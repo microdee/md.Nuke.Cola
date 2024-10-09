@@ -21,8 +21,8 @@ public static class TextExtensions
     /// "Hello World".Parse(@"Hello (?&lt;SUBJECT&gt;\w+)")("SUBJECT")
     /// </example>
     /// <returns>A function to be called with the desired capture name</returns>
-    public static Func<string, string?> Parse(this string? input, string pattern)
-        => Parse(input, new Regex(pattern));
+    public static Func<string, string?> Parse(this string? input, string pattern, RegexOptions options = RegexOptions.None)
+        => Parse(input, new Regex(pattern, options));
 
     /// <summary>
     /// Shorthand for one-liner regex parsing from named captures. Allows to use precompiled pattern.
@@ -40,6 +40,12 @@ public static class TextExtensions
     }
 
     /// <summary>
+    /// Simple convenience function for replacing new lines with other string (space by default)
+    /// </summary>
+    public static string AsSingleLine(this string input, string replaceWith = " ")
+        => input.Replace(Environment.NewLine, replaceWith).Replace("\n", replaceWith);
+
+    /// <summary>
     /// Converts a glob expression into a Regex expression with captures
     /// </summary>
     /// <param name="glob"></param>
@@ -50,4 +56,16 @@ public static class TextExtensions
         .ReplaceRegex(@"(?<PRE>[^\*]|^)\*(?<POST>[^\*])", m => $@"{m.Groups["PRE"]}([^\/]*){m.Groups["POST"]}")
         .ReplaceRegex(@"^\*\*", m => @"^(.*)")
         .ReplaceRegex(@"(?:\\\\|\\\/)\*\*", m => @"[\\\/]?(.*)");
+
+    /// <summary>
+    /// Convenience, append a piece of string to an input string only if input string is non-null and non-empty
+    /// </summary>
+    public static string AppendNonEmpty(this string? self, string other)
+        => string.IsNullOrWhiteSpace(self) ? "" : self + other;
+
+    /// <summary>
+    /// Convenience, prepend a piece of string to an input string only if input string is non-null and non-empty
+    /// </summary>
+    public static string PrependNonEmpty(this string? self, string other)
+        => string.IsNullOrWhiteSpace(self) ? "" : other + self;
 }
