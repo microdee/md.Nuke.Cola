@@ -43,11 +43,11 @@ public class Build : NukeBuild
             
             XRepoTasks.Install("vcpkg::spdlog")("");
             var spdlogInfo = XRepoTasks.Info("vcpkg::spdlog")("").ParseXRepoInfo();
-            Log.Information("Linkdirs: {0}", spdlogInfo["vcpkg::spdlog"]?["fetchinfo"]?["linkdirs"]);
+            Log.Information("Linkdirs: {0}", spdlogInfo["vcpkg::spdlog"]?["fetchinfo"]?["linkdirs"]?.Value);
             
             var conanSpdlogSpec = "conan::spdlog/1.14.1";
             XRepoTasks.Install(conanSpdlogSpec)("");
             var conanSpdlogInfo = XRepoTasks.Info(conanSpdlogSpec)("").ParseXRepoInfo();
-            Log.Information("Linkdirs: {0}", spdlogInfo[conanSpdlogSpec]?["fetchinfo"]?["linkdirs"]);
+            Log.Information("Linkdirs: {0}", conanSpdlogInfo[conanSpdlogSpec]?["fetchinfo"]?["linkdirs"]?.Value);
         });
 }
