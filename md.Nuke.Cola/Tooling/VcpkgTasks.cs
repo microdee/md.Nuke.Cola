@@ -28,13 +28,13 @@ public class VcpkgTasks
     internal static void Setup()
     {
         VcpkgPathInProject.CreateOrCleanDirectory();
-        GitTasks.Git($"clone --recurse-submodules --progress https://github.com/microsoft/vcpkg.git {VcpkgPathInProject}");
+        GitTasks.Git($"clone --recurse-submodules https://github.com/microsoft/vcpkg.git {VcpkgPathInProject}");
 
         var bootstrapPath = EnvironmentInfo.Platform == PlatformFamily.Windows
             ? VcpkgPathInProject / "bootstrap-vcpkg.bat"
             : VcpkgPathInProject / "bootstrap-vcpkg.sh";
 
-        ToolResolver.GetTool(bootstrapPath)("");
+        ToolResolver.GetTool(bootstrapPath)("-disableMetrics");
     }
 
     /// <summary>

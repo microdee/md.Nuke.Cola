@@ -35,11 +35,14 @@ public static class XRepoTasks
         {
             VcpkgTasks.EnsureVcpkg.Get($"VCPKG is needed for package(s) {package} but it couldn't be installed");
             if (VcpkgTasks.VcpkgPathInProject.DirectoryExists())
-                xrepo = xrepo.With(
-                    environmentVariables: new Dictionary<string, string>() {
-                        {"VCPKG_ROOT", VcpkgTasks.VcpkgPathInProject}
-                    }
-                );
+            {
+                // xrepo = xrepo.With(
+                //     environmentVariables: Cola.MakeDictionary(
+                //         ("VCPKG_ROOT", VcpkgTasks.VcpkgPathInProject.ToString())
+                //     )
+                // );
+                Environment.SetEnvironmentVariable("VCPKG_ROOT", VcpkgTasks.VcpkgPathInProject);
+            }
         }
         else if (package.Contains("conan::"))
             ToolCola.GetPathTool("conan", () => PythonTasks.Pip("install conan"))
@@ -95,6 +98,6 @@ public static class XRepoTasks
     /// <summary>
     /// Parse the Tool output of XRepoTasks.Info into structured data.
     /// </summary>
-    public static XRepoItem ParseXRepoInfo(this IReadOnlyCollection<Output> output)
-        => XRepoItem.Parse(output);
+    public static XRepoItem ParseXRepoInfo(this IEnumerable<Output> output)
+        => XRepoItem.Parse(output.RemoveAnsiEscape());
 }

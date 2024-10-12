@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using Nuke.Cola;
 using Nuke.Cola.BuildPlugins;
+using Nuke.Cola.Tooling;
 using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.Execution;
@@ -26,4 +28,26 @@ public class Build : NukeBuild
             Log.Information(Assembly.GetEntryAssembly().Location);
         });
 
+    public Target TestXRepo => _ => _
+        .Executes(() =>
+        {
+            var imguiConfig =
+                """
+                -f dx12=true
+                freetype=true
+                """
+                .AsSingleLine(",");
+            XRepoTasks.Install("imgui", imguiConfig)("");
+            var imguiInfo = XRepoTasks.Info("imgui", imguiConfig)("").ParseXRepoInfo();
+            Log.Information("Linkdirs: {0}", imguiInfo["imgui"]?["fetchinfo"]?["linkdirs"]?.Value);
+            
+            XRepoTasks.Install("vcpkg::spdlog")("");
+            var spdlogInfo = XRepoTasks.Info("vcpkg::spdlog")("").ParseXRepoInfo();
+            Log.Information("Linkdirs: {0}", spdlogInfo["vcpkg::spdlog"]?["fetchinfo"]?["linkdirs"]);
+            
+            var conanSpdlogSpec = "conan::spdlog/1.14.1";
+            XRepoTasks.Install(conanSpdlogSpec)("");
+            var conanSpdlogInfo = XRepoTasks.Info(conanSpdlogSpec)("").ParseXRepoInfo();
+            Log.Information("Linkdirs: {0}", spdlogInfo[conanSpdlogSpec]?["fetchinfo"]?["linkdirs"]);
+        });
 }

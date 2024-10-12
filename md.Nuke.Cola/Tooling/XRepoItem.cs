@@ -119,9 +119,9 @@ public class XRepoItem : IEnumerable<XRepoItem>
         int indent = GetIndent(line);
         var options = RegexOptions.IgnoreCase;
         // TODO: compile regex patterns in compile time
-        var packKey = line.Parse(@"\srequire\((?<KEY>[a-z].*)\)\:", options)("KEY");
-        var keyOnly = line.Parse(@"\s->\s(?<KEY>[a-z]\w*)\:$", options)("KEY");
-        var propWithValue = line.Parse(@"\s->\s(?:(?<KEY>[a-z]\w*)\:\s)?(?<VALUE>.+)$", options);
+        var packKey = line.Parse(@"\srequire\((?<KEY>[a-z].*)\)\:", options, forceNullOnWhitespce: true)("KEY");
+        var keyOnly = line.Parse(@"\s->\s(?<KEY>[a-z]\w*)\:$", options, forceNullOnWhitespce: true)("KEY");
+        var propWithValue = line.Parse(@"\s->\s(?:(?<KEY>[a-z]\w*)\:\s)?(?<VALUE>.+)$", options, forceNullOnWhitespce: true);
 
         Kind kind = packKey != null                                          ? Kind.Package
             : keyOnly != null                                                ? Kind.Key
@@ -144,9 +144,10 @@ public class XRepoItem : IEnumerable<XRepoItem>
         var result = new XRepoItem { ItemKind = kind, Key = key, Value = value };
 
         i++;
-        while(i < infoOutput.Count && IsWithinCurrentItem(line, indent))
+        while(i < infoOutput.Count)
         {
             line = infoOutput[i];
+            if (!IsWithinCurrentItem(line, indent)) break;
             if (!IsItemLine(line))
             {
                 i++;
@@ -165,17 +166,17 @@ public class XRepoItem : IEnumerable<XRepoItem>
     /// <summary>
     /// Parse the xrepo info structure from a Tool output
     /// </summary>
-    public static XRepoItem Parse(IReadOnlyCollection<Output> toolOutput)
+    internal static XRepoItem Parse(IEnumerable<Output> toolOutput)
     {
         var infoOutput = toolOutput
             .Where(o => o.Type == OutputType.Std)
-            .Select(o => o.Text)
+            .Select(o => o.Text.TrimEnd())
             .ToList();
         var result = new XRepoItem { ItemKind = Kind.Root };
-        int i = infoOutput.FindIndex(0, IsItemLine) + 1;
+        int i = infoOutput.FindIndex(0, IsItemLine);
         
         string line = "";
-        while(i < infoOutput.Count && IsWithinCurrentItem(line, MinimumIndent))
+        while(i < infoOutput.Count)
         {
             line = infoOutput[i];
             if (!IsItemLine(line))
