@@ -128,6 +128,16 @@ public static class ToolCola
         });
 
     /// <summary>
+    /// Removes ANSI escape sequences from the output of a Tool (remove color data for example)
+    /// </summary>
+    public static IEnumerable<Output> RemoveAnsiEscape(this IEnumerable<Output> toolOutput)
+        => toolOutput.Select(l => new Output
+        {
+            Type = l.Type,
+            Text = l.Text.ReplaceRegex("\x1b\\[[0-9;]*[mK]", m => "")
+        });
+
+    /// <summary>
     /// Attempt to update PATH of this process from user's environment variables
     /// </summary>
     public static void UpdatePathEnvVar()
