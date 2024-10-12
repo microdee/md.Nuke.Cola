@@ -21,8 +21,13 @@ public static class TextExtensions
     /// "Hello World".Parse(@"Hello (?&lt;SUBJECT&gt;\w+)")("SUBJECT")
     /// </example>
     /// <returns>A function to be called with the desired capture name</returns>
-    public static Func<string, string?> Parse(this string? input, string pattern, RegexOptions options = RegexOptions.None)
-        => Parse(input, new Regex(pattern, options));
+    public static Func<string, string?> Parse(
+        this string? input,
+        string pattern,
+        RegexOptions options = RegexOptions.None,
+        bool forceNullOnEmpty = false,
+        bool forceNullOnWhitespce = false
+    ) => Parse(input, new Regex(pattern, options), forceNullOnEmpty, forceNullOnWhitespce);
 
     /// <summary>
     /// Shorthand for one-liner regex parsing from named captures. Allows to use precompiled pattern.
@@ -31,12 +36,18 @@ public static class TextExtensions
     /// "Hello World".Parse(new Regex(@"Hello (?&lt;SUBJECT&gt;\w+)"))("SUBJECT")
     /// </example>
     /// <returns>A function to be called with the desired capture name</returns>
-    public static Func<string, string?> Parse(this string? input, Regex pattern)
-    {
+    public static Func<string, string?> Parse(
+        this string? input,
+        Regex pattern,
+        bool forceNullOnEmpty = false,
+        bool forceNullOnWhitespce = false
+    ) {
         if (input == null) return i => null;
         
         var groups = pattern.Matches(input)?.FirstOrDefault()?.Groups;
-        return i => groups?[i]?.Value;
+        return i => forceNullOnEmpty || forceNullOnWhitespce
+            ? groups?[i]?.Value.Else(ignoreWhitespace: forceNullOnWhitespce)
+            : groups?[i]?.Value;
     }
 
     /// <summary>
@@ -68,4 +79,8 @@ public static class TextExtensions
     /// </summary>
     public static string PrependNonEmpty(this string? self, string other)
         => string.IsNullOrWhiteSpace(self) ? "" : other + self;
+
+    public static string? Else(this string? self, string? def = null, bool ignoreWhitespace = true)
+        => (string.IsNullOrWhiteSpace(self) && ignoreWhitespace) || string.IsNullOrEmpty(self)
+            ? def : self;
 }
