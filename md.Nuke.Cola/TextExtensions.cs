@@ -80,6 +80,17 @@ public static class TextExtensions
     public static string PrependNonEmpty(this string? self, string other)
         => string.IsNullOrWhiteSpace(self) ? "" : other + self;
 
+    /// <summary>
+    /// Defer to a default value if string is null or empty or whitespace only
+    /// </summary>
+    /// <param name="self"></param>
+    /// <param name="def">
+    /// Default value to substitute null/empty/whitespace with (null by default)
+    /// </param>
+    /// <param name="ignoreWhitespace">
+    /// If set to true treat whitespace-only string as empty as well. (true by default)
+    /// </param>
+    /// <returns></returns>
     public static string? Else(this string? self, string? def = null, bool ignoreWhitespace = true)
         => (string.IsNullOrWhiteSpace(self) && ignoreWhitespace) || string.IsNullOrEmpty(self)
             ? def : self;
