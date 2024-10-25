@@ -35,8 +35,6 @@ public record ToolArguments(
     /// <summary>
     /// Merge two Tool argument records together.
     /// </summary>
-    /// <param name="a"></param>
-    /// <param name="b"></param>
     /// <remarks>
     /// <list>
     /// <item><term>Arguments </term><description> will be concatenated</description></item>
@@ -65,7 +63,7 @@ public record ToolArguments(
                 ? null
                 : (a?.EnvironmentVariables ?? new Dictionary<string, string>())
                     .ToDictionary(_ => _.Key, _ => _.Value)
-                    .AddDictionary(b?.EnvironmentVariables),
+                    .AddDictionary(b?.EnvironmentVariables ?? new Dictionary<string, string>()),
 
             Timeout = timeOut < 0 ? null : timeOut,
 

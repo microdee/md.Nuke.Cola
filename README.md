@@ -6,7 +6,11 @@
   - [Folder Composition](#folder-composition)
     - [Regular folders](#regular-folders)
     - [Folders with export manifest](#folders-with-export-manifest)
-  - [Build GUI (WIP)](#build-gui-wip)
+  - [`Tool` extensions](#tool-extensions)
+    - [Tool composition with `With` extension method](#tool-composition-with-with-extension-method)
+    - [Fluent API error tolerant Tool setup](#fluent-api-error-tolerant-tool-setup)
+    - [Specific tool support](#specific-tool-support)
+  - [Build GUI (very WIP)](#build-gui-very-wip)
 
 
 # Nuke.Cola
@@ -351,9 +355,61 @@ copy:
 
 </details>
 
-## Build GUI (WIP)
+## `Tool` extensions
 
-Build scripts can get complex enough that it is hard to fisrt grasp the options it can give to the user especially ones which dynamically import Build Plugins. Of course we have `--help` and the `--plan` features Nuke provides, but a nice interactive UI can help much more with team adoption, especially one which shows relations of which parameters are being used by which Nuke Target.
+Nuke.Cola comes with couple of useful extensions to Nuke's `Tool` delegate.
+
+### Tool composition with `With` extension method
+
+Whenever the Nuke Tooling API gives you a Tool delegate it is a clean slate, meaning you need to provide it your arguments, environment variables, how one reacts to its output etc. With the intended usage once these parameters are given to the `Tool` delegate it immediately executes the tool it represents.
+
+However there are cases when multiple tasks with one tool requires a common set of arguments, environment variables or any other parameters `Tool` accepts. In such cases the API preferably would still provide a `Tool` delegate but the user of that API shouldn't need to repeat the boilerplate setup for that task involving the tool. The solution Nuke.Cola provides is the `With` extension method which allows to combine together the parameters `Tool` accepts but in multiple steps. See:
+
+```CSharp
+public static Tool MyTool => ToolResolver.GetPathTool("my-tool");
+public static Tool MyToolMode => MyTool.With(arguments: "my-mode");
+public static Tool WithMyEnvironment(this Tool tool) => tool.With(environmentVariables: SomeCommonEnvVarDictionary);
+
+// ...
+
+MyTool("args"); // use normally
+MyToolMode("--arg value"); // yields `my-tool my-mode --arg value`
+MyToolMode.WithMyEnvironment().WithSemanticLogging()("--arg value"); // excercise for the reader
+```
+
+### Fluent API error tolerant Tool setup
+
+Build steps which may require random set of tools can provide the means to set up those tools before usage for the system. Simply using:
+
+```CSharp
+ToolCola.Use("cmake");
+```
+
+If `cmake` is not found in PATH, then Nuke.Cola will first attempt to install it via OS specific package managers. Finally it returns an `ValueOrError` wrapper further letting the developer to react to errors in a fluent way. Consider bundled tools
+
+```CSharp
+ToolCola.Use("pip", comesWith: () => ToolCola.Use("python").Get());
+```
+
+which will first try to setup `python` (if it isn't already) and then attempt to get `pip`.
+
+> [!NOTE]
+> the `.Get()` there will return the `Tool` without a wrapper or will throw all the previous errors accumulated if `ToolCola.Use` didn't manage to fetch the desired tool. In this context however if it fails, it will be caught and recorded into `ValueOrError` chain for `pip` and go onto the next attempt.
+
+See `ErrorHandling` class for how `ValueOrError` is implemented.
+
+### Specific tool support
+
+Nuke.Cola comes with explicit support of some tools
+
+* Python
+* VCPKG
+* XMake/XRepo
+  * See `XRepoItem` for parsed package information
+
+## Build GUI (very WIP)
+
+Build scripts can get complex enough that it is hard to fisrt grasp the options it can give to the user especially ones which dynamically import Build Plugins. Of course we have `--help` + `--plan` or `parameters.json` + profiles features Nuke provides, but a nice interactive UI can help much more with team adoption, especially one which shows relations of which parameters are being used by which Nuke Target.
 
 So far this is only there to aid Nuke adoption and select targets and related parameters to run for people who're not familiar with Nuke yet. More visualizations to mirror target relations and support more Nuke goodies might come in a distant future™.
 

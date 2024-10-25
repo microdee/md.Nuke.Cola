@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/build/_build.csproj",
+                "${workspaceFolder}/tests/TestBuild/TestBuild.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/build/_build.csproj"
+                "${workspaceFolder}/tests/TestBuild/TestBuild.csproj",
             ],
             "problemMatcher": "$msCompile"
         }

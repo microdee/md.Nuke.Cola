@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Nuke.Cola</RootNamespace>
-    <LangVersion>11</LangVersion>
+    <LangVersion>12</LangVersion>
     <Version>2.1.2</Version>
     <Authors>David Mórász</Authors>
     <Company>mcro.de</Company>
