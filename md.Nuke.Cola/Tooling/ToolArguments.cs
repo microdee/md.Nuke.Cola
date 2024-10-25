@@ -61,9 +61,8 @@ public record ToolArguments(
             
             EnvironmentVariables = (a?.EnvironmentVariables == null && b?.EnvironmentVariables == null)
                 ? null
-                : (a?.EnvironmentVariables ?? new Dictionary<string, string>())
-                    .ToDictionary(_ => _.Key, _ => _.Value)
-                    .AddDictionary(b?.EnvironmentVariables ?? new Dictionary<string, string>()),
+                : (a?.EnvironmentVariables?.ToDictionary() ?? [])
+                    .AddDictionary(b?.EnvironmentVariables?.ToDictionary() ?? []),
 
             Timeout = timeOut < 0 ? null : timeOut,
 

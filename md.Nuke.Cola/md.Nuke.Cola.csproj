@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="EverythingSearchClient" Version="0.8.0.51" />
-    <PackageReference Include="Nuke.Common" Version="8.0.0" />
+    <PackageReference Include="Nuke.Common" Version="8.1.2" />
     <PackageReference Include="Standart.Hash.xxHash" Version="4.0.5" />
   </ItemGroup>
 
