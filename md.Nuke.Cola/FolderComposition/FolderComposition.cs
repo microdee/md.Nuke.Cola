@@ -191,11 +191,9 @@ public static class FolderComposition
 
         FileSystemTask(
             instructions.Copy,
-            (src, dst, glob) => FileSystemTasks.CopyDirectoryRecursively(
-                src, dst, DirectoryExistsPolicy.Merge, FileExistsPolicy.Overwrite
-            ),
+            (src, dst, glob) => src.Copy(dst, ExistsPolicy.MergeAndOverwrite),
             (src, dst, glob) => {
-                FileSystemTasks.CopyFile(src, dst, FileExistsPolicy.Overwrite);
+                src.Copy(dst, ExistsPolicy.FileOverwrite);
                 if (glob.ProcessContent)
                     dst.ProcessSuffixContent(suffixes);
             }
