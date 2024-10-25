@@ -69,7 +69,7 @@ public static class XRepoTasks
     /// <returns></returns>
     public static Tool Install(string package, string options = "", string extraArgs = "")
     {
-        var xrepo = XRepo.With($"install -v -y {options.PrependNonEmpty("-f "):nq} {extraArgs:nq} {package:nq}");
+        var xrepo = XRepo.With($"install -v -y {options.PrependNonEmpty("-f "):nq} {extraArgs:nq} {package}");
         EnsureSupportedPackageManagers(ref xrepo, package);
         return xrepo;
     }
@@ -96,7 +96,7 @@ public static class XRepoTasks
     /// <returns></returns>
     public static Tool Info(string package, string options = "", string extraArgs = "")
     {
-        var xrepo = XRepo.With($"info -y {options.PrependNonEmpty("-f "):nq} {extraArgs:nq} {package:nq}");
+        var xrepo = XRepo.With($"info -y {options.PrependNonEmpty("-f "):nq} {extraArgs:nq} {package}");
         EnsureSupportedPackageManagers(ref xrepo, package);
         return xrepo;
     }
