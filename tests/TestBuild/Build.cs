@@ -33,10 +33,11 @@ public class Build : NukeBuild
         {
             var imguiConfig =
                 """
-                -f dx12=true
+                dx12=true
                 freetype=true
                 """
                 .AsSingleLine(",");
+            
             XRepoTasks.Install("imgui", imguiConfig)("");
             var imguiInfo = XRepoTasks.Info("imgui", imguiConfig)("").ParseXRepoInfo();
             Log.Information("Linkdirs: {0}", imguiInfo["imgui"]?["fetchinfo"]?["linkdirs"]?.Value);

@@ -61,12 +61,15 @@ public static class XRepoTasks
     /// See https://xrepo.xmake.io/#/?id=installation-package
     /// </param>
     /// <param name="options">
-    /// Extra options provided through command line arguments before package specification.
+    /// Extra options configuring the package. It should be comma separated key=value pairs.
+    /// </param>
+    /// <param name="extraArgs">
+    /// Extra arguments provided through command line before package specification.
     /// </param>
     /// <returns></returns>
-    public static Tool Install(string package, string options = "")
+    public static Tool Install(string package, string options = "", string extraArgs = "")
     {
-        var xrepo = XRepo.With($"install -v -y {options:nq} {package:nq}");
+        var xrepo = XRepo.With($"install -v -y {options.PrependNonEmpty("-f "):nq} {extraArgs:nq} {package:nq}");
         EnsureSupportedPackageManagers(ref xrepo, package);
         return xrepo;
     }
@@ -83,14 +86,17 @@ public static class XRepoTasks
     /// See https://xrepo.xmake.io/#/?id=installation-package
     /// </param>
     /// <param name="options">
-    /// Extra options provided through command line arguments before package specification. It is
+    /// Extra options configuring the package. It should be comma separated key=value pairs. It is
     /// important to provide the same options here as provided in install to get accurate information
     /// from the package (like dependencies, linking methods, etc)
     /// </param>
+    /// <param name="extraArgs">
+    /// Extra arguments provided through command line before package specification.
+    /// </param>
     /// <returns></returns>
-    public static Tool Info(string package, string options = "")
+    public static Tool Info(string package, string options = "", string extraArgs = "")
     {
-        var xrepo = XRepo.With($"info -y {options:nq} {package:nq}");
+        var xrepo = XRepo.With($"info -y {options.PrependNonEmpty("-f "):nq} {extraArgs:nq} {package:nq}");
         EnsureSupportedPackageManagers(ref xrepo, package);
         return xrepo;
     }
