@@ -139,6 +139,17 @@ public static class PathExtensions
     public static FileSystemInfo LinkedBy(this AbsolutePath real, AbsolutePath link)
         => Links(link, real);
 
+    /// <summary>
+    /// Create a new symlink referring to this item at given location, or if that fails for any
+    /// reason attempt to copy this item to given location
+    /// </summary>
+    /// <param name="real"></param>
+    /// <param name="link"></param>
+    /// <param name="policy"></param>
+    public static Attempt LinkedByOrCopyTo(this AbsolutePath real, AbsolutePath link, ExistsPolicy policy = ExistsPolicy.Fail)
+        => ErrorHandling.Try(() => real.LinkedBy(link))
+            .Else(() => real.Copy(link, policy));
+
     public static IEnumerable<AbsolutePath> SubTree(this AbsolutePath origin, Func<AbsolutePath, bool>? filter = null)
         => origin.DescendantsAndSelf(d =>
             from sd in d.GlobDirectories("*")
