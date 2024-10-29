@@ -1,16 +1,16 @@
 - [Nuke.Cola](#nukecola)
-  - [Build Plugins](#build-plugins)
-    - [`[ImplicitBuildInterface]` plugins](#implicitbuildinterface-plugins)
-    - [`*.nuke.csx` C# script plugins](#nukecsx-c-script-plugins)
-    - [`*.Nuke.csproj` C# project plugins](#nukecsproj-c-project-plugins)
-  - [Folder Composition](#folder-composition)
-    - [Regular folders](#regular-folders)
-    - [Folders with export manifest](#folders-with-export-manifest)
-  - [`Tool` extensions](#tool-extensions)
-    - [Tool composition with `With` extension method](#tool-composition-with-with-extension-method)
-    - [Fluent API error tolerant Tool setup](#fluent-api-error-tolerant-tool-setup)
-    - [Specific tool support](#specific-tool-support)
-  - [Build GUI (very WIP)](#build-gui-very-wip)
+- [Build Plugins](#build-plugins)
+  - [`[ImplicitBuildInterface]` plugins](#implicitbuildinterface-plugins)
+  - [`*.nuke.csx` C# script plugins](#nukecsx-c-script-plugins)
+  - [`*.Nuke.csproj` C# project plugins](#nukecsproj-c-project-plugins)
+- [Folder Composition](#folder-composition)
+  - [Regular folders](#regular-folders)
+  - [Folders with export manifest](#folders-with-export-manifest)
+- [`Tool` extensions](#tool-extensions)
+  - [Tool composition with `With` extension method](#tool-composition-with-with-extension-method)
+  - [Fluent API error tolerant Tool setup](#fluent-api-error-tolerant-tool-setup)
+  - [Specific tool support](#specific-tool-support)
+- [Build GUI (very WIP)](#build-gui-very-wip)
 
 
 # Nuke.Cola
@@ -19,7 +19,7 @@ Utilities and extensions useful for any Nuke builds originally separated from Nu
 
 Name comes from Nuka Cola of the Fallout franchise.
 
-## Build Plugins
+# Build Plugins
 
 Build plugins for Nuke is a way to implicitly share build tasks which the main build tool can pick up automatically from anywhere within the project. For components which are independent of each-other but they don't individually make a complete project, like a composition of those are expressing the resulting piece of software, it might not make sense for them to have independent full fledged Nuke context for each of them. For these scenarios Nuke.Cola provides a way to discover C# scripts or C# projects following a specific convention anywhere inside the subfolders of the project (recursively). These plugins can be then just distributed and re-used along these components.
 
@@ -58,7 +58,7 @@ Scripts are better when there's a single file with few targets which don't need 
 
 In all cases build interfaces inheriting `INukeBuild` are picked up and their targets and parameters are added to the final Nuke build class. [Read more about Nuke build interfaces](https://nuke.build/docs/sharing/build-components/) (or "Build Components" as they call it). Targets of Plugins have complete freedom to interact with the entire build graph, especially when the build graph is expressed first in a Nuget package library (like [Nuke.Unreal](https://github.com/microdee/Nuke.Unreal) already gives Unreal plugins a lot to work with).
 
-### `[ImplicitBuildInterface]` plugins
+## `[ImplicitBuildInterface]` plugins
 
 This is simply an interface defined in your main build project. It may not seem very useful until one factors in the following addition to your build csproj:
 
@@ -132,7 +132,7 @@ public interface IExtraTargets : INukeBuild
 
 </details>
 
-### `*.nuke.csx` C# script plugins
+## `*.nuke.csx` C# script plugins
 
 Example:
 
@@ -191,7 +191,7 @@ public interface IExtraTargets : INukeBuild
 
 You can put a `*.nuke.csx` file anywhere and it will be picked up as a Build Plugin. `Nuke.Cola` will also configure VSCode for C# scripts auto-completion support as common courtasy. In order for VSCode to pick up nuget references use `.NET: Restart Language Server` via the command palette (or `Omnisharp: Restart OmniSharp` in case that fallback is used). Debugging plugins require you to modify `.vscode/launch.json` and run the desired targets/parameters as startup. Mutliple scripts with the same name in different folders can co-exist as long as they define unique interface names.
 
-### `*.Nuke.csproj` C# project plugins
+## `*.Nuke.csproj` C# project plugins
 
 You can put a `*.Nuke.csproj` named project anywhere and the build script using `Nuke.Cola` will pick it up. Simplest way to do it is via dotnet command line:
 
@@ -211,7 +211,7 @@ and then you can proceed as with any other dotnet class library.
 > [!NOTE]
 > Unlike scripts, each C# project build plugin needs to be named uniquely in one project.
 
-## Folder Composition
+# Folder Composition
 
 There are cases when one project needs to compose from one pre-existing rigid folder structure of one dependency to another rigid folder structure of the current project. For scenarios like this Nuke.Cola provides `ImportFolder` build class extension method which will copy/link the target folder and its contents according to some instructions expressed by either an `export.yml` file in the imported folder or provided explicitly to the `ImportFolder` extension method.
 
@@ -300,13 +300,13 @@ ThirdParty                                  ->  Target
 
 To break it down:
 
-### Regular folders
+## Regular folders
 
 A regular folder (like `Unassuming`) with no extra import instructions provided will be just symlinked.
 
 Folders and files containing a preset suffix (by default `Origin` with either `_`, `.` and `:` as separators) can be replaced by a suffix chosen by the importing script (in this case `Test`). Files/Folders linked or copied will have this suffix replaced at their destination. (see `FolderOnly_Origin` -> `FolderOnly_Test`)
 
-### Folders with export manifest
+## Folders with export manifest
 
 Folders can dictate the intricacies of how they're shared this way with a simple manifest file called `export.yml`. For example the one in `Both_Test` does
 
@@ -355,11 +355,11 @@ copy:
 
 </details>
 
-## `Tool` extensions
+# `Tool` extensions
 
 Nuke.Cola comes with couple of useful extensions to Nuke's `Tool` delegate.
 
-### Tool composition with `With` extension method
+## Tool composition with `With` extension method
 
 Whenever the Nuke Tooling API gives you a Tool delegate it is a clean slate, meaning you need to provide it your arguments, environment variables, how one reacts to its output etc. With the intended usage once these parameters are given to the `Tool` delegate it immediately executes the tool it represents.
 
@@ -377,7 +377,7 @@ MyToolMode("--arg value"); // yields `my-tool my-mode --arg value`
 MyToolMode.WithMyEnvironment().WithSemanticLogging()("--arg value"); // excercise for the reader
 ```
 
-### Fluent API error tolerant Tool setup
+## Fluent API error tolerant Tool setup
 
 Build steps which may require random set of tools can provide the means to set up those tools before usage for the system. Simply using:
 
@@ -398,7 +398,7 @@ which will first try to setup `python` (if it isn't already) and then attempt to
 
 See `ErrorHandling` class for how `ValueOrError` is implemented.
 
-### Specific tool support
+## Specific tool support
 
 Nuke.Cola comes with explicit support of some tools
 
@@ -407,7 +407,7 @@ Nuke.Cola comes with explicit support of some tools
 * XMake/XRepo
   * See `XRepoItem` for parsed package information
 
-## Build GUI (very WIP)
+# Build GUI (very WIP)
 
 Build scripts can get complex enough that it is hard to fisrt grasp the options it can give to the user especially ones which dynamically import Build Plugins. Of course we have `--help` + `--plan` or `parameters.json` + profiles features Nuke provides, but a nice interactive UI can help much more with team adoption, especially one which shows relations of which parameters are being used by which Nuke Target.
 
