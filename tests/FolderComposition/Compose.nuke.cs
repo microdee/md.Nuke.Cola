@@ -19,9 +19,10 @@ public interface IImportTestFolders : INukeBuild
             this.ImportFolders("Test"
                 , (root / "Unassuming", target)
                 , (root / "FolderOnly_Origin", target)
-                , (root / "WithManifest" / "Both_Origin", target / "WithManifest")
-                , (root / "WithManifest" / "Copy_Origin", target / "WithManifest")
-                , (root / "WithManifest" / "Link_Origin", target / "WithManifest")
+                , (root / "WithManifest", target)
+                , (root / "WithManifest" / "Both_Origin", target / "WithManifest_Individual")
+                , (root / "WithManifest" / "Copy_Origin", target / "WithManifest_Individual")
+                , (root / "WithManifest" / "Link_Origin", target / "WithManifest_Individual")
                 , (root / "ScriptControlled", target, new ExportManifest
                 {
                     Link = {

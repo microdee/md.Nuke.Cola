@@ -7,8 +7,10 @@ using GlobExpressions;
 using Nuke.Cola.Search;
 using Nuke.Common;
 using Nuke.Common.IO;
+using Nuke.Common.Utilities;
 using Nuke.Common.Utilities.Collections;
 using Nuke.Utilities.Text.Yaml;
+using Serilog;
 
 namespace Nuke.Cola.FolderComposition;
 
@@ -204,5 +206,39 @@ public static class FolderComposition
             (src, dst, glob) => dst.LinksDirectory(src),
             (src, dst, glob) => dst.LinksFile(src)
         );
+
+        foreach (var glob in instructions.Use)
+        {
+            if (string.IsNullOrWhiteSpace(glob.Directory) && string.IsNullOrWhiteSpace(glob.File))
+                continue;
+
+            var manifestGlob = glob.Directory != null
+                ? glob.Directory + "/export.y*ml"
+                : glob.File;
+
+            var manifests = import.From.SearchFiles(manifestGlob!)
+                    .Select(p => p.Parent)
+                    .Where(p => p != import.From)
+                    .ToList();
+
+            if (manifests.Count > 0)
+                Log.Information(
+                    "Folder {0} uses {1} importing\n    {2}",
+                    import.From, manifestGlob,
+                    string.Join("\n    ", manifests)
+                );
+            else
+                Log.Warning(
+                    "Folder {0} attempted to import {1} but no importable subfolders were found (none of them had export.yml manifest file)",
+                    import.From, manifestGlob
+                );
+
+            manifests.ForEach((p, i) =>
+            {
+                var dst = glob.GetDestination(import.From, to, p, i);
+                Log.Information("Importing folder {0} -> {1}", p, dst);
+                self.ImportFolder(suffixes, (p, dst.Parent));
+            });
+        }
     }
 }

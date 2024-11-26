@@ -10,6 +10,8 @@ using Nuke.Common.Utilities.Collections;
 using Serilog;
 using YamlDotNet.Serialization;
 
+namespace Nuke.Cola.FolderComposition;
+
 /// <summary>
 /// A union provided for denoting wether we want to link/copy a file or a directory.
 /// It is undefined behavior when both File and Directory is set to non-null value.
@@ -65,7 +67,7 @@ public class FileOrDirectory
             var relPath = relativePath.ToString().Replace("\\", "/");
             var regex = glob.GlobToRegex();
             var match = Regex.Match(relPath, regex);
-            for (int i = 0; i < match.Groups.Count; i++)
+            for (int i = 1; i < match.Groups.Count; i++)
             {
                 asResult = asResult.Replace($"${i}", match.Groups[i]?.Value);
             }
@@ -78,7 +80,7 @@ public class FileOrDirectory
 
 /// <summary>
 /// Controls how a folder should be exported for composition.
-/// It is meant to be used with export.yml YAML files.
+/// It is meant to be used with export.yml YAML files (or export manifest files).
 /// </summary>
 public class ExportManifest
 {
@@ -86,12 +88,23 @@ public class ExportManifest
     /// A list of items which will be symlinked. Content processing will obviously not happen in this case.
     /// </summary>
     [YamlMember]
-    public List<FileOrDirectory> Link = new();
+    public List<FileOrDirectory> Link = [];
     
     /// <summary>
     /// A list of items which will be copied. Content processing can happen in this case if item is
     /// flagged to do so.
     /// </summary>
     [YamlMember]
-    public List<FileOrDirectory> Copy = new();
+    public List<FileOrDirectory> Copy = [];
+    
+    /// <summary>
+    /// A list of folders which should contain an export manifest, or files which points to export
+    /// manifests. If a given folder doesn't contain an export.yml or the given file is not an
+    /// export.yml then those will be ignored with noop.
+    /// ProcessContent is ignored in this list as that's controlled by the imported manifests.
+    /// Globbing is also supported, simply writing `**` in Directory (dir) will import all subfolders
+    /// containing an `export.yml` manifest file.
+    /// </summary>
+    [YamlMember]
+    public List<FileOrDirectory> Use = [];
 }
