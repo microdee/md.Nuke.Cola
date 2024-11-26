@@ -62,10 +62,15 @@ public static class TextExtensions
     /// <param name="glob"></param>
     /// <returns></returns>
     public static string GlobToRegex(this string glob) => Regex.Escape(glob)
+        // Escape /
         .Replace("/", @"\/")
+        // preprocess wildcards directly after backslash (edge case)
         .Replace(@"\*", "*")
+        // Singular * wildcard is converted to capturing ([^\/]*) pattern with surroundings (match everything within current level)
         .ReplaceRegex(@"(?<PRE>[^\*]|^)\*(?<POST>[^\*])", m => $@"{m.Groups["PRE"]}([^\/]*){m.Groups["POST"]}")
+        // Recursive ** wildcard at the beginning of the expression is simply converted to capturing (.*) pattern
         .ReplaceRegex(@"^\*\*", m => @"^(.*)")
+        // Recursive ** wildcard at the beginning of path components converted into capturing [\\\/]?(.*) pattern
         .ReplaceRegex(@"(?:\\\\|\\\/)\*\*", m => @"[\\\/]?(.*)");
 
     /// <summary>

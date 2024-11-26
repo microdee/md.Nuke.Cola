@@ -10,7 +10,7 @@
   - [Tool composition with `With` extension method](#tool-composition-with-with-extension-method)
   - [Fluent API error tolerant Tool setup](#fluent-api-error-tolerant-tool-setup)
   - [Specific tool support](#specific-tool-support)
-- [Build GUI (very WIP)](#build-gui-very-wip)
+- [Build GUI (very WIP, coming at some point)](#build-gui-very-wip-coming-at-some-point)
 
 
 # Nuke.Cola
@@ -312,13 +312,13 @@ Folders can dictate the intricacies of how they're shared this way with a simple
 
 ```yaml
 link:
-  - dir: Private/SharedSubfolder
-  - dir: Public/SharedSubfolder
-  - dir: Some/Deep/Folder/For/Some/Reason
+  - dir: Private/SharedSubfolder          # Simply link single subfolder at destination maintaining structure
+  - dir: Public/SharedSubfolder           # Simply link single subfolder at destination maintaining structure
+  - dir: Some/Deep/Folder/For/Some/Reason # Map a deep folder structure into a singular level
     as: MyNiceFolder
 copy:
-  - file: "**/*_Origin.*"
-    procContent: true
+  - file: "**/*_Origin.*" # Individually and recursively copy every file with a suffix "_Origin" maintaining subfolder structure
+    procContent: true     # also replace [_.:]Origin suffixes in the content of files (controlled by the importer)
 ```
 
 Linking folders is straightforward and globbable. Target folders and parent folders (up until export root) is processed for suffixes at destination same as when copying folders.
@@ -332,11 +332,26 @@ When copying files (including when they're globbed) their content can be also pr
 The destination relative path and name can also be overridden with `as:`. This works with globbing as well where the captures of `*` and `**` can be referred to as `$N` where N is the 1 based index of the wildcards. For example
 
 ```yaml
-- file: Flatten/**/*.txt
-  as: Flatten/$2.txt
+- file: Flatten/**/*.txt # Select all text files arbitrarily deep inside subfolder structure
+  as: Flatten/$2.txt     # copy/link them in a singular folder referencing the second wildcard
 ```
 
 Where all the files inside the recursive structure of subfolder `Flatten` is copied/linked into a single-level subfolder. `$2` in `as:` indicates it uses the second wildcard (the one at `*.txt`).
+
+Export manifests can reference other export manifests when they're listed under `use` key the same way as copies or links are done, for example:
+
+```yaml
+use:
+  - dir: Subfolder/MyDependency         # will export subfolder to destination maintaining subfolder structure
+  - dir: Components/*                   # consider using all direct subfolders inside components folder
+  - dir: Components/**                  # consider using all recursive subfolders inside components folder
+  - dir: Components/**/*                # consider using all recursive subfolders inside components folder BUT
+    as: Components/$2                   # flatten them into a single subfolder
+  - dir: "**"                           # just use everything from the recursive subfolder structure which has an export.yml
+  - file: Another/Dependency/export.yml # files are only considered if they point to export.yml
+```
+
+The `file:` mode for `use` is only there for consistency. Please use `dir:` both of them yield the same result basically. This feature is not visualized above in the folder structure figure as that's already complicated enough. Note that `copy` and `link` will not consider instructions from `export.yml` manifest files, only `use` does that, and `use` will ignore every folder which doesn't have an `export.yml` manifest file directly in it. This is done this way to alleviate surprises from "smart defaults".
 
 <details><summary><b>NOTE</b> about string values in YAML containing *</summary>
 
@@ -407,7 +422,7 @@ Nuke.Cola comes with explicit support of some tools
 * XMake/XRepo
   * See `XRepoItem` for parsed package information
 
-# Build GUI (very WIP)
+# Build GUI (very WIP, coming at some point)
 
 Build scripts can get complex enough that it is hard to fisrt grasp the options it can give to the user especially ones which dynamically import Build Plugins. Of course we have `--help` + `--plan` or `parameters.json` + profiles features Nuke provides, but a nice interactive UI can help much more with team adoption, especially one which shows relations of which parameters are being used by which Nuke Target.
 
