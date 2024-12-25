@@ -103,6 +103,10 @@ public static class FolderComposition
     /// <param name="suffixes">
     /// Can be simply the desired project suffix, <see cref="ImportFolderSuffixes"/> for more details
     /// </param>
+    /// <param name="useSubfolder">
+    /// When and by default true, a subfolder is created for the import, or when false, the folder
+    /// is composited with the given target folder directly.
+    /// </param>
     /// <param name="imports">
     /// The folder import from / to pair. Optionally can specify an export manifest.
     /// <see cref="ImportFolderItem"/>
@@ -129,6 +133,10 @@ public static class FolderComposition
     ///     })
     /// );
     /// </example>
+    public static void ImportFolders(this INukeBuild self, ImportFolderSuffixes suffixes, bool useSubfolder, params ImportFolderItem[] imports)
+        => imports.ForEach(i => ImportFolder(self, suffixes, i, useSubfolder));
+    
+    /// <inheritdoc cref="ImportFolders(INukeBuild, ImportFolderSuffixes, bool, ImportFolderItem[])"/>
     public static void ImportFolders(this INukeBuild self, ImportFolderSuffixes suffixes, params ImportFolderItem[] imports)
         => imports.ForEach(i => ImportFolder(self, suffixes, i));
 
@@ -147,12 +155,16 @@ public static class FolderComposition
     /// The folder import from / to pair. Optionally can specify an export manifest.
     /// <see cref="ImportFolderItem"/>
     /// </param>
-    public static void ImportFolder(this INukeBuild self, ImportFolderSuffixes suffixes, ImportFolderItem import)
+    /// <param name="useSubfolder">
+    /// When and by default true, a subfolder is created for the import, or when false, the folder
+    /// is composited with the given target folder directly.
+    /// </param>
+    public static void ImportFolder(this INukeBuild self, ImportFolderSuffixes suffixes, ImportFolderItem import, bool useSubfolder = true)
     {
         var manifestPath = (import.From / "export.yml").ExistingFile()
             ?? import.From / "export.yaml";
 
-        var to = import.ToParent / import.From.Name.ProcessSuffix(suffixes);
+        var to = useSubfolder ? import.ToParent / import.From.Name.ProcessSuffix(suffixes) : import.ToParent;
 
         var instructions = import.Manifest ?? manifestPath.ExistingFile()?.ReadYaml<ExportManifest>();
         
@@ -173,19 +185,23 @@ public static class FolderComposition
             {
                 if (string.IsNullOrWhiteSpace(glob.Directory) && string.IsNullOrWhiteSpace(glob.File))
                     continue;
+
+                var exclude = glob.Not.Concat(instructions.Not);
                 
                 if (string.IsNullOrWhiteSpace(glob.File))
                     import.From.SearchDirectories(glob.Directory!)
                         .ForEach((p, i) =>
                         {
-                            var dst = glob.GetDestination(import.From, to, p, i);
+                            var dst = glob.GetDestination(import.From, to, p, i, exclude);
+                            if (dst == null) return;
                             handleDirectories(p, dst.ProcessSuffixPath(suffixes, to), glob);
                         });
                 else
                     import.From.SearchFiles(glob.File!)
                         .ForEach((p, i) =>
                         {
-                            var dst = glob.GetDestination(import.From, to, p, i);
+                            var dst = glob.GetDestination(import.From, to, p, i, exclude);
+                            if (dst == null) return;
                             handleFiles(p, dst.ProcessSuffixPath(suffixes, to), glob);
                         });
             }
@@ -233,9 +249,16 @@ public static class FolderComposition
                     import.From, manifestGlob
                 );
 
+            var exclude = glob.Not.Concat(instructions.Not);
+
             manifests.ForEach((p, i) =>
             {
-                var dst = glob.GetDestination(import.From, to, p, i);
+                var dst = glob.GetDestination(import.From, to, p, i, exclude);
+                if (dst == null)
+                {
+                    Log.Information("Ignoring folder {0}", p, dst);
+                    return;
+                }
                 Log.Information("Importing folder {0} -> {1}", p, dst);
                 self.ImportFolder(suffixes, (p, dst.Parent));
             });

@@ -5,6 +5,9 @@ link:
     as: Include
   - file: Flatten/**/*.txt
     as: Flatten/$2.txt
+    not: [ IgnorePlease* ]
 copy:
   - file: "**/*_Origin.*"
     procContent: true
+not:
+  - Ignore*ByGlob*

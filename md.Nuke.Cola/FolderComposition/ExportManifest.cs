@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using GlobExpressions;
 using Nuke.Cola;
 using Nuke.Common.IO;
 using Nuke.Common.Utilities;
@@ -28,17 +29,17 @@ public class FileOrDirectory
     public string? File;
 
     /// <summary>
-    /// When working with a file, process its contents for replacing specified suffixes
-    /// </summary>
-    [YamlMember(Alias = "procContent")]
-    public bool ProcessContent = false;
-
-    /// <summary>
     /// Export one or a glob of directories handled recursively. Files inside target directories are
     /// not considered. Either File or Directory (dir) must be specified.
     /// </summary>
     [YamlMember(Alias = "dir")]
     public string? Directory;
+
+    /// <summary>
+    /// Exclude iterms from this particular set of files or directories if they match any of these patterns
+    /// </summary>
+    [YamlMember(Alias = "not")]
+    public List<string> Not = [];
 
     /// <summary>
     /// Override the destination relative path of exported item.
@@ -51,10 +52,25 @@ public class FileOrDirectory
     [YamlMember]
     public string? As;
 
-    internal AbsolutePath GetDestination(AbsolutePath srcRoot, AbsolutePath dstRoot, AbsolutePath currentPath, int itemId)
+    /// <summary>
+    /// When working with a file, process its contents for replacing specified suffixes
+    /// </summary>
+    [YamlMember(Alias = "procContent")]
+    public bool ProcessContent = false;
+
+    internal AbsolutePath? GetDestination(AbsolutePath srcRoot, AbsolutePath dstRoot, AbsolutePath currentPath, int itemId, IEnumerable<string> exclude)
     {
         var glob = (File ?? Directory)!;
         var relativePath = srcRoot.GetRelativePathTo(currentPath);
+
+        bool Ignore(string glob)
+        {
+            var regex = glob.GlobToRegex();
+            return Regex.IsMatch(relativePath!.ToString(), regex, RegexOptions.IgnoreCase);
+        }
+
+        if (exclude.Any(Ignore))
+            return null;
         
         if (As == null)
             return dstRoot / relativePath;
@@ -107,4 +123,10 @@ public class ExportManifest
     /// </summary>
     [YamlMember]
     public List<FileOrDirectory> Use = [];
+    
+    /// <summary>
+    /// Ignore files or directories matching any of these patterns from this entire export
+    /// </summary>
+    [YamlMember]
+    public List<string> Not = [];
 }

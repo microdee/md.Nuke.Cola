@@ -68,6 +68,8 @@ public static class TextExtensions
         .Replace(@"\*", "*")
         // Singular * wildcard is converted to capturing ([^\/]*) pattern with surroundings (match everything within current level)
         .ReplaceRegex(@"(?<PRE>[^\*]|^)\*(?<POST>[^\*])", m => $@"{m.Groups["PRE"]}([^\/]*){m.Groups["POST"]}")
+        // Singular * wildcard at the end of the glob is converted to capturing ([^\/]*) pattern with its prefix surroundings (match everything within current level)
+        .ReplaceRegex(@"(?<PRE>[^\*]|^)\*$", m => $@"{m.Groups["PRE"]}([^\/]*)")
         // Recursive ** wildcard at the beginning of the expression is simply converted to capturing (.*) pattern
         .ReplaceRegex(@"^\*\*", m => @"^(.*)")
         // Recursive ** wildcard at the beginning of path components converted into capturing [\\\/]?(.*) pattern
