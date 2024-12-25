@@ -6,6 +6,7 @@
 - [Folder Composition](#folder-composition)
   - [Regular folders](#regular-folders)
   - [Folders with export manifest](#folders-with-export-manifest)
+  - [Exclude/ignore items](#excludeignore-items)
 - [`Tool` extensions](#tool-extensions)
   - [Tool composition with `With` extension method](#tool-composition-with-with-extension-method)
   - [Fluent API error tolerant Tool setup](#fluent-api-error-tolerant-tool-setup)
@@ -352,6 +353,24 @@ use:
 ```
 
 The `file:` mode for `use` is only there for consistency. Please use `dir:` both of them yield the same result basically. This feature is not visualized above in the folder structure figure as that's already complicated enough. Note that `copy` and `link` will not consider instructions from `export.yml` manifest files, only `use` does that, and `use` will ignore every folder which doesn't have an `export.yml` manifest file directly in it. This is done this way to alleviate surprises from "smart defaults".
+
+## Exclude/ignore items
+
+There are cases when it's easier to have an explicit rule for ignoring files/folders from a generic match, instead of composing a match for wide range of files, but the ones we want to exclude. For this reason folder composition allows to list patterns which will exclude matched paths. They can be declared for all the exported folder, or individual glob items.
+
+```YAML
+copy:
+  - file: Folder/**/*   # copy everything from Folder
+    not:
+      - ".*/"           # except dot folders
+      - "*.generated.*" # except "generated" files
+  - dir: Source         # above exceptions don't apply here
+not:
+  - Intermediate/       # Ignore intermediate folders in all entries.
+```
+
+> [!NOTE]
+> For now "ignore files" like `.gitignore` are not considered, but in the future there may be a feature which ignores files the way git does with `.gitignore` upon request. Until that time copying entries from your gitignore to `not:` fields as an array should do the same, if that is indeed the preferred behavior.
 
 <details><summary><b>NOTE</b> about string values in YAML containing *</summary>
 
