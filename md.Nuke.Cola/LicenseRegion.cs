@@ -36,7 +36,7 @@ public abstract class DoxygenLicenseCommentTemplate : ILicenseCommentTemplate
          *  @date {{ year }}
          */
         """;
-    public abstract string[] FileFilters { get; };
+    public abstract string[] FileFilters { get; }
     public string RemoveExistingComment(string fileContent)
     {
         return fileContent.SplitLineBreaks()
@@ -103,7 +103,7 @@ public static class LicenseRegionStatic
             .Where(f => options.AllowFile?.Invoke(f) ?? true)
             .Where(f => options.AllowDotFiles || !f.Name.StartsWith('.'))
             .Where(f => !Glob.IsMatch(f, options.LicenseRegionFile, GlobOptions.CaseInsensitive));
-            
+
         foreach (var file in files)
         {
             var template = options.Templates.First(t => t.FileFilters.Any(f => Glob.IsMatch(file, f, GlobOptions.CaseInsensitive)));
