@@ -25,6 +25,8 @@
       "type": "string",
       "enum": [
         "BuildPluginPoc",
+        "EnsureMainLicense",
+        "EnsureOtherLicense",
         "ImportTestFolders",
         "PluginTest",
         "ProjectTest",
