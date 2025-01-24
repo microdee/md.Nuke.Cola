@@ -1,4 +1,12 @@
-- [Nuke.Cola](#nukecola)
+<div align="center">
+
+<img width="400px" src="docs/nuke.cola.text.onLight.svg#gh-light-mode-only" />
+<img width="400px" src="docs/nuke.cola.text.onDark.svg#gh-dark-mode-only" />
+
+Utilities and extensions useful for any Nuke builds originally separated from Nuke.Unreal.
+
+</div>
+
 - [Build Plugins](#build-plugins)
   - [`[ImplicitBuildInterface]` plugins](#implicitbuildinterface-plugins)
   - [`*.nuke.csx` C# script plugins](#nukecsx-c-script-plugins)
@@ -11,12 +19,6 @@
   - [Tool composition with `With` extension method](#tool-composition-with-with-extension-method)
   - [Fluent API error tolerant Tool setup](#fluent-api-error-tolerant-tool-setup)
   - [Specific tool support](#specific-tool-support)
-- [Build GUI (very WIP, coming at some point)](#build-gui-very-wip-coming-at-some-point)
-
-
-# Nuke.Cola
-
-Utilities and extensions useful for any Nuke builds originally separated from Nuke.Unreal.
 
 Name comes from Nuka Cola of the Fallout franchise.
 
@@ -441,9 +443,9 @@ Nuke.Cola comes with explicit support of some tools
 * XMake/XRepo
   * See `XRepoItem` for parsed package information
 
-# Build GUI (very WIP, coming at some point)
+<div align="center">
 
-Build scripts can get complex enough that it is hard to fisrt grasp the options it can give to the user especially ones which dynamically import Build Plugins. Of course we have `--help` + `--plan` or `parameters.json` + profiles features Nuke provides, but a nice interactive UI can help much more with team adoption, especially one which shows relations of which parameters are being used by which Nuke Target.
+<img width="400px" src="docs/nuke.cola.full.onLight.svg#gh-light-mode-only" />
+<img width="400px" src="docs/nuke.cola.full.onDark.svg#gh-dark-mode-only" />
 
-So far this is only there to aid Nuke adoption and select targets and related parameters to run for people who're not familiar with Nuke yet. More visualizations to mirror target relations and support more Nuke goodies might come in a distant future™.
-
+</div>
