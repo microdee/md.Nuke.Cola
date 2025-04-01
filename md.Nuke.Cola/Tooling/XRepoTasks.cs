@@ -22,7 +22,7 @@ public static class XRepoTasks
     /// <summary>
     /// Get XRepo or an error if setup has failed.
     /// </summary>
-    public static ValueOrError<Tool> EnsureXRepo => ToolCola.GetPathTool("xrepo", XMakeTasks.Setup);
+    public static ValueOrError<Tool> EnsureXRepo => ToolCola.Use("xrepo", XMakeTasks.Setup);
     
     /// <summary>
     /// Get XRepo. It throws an exception if setup has failed.
@@ -45,7 +45,7 @@ public static class XRepoTasks
             }
         }
         else if (package.Contains("conan::"))
-            ToolCola.GetPathTool("conan", () => PythonTasks.Pip("install conan"))
+            ToolCola.Use("conan", () => PythonTasks.Pip("install conan"))
                 .Get($"Conan is needed for package(s) {package} but it couldn't be installed");
     }
 

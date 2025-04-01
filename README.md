@@ -17,7 +17,6 @@ Utilities and extensions useful for any Nuke builds originally separated from Nu
   - [Exclude/ignore items](#excludeignore-items)
 - [`Tool` extensions](#tool-extensions)
   - [Tool composition with `With` extension method](#tool-composition-with-with-extension-method)
-  - [Fluent API error tolerant Tool setup](#fluent-api-error-tolerant-tool-setup)
   - [Specific tool support](#specific-tool-support)
 
 Name comes from Nuka Cola of the Fallout franchise.
@@ -31,7 +30,6 @@ Build plugins for Nuke is a way to implicitly share build tasks which the main b
 This is originally developed for Unreal plugins where the main project's Nuke scripts or the pre-built independently distributed build-tools shouldn't explicitly know about the plugin composition of the project they need to work on in runtime. Unreal, or other non-dotnet project models might not have the capacity or cultural acceptance to rely on a Nuget infrastructure to distribute build scripts of these independent software components, which then could be referenced by the main project. Even if that would be plausable it would still take uncomfortable extra boilerplate for each of these software components. In case of a pre-built build tool based on a Nuke build script, this is the only way I know of to have dynamically composable software component specific build scripts considered.
 
 </details>
-
 
 Build plugins are discovered before the main entry point of Nuke, if the developer uses
 
@@ -412,27 +410,6 @@ MyTool("args"); // use normally
 MyToolMode("--arg value"); // yields `my-tool my-mode --arg value`
 MyToolMode.WithMyEnvironment().WithSemanticLogging()("--arg value"); // excercise for the reader
 ```
-
-## Fluent API error tolerant Tool setup
-
-Build steps which may require random set of tools can provide the means to set up those tools before usage for the system. Simply using:
-
-```CSharp
-ToolCola.Use("cmake");
-```
-
-If `cmake` is not found in PATH, then Nuke.Cola will first attempt to install it via OS specific package managers. Finally it returns an `ValueOrError` wrapper further letting the developer to react to errors in a fluent way. Consider bundled tools
-
-```CSharp
-ToolCola.Use("pip", comesWith: () => ToolCola.Use("python").Get());
-```
-
-which will first try to setup `python` (if it isn't already) and then attempt to get `pip`.
-
-> [!NOTE]
-> the `.Get()` there will return the `Tool` without a wrapper or will throw all the previous errors accumulated if `ToolCola.Use` didn't manage to fetch the desired tool. In this context however if it fails, it will be caught and recorded into `ValueOrError` chain for `pip` and go onto the next attempt.
-
-See `ErrorHandling` class for how `ValueOrError` is implemented.
 
 ## Specific tool support
 
