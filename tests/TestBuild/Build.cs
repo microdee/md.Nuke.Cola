@@ -13,7 +13,6 @@ using Nuke.Common.Tooling;
 using Nuke.Common.Utilities.Collections;
 using Serilog;
 using static Nuke.Common.EnvironmentInfo;
-using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.PathConstruction;
 
 public class Build : NukeBuild
