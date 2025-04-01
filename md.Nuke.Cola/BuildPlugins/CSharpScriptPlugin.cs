@@ -8,7 +8,7 @@ namespace Nuke.Cola.BuildPlugins;
 /// </summary>
 public class CSharpScriptPlugin : IHavePlugin
 {
-    private List<Importable> _buildInterfaces = new();
+    private List<Importable> _buildInterfaces = [];
     public IEnumerable<Importable> BuildInterfaces => _buildInterfaces;
 
     public AbsolutePath SourcePath { init; get; } = (AbsolutePath) "/";
@@ -18,13 +18,9 @@ public class CSharpScriptPlugin : IHavePlugin
         var compiledRoot = context.Temporary / "CSharpScriptOutput";
 
         var assembly = Assembly.LoadFrom(
-            DotnetCommon.CompileScript(
-                SourcePath,
-                compiledRoot,
-                context.Temporary
-            )
+            DotnetCommon.CompileScript(SourcePath, compiledRoot)
         );
 
-        _buildInterfaces = assembly.GetBuildInterfaces(SourcePath, true).ToList();
+        _buildInterfaces = [.. assembly.GetBuildInterfaces(SourcePath, true)];
     }
 }

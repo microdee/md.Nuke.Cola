@@ -114,11 +114,7 @@ public static class Plugins
 
         "Preparing intermediate assembly".Log();
         var intermediateAssembly = Assembly.LoadFrom(
-            DotnetCommon.CompileScript(
-                intermediateScriptPath,
-                intermediateAssembliesRoot,
-                context.Temporary
-            )
+            DotnetCommon.CompileScript(intermediateScriptPath, intermediateAssembliesRoot)
         );
 
         var intermediateClass = intermediateAssembly.GetTypes().First(t => t.Name == OutputBuildClass);
