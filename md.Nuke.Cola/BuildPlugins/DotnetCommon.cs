@@ -17,7 +17,11 @@ internal static class DotnetCommon
 {
     private static LogFactory? DotnetScriptLogFactoryInstance = null;
     private static LogFactory DotnetScriptLogFactory => DotnetScriptLogFactoryInstance
-        ??= new(type => (level, message, except) => message.Log());
+        ??= new(type => (level, message, except) =>
+        {
+            if (level > LogLevel.Debug)
+                message.Log();
+}       );
 
     /// <summary>
     /// Compiles a C# script into a DLL with dotnet-script, which needs to be installed
