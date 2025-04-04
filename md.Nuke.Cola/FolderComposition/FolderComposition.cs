@@ -37,6 +37,9 @@ public record ImportFolderSuffixes(string To, string From = "Origin")
 /// </summary>
 /// <param name="From">The source or origin folder</param>
 /// <param name="ToParent">The destination parent folder</param>
+/// <param name="ManifestFilePattern">
+/// An explicit glob for finding export manifest files in the wprking~ and its subdirectories
+/// </param>
 /// <param name="Manifest">
 /// Control how the contents of the folder should be imported into target project. If null and if
 /// an export.yml manifest file exists in the imported folder, that manifest file will be used.
@@ -44,7 +47,7 @@ public record ImportFolderSuffixes(string To, string From = "Origin")
 /// symlinked.
 /// </param>
 /// <returns></returns>
-public record ImportFolderItem(AbsolutePath From, AbsolutePath ToParent, ExportManifest? Manifest = null)
+public record ImportFolderItem(AbsolutePath From, AbsolutePath ToParent, ExportManifest? Manifest = null, string ManifestFilePattern = "export.y*ml")
 {
     public static implicit operator ImportFolderItem ((AbsolutePath from, AbsolutePath toParent) from)
         => new(from.from, from.toParent);
@@ -52,12 +55,29 @@ public record ImportFolderItem(AbsolutePath From, AbsolutePath ToParent, ExportM
     public static implicit operator ImportFolderItem ((AbsolutePath from, AbsolutePath toParent, ExportManifest manifest) from)
         => new(from.from, from.toParent, from.manifest);
 
+    public static implicit operator ImportFolderItem ((AbsolutePath from, AbsolutePath toParent, string manifestFilePattern) from)
+        => new(from.from, from.toParent, ManifestFilePattern: from.manifestFilePattern);
+
+    public static implicit operator ImportFolderItem ((AbsolutePath from, AbsolutePath toParent, ExportManifest manifest, string manifestFilePattern) from)
+        => new(from.from, from.toParent, from.manifest, from.manifestFilePattern);
+
     public static implicit operator (AbsolutePath, AbsolutePath) (ImportFolderItem from)
         => (from.From, from.ToParent);
 
     public static implicit operator (AbsolutePath, AbsolutePath, ExportManifest?) (ImportFolderItem from)
         => (from.From, from.ToParent, from.Manifest);
+
+    public static implicit operator (AbsolutePath, AbsolutePath, ExportManifest?, string) (ImportFolderItem from)
+        => (from.From, from.ToParent, from.Manifest, from.ManifestFilePattern);
 }
+
+public enum ImportMethod
+{
+    Copy,
+    Link
+}
+
+public record ImportedItem(AbsolutePath From, AbsolutePath To, ImportMethod Method);
 
 public static class FolderComposition
 {
@@ -133,12 +153,12 @@ public static class FolderComposition
     ///     })
     /// );
     /// </example>
-    public static void ImportFolders(this INukeBuild self, ImportFolderSuffixes suffixes, bool useSubfolder, params ImportFolderItem[] imports)
-        => imports.ForEach(i => ImportFolder(self, suffixes, i, useSubfolder));
+    public static List<ImportedItem> ImportFolders(this INukeBuild self, ImportFolderSuffixes suffixes, bool useSubfolder, params ImportFolderItem[] imports)
+        => [.. imports.SelectMany(i => ImportFolder(self, suffixes, i, useSubfolder))];
     
     /// <inheritdoc cref="ImportFolders(INukeBuild, ImportFolderSuffixes, bool, ImportFolderItem[])"/>
-    public static void ImportFolders(this INukeBuild self, ImportFolderSuffixes suffixes, params ImportFolderItem[] imports)
-        => imports.ForEach(i => ImportFolder(self, suffixes, i));
+    public static List<ImportedItem> ImportFolders(this INukeBuild self, ImportFolderSuffixes suffixes, params ImportFolderItem[] imports)
+        => [.. imports.SelectMany(i => ImportFolder(self, suffixes, i))];
 
     /// <summary>
     /// There are cases when one project needs to compose from one pre-existing rigid folder
@@ -159,27 +179,30 @@ public static class FolderComposition
     /// When and by default true, a subfolder is created for the import, or when false, the folder
     /// is composited with the given target folder directly.
     /// </param>
-    public static void ImportFolder(this INukeBuild self, ImportFolderSuffixes suffixes, ImportFolderItem import, bool useSubfolder = true)
-    {
-        var manifestPath = (import.From / "export.yml").ExistingFile()
-            ?? import.From / "export.yaml";
-
+    public static List<ImportedItem> ImportFolder(
+        this INukeBuild self,
+        ImportFolderSuffixes suffixes,
+        ImportFolderItem import,
+        bool useSubfolder = true
+    ) {
+        var manifestPath = import.From.GetFiles(import.ManifestFilePattern).FirstOrDefault();
         var to = useSubfolder ? import.ToParent / import.From.Name.ProcessSuffix(suffixes) : import.ToParent;
-
-        var instructions = import.Manifest ?? manifestPath.ExistingFile()?.ReadYaml<ExportManifest>();
+        var instructions = import.Manifest ?? manifestPath?.ReadYaml<ExportManifest>();
+        var result = new List<ImportedItem>();
         
         if (instructions == null)
         {
             to.LinksDirectory(import.From);
-            return;
+            result.Add(new(import.From, to, ImportMethod.Link));
+            return result;
         }
 
         if (!to.DirectoryExists()) to.CreateDirectory();
 
         void FileSystemTask(
             IEnumerable<FileOrDirectory> list,
-            Action<AbsolutePath, AbsolutePath, FileOrDirectory> handleDirectories,
-            Action<AbsolutePath, AbsolutePath, FileOrDirectory> handleFiles
+            Func<AbsolutePath, AbsolutePath, FileOrDirectory, ImportedItem> handleDirectories,
+            Func<AbsolutePath, AbsolutePath, FileOrDirectory, ImportedItem> handleFiles
         ) {
             foreach (var glob in list)
             {
@@ -194,7 +217,7 @@ public static class FolderComposition
                         {
                             var dst = glob.GetDestination(import.From, to, p, i, exclude);
                             if (dst == null) return;
-                            handleDirectories(p, dst.ProcessSuffixPath(suffixes, to), glob);
+                            result.Add(handleDirectories(p, dst.ProcessSuffixPath(suffixes, to), glob));
                         });
                 else
                     import.From.SearchFiles(glob.File!)
@@ -202,25 +225,35 @@ public static class FolderComposition
                         {
                             var dst = glob.GetDestination(import.From, to, p, i, exclude);
                             if (dst == null) return;
-                            handleFiles(p, dst.ProcessSuffixPath(suffixes, to), glob);
+                            result.Add(handleFiles(p, dst.ProcessSuffixPath(suffixes, to), glob));
                         });
             }
         }
 
         FileSystemTask(
             instructions.Copy,
-            (src, dst, glob) => src.Copy(dst, ExistsPolicy.MergeAndOverwrite),
+            (src, dst, glob) => {
+                src.Copy(dst, ExistsPolicy.MergeAndOverwrite);
+                return new(src, dst, ImportMethod.Copy);
+            },
             (src, dst, glob) => {
                 src.Copy(dst, ExistsPolicy.FileOverwrite);
                 if (glob.ProcessContent)
                     dst.ProcessSuffixContent(suffixes);
+                return new(src, dst, ImportMethod.Copy);
             }
         );
 
         FileSystemTask(
             instructions.Link,
-            (src, dst, glob) => dst.LinksDirectory(src),
-            (src, dst, glob) => dst.LinksFile(src)
+            (src, dst, glob) => {
+                dst.LinksDirectory(src);
+                return new(src, dst, ImportMethod.Link);
+            },
+            (src, dst, glob) => {
+                dst.LinksFile(src);
+                return new(src, dst, ImportMethod.Link);
+            }
         );
 
         foreach (var glob in instructions.Use)
@@ -228,8 +261,10 @@ public static class FolderComposition
             if (string.IsNullOrWhiteSpace(glob.Directory) && string.IsNullOrWhiteSpace(glob.File))
                 continue;
 
+            var manifestFilePattern = glob.ManifestFilePattern ?? import.ManifestFilePattern;
+
             var manifestGlob = glob.Directory != null
-                ? glob.Directory + "/export.y*ml"
+                ? glob.Directory + "/" + manifestFilePattern
                 : glob.File;
 
             var manifests = import.From.SearchFiles(manifestGlob!)
@@ -245,7 +280,7 @@ public static class FolderComposition
                 );
             else
                 Log.Warning(
-                    "Folder {0} attempted to import {1} but no importable subfolders were found (none of them had export.yml manifest file)",
+                    "Folder {0} attempted to import {1} but no importable subfolders were found (none of them had an export manifest file)",
                     import.From, manifestGlob
                 );
 
@@ -260,8 +295,10 @@ public static class FolderComposition
                     return;
                 }
                 Log.Information("Importing folder {0} -> {1}", p, dst);
-                self.ImportFolder(suffixes, (p, dst.Parent));
+                result.AddRange(self.ImportFolder(suffixes, (p, dst.Parent, manifestGlob!)));
             });
         }
+
+        return result;
     }
 }
