@@ -214,20 +214,7 @@ and then you can proceed as with any other dotnet class library.
 
 # Folder Composition
 
-There are cases when one project needs to compose from one pre-existing rigid folder structure of one dependency to another rigid folder structure of the current project. For scenarios like this Nuke.Cola provides `ImportFolder` build class extension method which will copy/link the target folder and its contents according to some instructions expressed by either an `export.yml` file in the imported folder or provided explicitly to the `ImportFolder` extension method.
-
-<details><summary>Practical justification / reasoning / motivation</summary>
-
-In Unreal Engine a code plugin can only be uploaded to the Marketplace (or now Fab) if it doesn't depend on any other code plugins or anything else outside of the archive the seller provides Epic for distribution. This makes however sharing code between these plugins non-trivial.
-
-Simply duplicating code among plugins is good enough until the user acquires two or more of these plugins using shared code with the same module names. Unreal modules names need to be unique in a global scope because Epic doesn't like namespaces for pragmatic reasons. To work around this while allowing duplicated code to be referenced in Unreal projects without ambiguity I cooked up an automatic solution which may need lot's of explanation but provides easy setup maintaining freedom for modularity.
-
-Folder composition allows couple of more things:
-
-* Maintaining the above mentioned shared code in a central location without that needing to know where they might be shared
-* Linking to only couple of subfolders of a submoduled monorepo in your root project.
-
-</details>
+There are cases when one project needs to compose from one pre-existing rigid folder structure of one dependency to another rigid folder structure of the current project. For scenarios like this Nuke.Cola provides `ImportFolder` build class extension method which will copy/link the target folder and its contents according to some instructions expressed by either a YAML manifest file (by default `export.yml`) in the imported folder or provided explicitly to the `ImportFolder` extension method.
 
 For example the following target:
 
@@ -309,7 +296,7 @@ Folders and files containing a preset suffix (by default `Origin` with either `_
 
 ## Folders with export manifest
 
-Folders can dictate the intricacies of how they're shared this way with a simple manifest file called `export.yml`. For example the one in `Both_Test` does
+Folders can dictate the intricacies of how they're shared this way with a simple YAML manifest file (by default called `export.yml` but this can be changed). For example the one in `Both_Test` does
 
 ```yaml
 link:
@@ -348,11 +335,12 @@ use:
   - dir: Components/**                  # consider using all recursive subfolders inside components folder
   - dir: Components/**/*                # consider using all recursive subfolders inside components folder BUT
     as: Components/$2                   # flatten them into a single subfolder
-  - dir: "**"                           # just use everything from the recursive subfolder structure which has an export.yml
-  - file: Another/Dependency/export.yml # files are only considered if they point to export.yml
+    manifestFilePattern: flat.yml       # and use `flat.yml` as export manifests
+  - dir: "**"                           # just use everything from the recursive subfolder structure which has an export.yml (by default)
+  - file: Another/Dependency/stuff.yml  # use an explicit file for the manifest being imported
 ```
 
-The `file:` mode for `use` is only there for consistency. Please use `dir:` both of them yield the same result basically. This feature is not visualized above in the folder structure figure as that's already complicated enough. Note that `copy` and `link` will not consider instructions from `export.yml` manifest files, only `use` does that, and `use` will ignore every folder which doesn't have an `export.yml` manifest file directly in it. This is done this way to alleviate surprises from "smart defaults".
+This feature is not visualized above in the folder structure figure as that's already complicated enough. Note that `copy` and `link` will not consider instructions from export manifest files, only `use` does that, and `use` will ignore every folder which doesn't have an export manifest file directly in it. This is done this way to alleviate surprises from "smart defaults".
 
 ## Exclude/ignore items
 
