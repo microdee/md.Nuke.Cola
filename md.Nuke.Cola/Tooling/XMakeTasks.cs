@@ -30,7 +30,7 @@ public static class XMakeTasks
     /// <summary>
     /// Get XMake or an error if setup has failed.
     /// </summary>
-    public static ValueOrError<Tool> EnsureXMake => ToolCola.GetPathTool("xmake", Setup);
+    public static ValueOrError<Tool> EnsureXMake => ToolCola.Use("xmake", Setup);
 
     /// <summary>
     /// Get XMake. It throws an exception if setup has failed.

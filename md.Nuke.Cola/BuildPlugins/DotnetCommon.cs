@@ -1,20 +1,28 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Nuke.Common.IO;
-using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.MSBuild;
 using Nuke.Common.Utilities.Collections;
+using Dotnet.Script.Core.Commands;
+using Dotnet.Script.DependencyModel.Logging;
+using Dotnet.Script.DependencyModel.Environment;
 using Standart.Hash.xxHash;
+using Dotnet.Script.Core;
+using Microsoft.CodeAnalysis;
 
 namespace Nuke.Cola.BuildPlugins;
 
 internal static class DotnetCommon
 {
+    private static LogFactory? DotnetScriptLogFactoryInstance = null;
+    private static LogFactory DotnetScriptLogFactory => DotnetScriptLogFactoryInstance
+        ??= new(type => (level, message, except) =>
+        {
+            if (level > LogLevel.Debug)
+                message.Log();
+}       );
+
     /// <summary>
     /// Compiles a C# script into a DLL with dotnet-script, which needs to be installed
     /// at least into the context of the provided working directory before using this
@@ -24,31 +32,33 @@ internal static class DotnetCommon
     /// <param name="outputDirIn">
     /// The parent directory in which the directory of published binaries will be put
     /// </param>
-    /// <param name="workingDir">
-    /// The working directory in which dotnet-script is run.
-    /// </param>
     /// <returns>The path of the newly created DLL</returns>
-    internal static AbsolutePath CompileScript(AbsolutePath scriptPath, AbsolutePath outputDirIn, AbsolutePath workingDir)
+    internal static AbsolutePath CompileScript(AbsolutePath scriptPath, AbsolutePath outputDirIn)
     {
         uint pathHash = xxHash32.ComputeHash(scriptPath);
-        ulong hash = xxHash64.ComputeHash(File.ReadAllText(scriptPath));
+        ulong hash = xxHash64.ComputeHash(scriptPath.ReadAllText());
         var dllName = hash.ToString();
         var outputDir = outputDirIn / (pathHash.ToString() + "_" + dllName);
         var dllPath = outputDir / (dllName + ".dll");
 
         if (dllPath.FileExists())
-        {
             return dllPath;
-        }
 
         $"Compiling script {scriptPath}".Log();
 
         outputDir.CreateOrCleanDirectory();
-        DotNetTasks.DotNet(
-            $"script publish \"{scriptPath}\" --dll -o {outputDir} -n {dllName}",
-            workingDirectory: workingDir
-        );
+        new PublishCommand(ScriptConsole.Default, DotnetScriptLogFactory).Execute(new(
+            new(scriptPath),
+            outputDir,
+            dllName,
+            PublishType.Library,
+            OptimizationLevel.Debug,
+            [],
+            ScriptEnvironment.Default.RuntimeIdentifier,
+            false
+        ));
 
+        // Remove residue of previous build results
         outputDirIn
             .GlobDirectories($"{pathHash}_*")
             .Where(p => !p.Name.Contains(hash.ToString()))

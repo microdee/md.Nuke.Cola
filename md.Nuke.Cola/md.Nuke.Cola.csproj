@@ -21,10 +21,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dotnet.Script.Core" Version="1.6.0" />
     <PackageReference Include="EverythingSearchClient" Version="0.8.0.51" />
-    <PackageReference Include="Nuke.Common" Version="9.0.3" />
+    <PackageReference Include="Nuke.Common" Version="9.0.4" />
     <PackageReference Include="Standart.Hash.xxHash" Version="4.0.5" />
-    <PackageReference Include="Scriban" Version="5.10.0" />
+    <PackageReference Include="Scriban" Version="5.12.1" />
   </ItemGroup>
 
 </Project>
