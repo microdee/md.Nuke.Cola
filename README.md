@@ -214,20 +214,7 @@ and then you can proceed as with any other dotnet class library.
 
 # Folder Composition
 
-There are cases when one project needs to compose from one pre-existing rigid folder structure of one dependency to another rigid folder structure of the current project. For scenarios like this Nuke.Cola provides `ImportFolder` build class extension method which will copy/link the target folder and its contents according to some instructions expressed by either an `export.yml` file in the imported folder or provided explicitly to the `ImportFolder` extension method.
-
-<details><summary>Practical justification / reasoning / motivation</summary>
-
-In Unreal Engine a code plugin can only be uploaded to the Marketplace (or now Fab) if it doesn't depend on any other code plugins or anything else outside of the archive the seller provides Epic for distribution. This makes however sharing code between these plugins non-trivial.
-
-Simply duplicating code among plugins is good enough until the user acquires two or more of these plugins using shared code with the same module names. Unreal modules names need to be unique in a global scope because Epic doesn't like namespaces for pragmatic reasons. To work around this while allowing duplicated code to be referenced in Unreal projects without ambiguity I cooked up an automatic solution which may need lot's of explanation but provides easy setup maintaining freedom for modularity.
-
-Folder composition allows couple of more things:
-
-* Maintaining the above mentioned shared code in a central location without that needing to know where they might be shared
-* Linking to only couple of subfolders of a submoduled monorepo in your root project.
-
-</details>
+There are cases when one project needs to compose from one pre-existing rigid folder structure of one dependency to another rigid folder structure of the current project. For scenarios like this Nuke.Cola provides `ImportFolder` build class extension method which will copy/link the target folder and its contents according to some instructions expressed by either a YAML manifest file (by default `export.yml`) in the imported folder or provided explicitly to the `ImportFolder` extension method.
 
 For example the following target:
 
@@ -242,7 +229,8 @@ public interface IImportTestFolders : INukeBuild
             var target = root / "Target";
             var thirdparty = root / "ThirdParty";
 
-            this.ImportFolders("Test"
+            this.ImportFolders(
+                new ImportOptions(Suffixes: "Test")
                 , (thirdparty / "Unassuming", target)
                 , (thirdparty / "FolderOnly_Origin", target)
                 , (thirdparty / "WithManifest" / "Both_Origin", target / "WithManifest")
@@ -305,11 +293,11 @@ To break it down:
 
 A regular folder (like `Unassuming`) with no extra import instructions provided will be just symlinked.
 
-Folders and files containing a preset suffix (by default `Origin` with either `_`, `.` and `:` as separators) can be replaced by a suffix chosen by the importing script (in this case `Test`). Files/Folders linked or copied will have this suffix replaced at their destination. (see `FolderOnly_Origin` -> `FolderOnly_Test`)
+Optionally folders and files containing a preset suffix (for example and by default `Origin` with either `_`, `.` and `:` as separators) can be replaced by another suffix chosen by the importing script (in this case `Test`). Files/Folders linked or copied will have this suffix replaced at their destination. (see `FolderOnly_Origin` -> `FolderOnly_Test`). If `Suffixes` were not specified in `ImportOptions` or if `ImportOptions` is not provided at all, suffix processing is skipped.
 
 ## Folders with export manifest
 
-Folders can dictate the intricacies of how they're shared this way with a simple manifest file called `export.yml`. For example the one in `Both_Test` does
+Folders can dictate the intricacies of how they're shared this way with a simple YAML manifest file (by default called `export.yml` but this can be changed). For example the one in `Both_Test` does
 
 ```yaml
 link:
@@ -322,13 +310,13 @@ copy:
     procContent: true     # also replace [_.:]Origin suffixes in the content of files (controlled by the importer)
 ```
 
-Linking folders is straightforward and globbable. Target folders and parent folders (up until export root) is processed for suffixes at destination same as when copying folders.
+Linking folders is straightforward and globbable. If suffixes are provided target folders and parent folders (up until export root) is processed for suffixes at destination same as when copying folders.
 
-When linking files, globbed files are individually symlinked with suffix processing on file/folder name.
+When linking files, globbed files are individually symlinked, optionally with suffix processing on file/folder name.
 
 Copying folders recursively have the same folder name processing but doesn't touch its contents (not even file/folder name processing)
 
-When copying files (including when they're globbed) their content can be also processed for suffixes if `procContent` is set to true. Copying an entire folder recursively but with all the file/folder names processed can be done by simply doing recursive globbing `-file: "MyFolder/**"`. The reasoning behind this design is suggesting performance implications, that each file is individually treated.
+When copying files (including when they're globbed) their content can be also processed for suffixes if `procContent` is set to true and suffixes are enabled. Copying an entire folder recursively but with all the file/folder names processed can be done by simply doing recursive globbing `-file: "MyFolder/**"`. The reasoning behind this design is suggesting performance implications, that each file is individually treated.
 
 The destination relative path and name can also be overridden with `as:`. This works with globbing as well where the captures of `*` and `**` can be referred to as `$N` where N is the 1 based index of the wildcards. For example
 
@@ -348,11 +336,12 @@ use:
   - dir: Components/**                  # consider using all recursive subfolders inside components folder
   - dir: Components/**/*                # consider using all recursive subfolders inside components folder BUT
     as: Components/$2                   # flatten them into a single subfolder
-  - dir: "**"                           # just use everything from the recursive subfolder structure which has an export.yml
-  - file: Another/Dependency/export.yml # files are only considered if they point to export.yml
+    manifestFilePattern: flat.yml       # and use `flat.yml` as export manifests
+  - dir: "**"                           # just use everything from the recursive subfolder structure which has an export.yml (by default)
+  - file: Another/Dependency/stuff.yml  # use an explicit file for the manifest being imported
 ```
 
-The `file:` mode for `use` is only there for consistency. Please use `dir:` both of them yield the same result basically. This feature is not visualized above in the folder structure figure as that's already complicated enough. Note that `copy` and `link` will not consider instructions from `export.yml` manifest files, only `use` does that, and `use` will ignore every folder which doesn't have an `export.yml` manifest file directly in it. This is done this way to alleviate surprises from "smart defaults".
+This feature is not visualized above in the folder structure figure as that's already complicated enough. Note that `copy` and `link` will not consider instructions from export manifest files, only `use` does that, and `use` will ignore every folder which doesn't have an export manifest file directly in it. This is done this way to alleviate surprises from "smart defaults".
 
 ## Exclude/ignore items
 

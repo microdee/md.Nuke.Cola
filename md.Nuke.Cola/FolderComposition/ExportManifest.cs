@@ -58,6 +58,14 @@ public class FileOrDirectory
     [YamlMember(Alias = "procContent")]
     public bool ProcessContent = false;
 
+    /// <summary>
+    /// Only used by "use", if a subfolder uses a different file for export manifest, specify that
+    /// via this glob. Default is "export.y*ml" or whatever else has been specified for this import
+    /// session.
+    /// </summary>
+    [YamlMember(Alias = "manifestFilePattern")]
+    public string? ManifestFilePattern;
+
     internal AbsolutePath? GetDestination(AbsolutePath srcRoot, AbsolutePath dstRoot, AbsolutePath currentPath, int itemId, IEnumerable<string> exclude)
     {
         var glob = (File ?? Directory)!;
