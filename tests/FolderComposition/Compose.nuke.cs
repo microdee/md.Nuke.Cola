@@ -35,7 +35,7 @@ public interface IImportTestFolders : INukeBuild
                             ProcessContent = true
                         }
                     }
-                })
+                }, "test-export.yml")
             );
         });
 }
