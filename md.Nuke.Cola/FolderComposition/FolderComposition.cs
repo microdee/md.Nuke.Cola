@@ -295,7 +295,7 @@ public static class FolderComposition
                     return;
                 }
                 Log.Information("Importing folder {0} -> {1}", p, dst);
-                result.AddRange(self.ImportFolder(suffixes, (p, dst.Parent, manifestGlob!)));
+                result.AddRange(self.ImportFolder(suffixes, (p, dst.Parent, Path.GetFileName(manifestGlob!))));
             });
         }
 
