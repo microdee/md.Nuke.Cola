@@ -229,7 +229,8 @@ public interface IImportTestFolders : INukeBuild
             var target = root / "Target";
             var thirdparty = root / "ThirdParty";
 
-            this.ImportFolders("Test"
+            this.ImportFolders(
+                new ImportOptions(Suffixes: "Test")
                 , (thirdparty / "Unassuming", target)
                 , (thirdparty / "FolderOnly_Origin", target)
                 , (thirdparty / "WithManifest" / "Both_Origin", target / "WithManifest")
@@ -292,7 +293,7 @@ To break it down:
 
 A regular folder (like `Unassuming`) with no extra import instructions provided will be just symlinked.
 
-Folders and files containing a preset suffix (by default `Origin` with either `_`, `.` and `:` as separators) can be replaced by a suffix chosen by the importing script (in this case `Test`). Files/Folders linked or copied will have this suffix replaced at their destination. (see `FolderOnly_Origin` -> `FolderOnly_Test`)
+Optionally folders and files containing a preset suffix (for example and by default `Origin` with either `_`, `.` and `:` as separators) can be replaced by another suffix chosen by the importing script (in this case `Test`). Files/Folders linked or copied will have this suffix replaced at their destination. (see `FolderOnly_Origin` -> `FolderOnly_Test`). If `Suffixes` were not specified in `ImportOptions` or if `ImportOptions` is not provided at all, suffix processing is skipped.
 
 ## Folders with export manifest
 
@@ -309,13 +310,13 @@ copy:
     procContent: true     # also replace [_.:]Origin suffixes in the content of files (controlled by the importer)
 ```
 
-Linking folders is straightforward and globbable. Target folders and parent folders (up until export root) is processed for suffixes at destination same as when copying folders.
+Linking folders is straightforward and globbable. If suffixes are provided target folders and parent folders (up until export root) is processed for suffixes at destination same as when copying folders.
 
-When linking files, globbed files are individually symlinked with suffix processing on file/folder name.
+When linking files, globbed files are individually symlinked, optionally with suffix processing on file/folder name.
 
 Copying folders recursively have the same folder name processing but doesn't touch its contents (not even file/folder name processing)
 
-When copying files (including when they're globbed) their content can be also processed for suffixes if `procContent` is set to true. Copying an entire folder recursively but with all the file/folder names processed can be done by simply doing recursive globbing `-file: "MyFolder/**"`. The reasoning behind this design is suggesting performance implications, that each file is individually treated.
+When copying files (including when they're globbed) their content can be also processed for suffixes if `procContent` is set to true and suffixes are enabled. Copying an entire folder recursively but with all the file/folder names processed can be done by simply doing recursive globbing `-file: "MyFolder/**"`. The reasoning behind this design is suggesting performance implications, that each file is individually treated.
 
 The destination relative path and name can also be overridden with `as:`. This works with globbing as well where the captures of `*` and `**` can be referred to as `$N` where N is the 1 based index of the wildcards. For example
 

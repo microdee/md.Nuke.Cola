@@ -6,6 +6,7 @@ using Nuke.Cola;
 using Nuke.Cola.FolderComposition;
 using System;
 using Nuke.Cola.BuildPlugins;
+using Serilog;
 
 [ImplicitBuildInterface]
 public interface IImportTestFolders : INukeBuild
@@ -16,7 +17,8 @@ public interface IImportTestFolders : INukeBuild
             var root = this.ScriptFolder();
             var target = root / "Target";
 
-            this.ImportFolders("Test"
+            var result = this.ImportFolders(
+                new ImportOptions(Suffixes: "Test")
                 , (root / "Unassuming", target)
                 , (root / "FolderOnly_Origin", target)
                 , (root / "WithManifest", target)
@@ -37,5 +39,8 @@ public interface IImportTestFolders : INukeBuild
                     }
                 }, "test-export.yml")
             );
+
+            Log.Information("--- RESULT: ---");
+            result.ForEach(r => Log.Debug("{0} -> {1} ({2})", r.From, r.To, r.Method));
         });
 }
