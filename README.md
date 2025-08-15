@@ -18,6 +18,7 @@ Utilities and extensions useful for any Nuke builds originally separated from Nu
 - [`Tool` extensions](#tool-extensions)
   - [Tool composition with `With` extension method](#tool-composition-with-with-extension-method)
   - [Specific tool support](#specific-tool-support)
+  - [Arguments passing from user to tool](#arguments-passing-from-user-to-tool)
 
 Name comes from Nuka Cola of the Fallout franchise.
 
@@ -408,6 +409,29 @@ Nuke.Cola comes with explicit support of some tools
 * VCPKG
 * XMake/XRepo
   * See `XRepoItem` for parsed package information
+
+## Arguments passing from user to tool
+
+In some cases a build may allow custom arguments to be passed from the user to a specific tool the build is using. Nuke.Cola has the "argument block" concept for that: at the end of the argument list for nuke the user can pass in blocks of arguments after the sequence `-->` so with the input
+
+```
+> nuke mytarget --foo bar --> extra arguments /foo --bar
+```
+
+```csharp
+Arguments.GetBlock(); //-> ["extra", "arguments", "/foo", "--bar"]
+```
+
+Multiple blocks can be distinguished by name appended:
+
+```
+> nuke mytarget --foo bar -->extra extra arguments -->foo /foo --bar
+```
+
+```csharp
+Arguments.GetBlock("extra"); //-> ["extra", "arguments", "/foo", "--bar"]
+Arguments.GetBlock("foo"); //-> ["extra", "arguments", "/foo", "--bar"]
+```
 
 <div align="center">
 

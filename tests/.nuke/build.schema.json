@@ -103,7 +103,13 @@
     }
   },
   "allOf": [
-    {},
+    {
+      "properties": {
+        "Block": {
+          "type": "string"
+        }
+      }
+    },
     {
       "$ref": "#/definitions/NukeBuild"
     }

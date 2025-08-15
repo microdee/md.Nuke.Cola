@@ -21,10 +21,14 @@ public class Build : NukeBuild
 
     protected override void OnBuildCreated() => NoLogo = true;
 
+    [Parameter()]
+    public string Block = "b1";
+
     public Target BuildPluginPoc => _ => _
         .Executes(() =>
         {
-            Log.Information(Assembly.GetEntryAssembly().Location);
+            Log.Information(Assembly.GetExecutingAssembly().Location);
+            Log.Information("Extra args: {0}", Arguments.GetBlock(Block));
         });
 
     public Target TestXRepo => _ => _
