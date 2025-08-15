@@ -23,5 +23,5 @@ public class DotnetProjectPluginProvider : IProvidePlugins
                 SourcePath = f
             });
 
-    public void InitializeEngine(BuildContext context) { }
+    public void InitializeEngine(BuildContext context) {}
 }
