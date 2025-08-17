@@ -7,6 +7,7 @@ using Nuke.Cola.FolderComposition;
 using System;
 using Nuke.Cola.BuildPlugins;
 using Serilog;
+using Nuke.Common.Utilities.Collections;
 
 [ImplicitBuildInterface]
 public interface IImportTestFolders : INukeBuild
@@ -41,6 +42,6 @@ public interface IImportTestFolders : INukeBuild
             );
 
             Log.Information("--- RESULT: ---");
-            result.ForEach(r => Log.Debug("{0} -> {1} ({2})", r.From, r.To, r.Method));
+            result.WithFilesExpanded().ForEach(r => Log.Debug("{0} -> {1} ({2})", r.From, r.To, r.Method));
         });
 }

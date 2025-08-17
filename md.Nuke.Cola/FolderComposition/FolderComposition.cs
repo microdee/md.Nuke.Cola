@@ -85,7 +85,11 @@ public record ImportFolderItem(AbsolutePath From, AbsolutePath ToParent, ExportM
 /// <param name="Suffixes">
 /// Can be the desired project suffix, <see cref="ImportFolderSuffixes"/> for more details
 /// </param>
-public record ImportOptions(bool UseSubfolder = true, bool Pretend = false, ImportFolderSuffixes? Suffixes = null);
+public record ImportOptions(
+    bool UseSubfolder = true,
+    bool Pretend = false,
+    ImportFolderSuffixes? Suffixes = null
+);
 
 public enum ImportMethod
 {
@@ -137,17 +141,7 @@ public static class FolderComposition
 
     /// <summary>
     /// Convenience method for specifying multiple folder from/to pairs for <see cref="ImportFolder"/>
-    /// </summary>
-    /// <param name="self">For easier access this is an extension method</param>
-    /// <param name="options">
-    /// When and by default true, a subfolder is created for the import, or when false, the folder
-    /// is composited with the given target folder directly.
-    /// </param>
-    /// <param name="imports">
-    /// The folder import from / to pair. Optionally can specify an export manifest.
-    /// <see cref="ImportFolderItem"/>
-    /// </param>
-    /// <example>
+    /// <code>
     /// this.ImportFolders(
     ///     , new ImportOptions(Suffixes: "Test")
     ///     , (root / "Unassuming", target)
@@ -169,7 +163,17 @@ public static class FolderComposition
     ///         }
     ///     })
     /// );
-    /// </example>
+    /// </code>
+    /// </summary>
+    /// <param name="self">For easier access this is an extension method</param>
+    /// <param name="options">
+    /// When and by default true, a subfolder is created for the import, or when false, the folder
+    /// is composited with the given target folder directly.
+    /// </param>
+    /// <param name="imports">
+    /// The folder import from / to pair. Optionally can specify an export manifest.
+    /// <see cref="ImportFolderItem"/>
+    /// </param>
     public static List<ImportedItem> ImportFolders(this INukeBuild self, ImportOptions? options, params ImportFolderItem[] imports)
         => [.. imports.SelectMany(i => ImportFolder(self, i, options))];
     
@@ -224,7 +228,7 @@ public static class FolderComposition
                     continue;
 
                 var exclude = glob.Not.Concat(instructions.Not);
-                
+
                 if (string.IsNullOrWhiteSpace(glob.File))
                     import.From.SearchDirectories(glob.Directory!)
                         .ForEach((p, i) =>
@@ -246,11 +250,13 @@ public static class FolderComposition
 
         FileSystemTask(
             instructions.Copy,
-            (src, dst, glob) => {
+            (src, dst, glob) =>
+            {
                 if (!options.Pretend) src.Copy(dst, ExistsPolicy.MergeAndOverwrite);
                 return new(src, dst, ImportMethod.Copy);
             },
-            (src, dst, glob) => {
+            (src, dst, glob) =>
+            {
                 if (!options.Pretend)
                 {
                     src.Copy(dst, ExistsPolicy.FileOverwrite);
@@ -263,11 +269,13 @@ public static class FolderComposition
 
         FileSystemTask(
             instructions.Link,
-            (src, dst, glob) => {
+            (src, dst, glob) =>
+            {
                 if (!options.Pretend) dst.LinksDirectory(src);
                 return new(src, dst, ImportMethod.Link);
             },
-            (src, dst, glob) => {
+            (src, dst, glob) =>
+            {
                 if (!options.Pretend) dst.LinksFile(src);
                 return new(src, dst, ImportMethod.Link);
             }
@@ -326,4 +334,33 @@ public static class FolderComposition
 
         return result;
     }
+
+    /// <summary>
+    /// The result of ImportFolder only contain directory references if they were imported
+    /// explicitly as a directory as a singular item (so not via file globbing). However there are
+    /// cases in which all affected files should be minded. WithFilesExpanded converts the result
+    /// of ImportFolder into a proper flat list of files only. It can work with pretended data as
+    /// well, maintaining correct relations between From / To members.
+    /// </summary>
+    /// <param name="importedItems"></param>
+    /// <param name="pattern"></param>
+    /// <param name="depth"></param>
+    /// <returns>
+    /// A flat list of all files affected even in directories referenced as singular items.
+    /// </returns>
+    public static IEnumerable<ImportedItem> WithFilesExpanded(
+        this IEnumerable<ImportedItem> importedItems,
+        string pattern = "*",
+        int depth = 40
+    ) => importedItems
+        .SelectMany(i =>
+        {
+            if (i.From.DirectoryExists())
+                return i.From.GetFiles(pattern, depth)
+                    .Select(f => new ImportedItem(
+                        f, i.To / i.From.GetRelativePathTo(f), i.Method
+                    ))
+                ;
+            else return [i];
+        });
 }
