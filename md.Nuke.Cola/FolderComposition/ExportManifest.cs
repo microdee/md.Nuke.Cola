@@ -19,7 +19,7 @@ namespace Nuke.Cola.FolderComposition;
 /// 
 /// Addtitionally specify some options about the method of exporting given item.
 /// </summary>
-public class FileOrDirectory
+public class FileOrDirectory : ICloneable<FileOrDirectory>
 {
     /// <summary>
     /// Export a single or a glob of files handled individually. Either File or Directory (dir)
@@ -100,13 +100,31 @@ public class FileOrDirectory
         }
         else return dstRoot / asExpr;
     }
+
+    public FileOrDirectory Clone()
+    {
+        return new()
+        {
+            File = File,
+            Directory = Directory,
+            Not = [.. Not],
+            As = As,
+            ProcessContent = ProcessContent,
+            ManifestFilePattern = ManifestFilePattern
+        };
+    }
+
+    object ICloneable.Clone()
+    {
+        return Clone();
+    }
 }
 
 /// <summary>
 /// Controls how a folder should be exported for composition.
 /// It is meant to be used with export.yml YAML files (or export manifest files).
 /// </summary>
-public class ExportManifest
+public class ExportManifest : ICloneable<ExportManifest>
 {
     /// <summary>
     /// A list of items which will be symlinked. Content processing will obviously not happen in this case.
@@ -137,4 +155,58 @@ public class ExportManifest
     /// </summary>
     [YamlMember]
     public List<string> Not = [];
+
+    /// <summary>
+    /// Merge one manifest with another. This will simply append items to each lists.
+    /// </summary>
+    public void Add(ExportManifest? other)
+    {
+        if (other == null) return;
+        Link.AddRange(other.Link);
+        Copy.AddRange(other.Copy);
+        Use.AddRange(other.Use);
+        Not.AddRange(other.Not);
+    }
+
+    public ExportManifest Clone()
+    {
+        return new()
+        {
+            Link = [.. Link.Select(s => s.Clone())],
+            Copy = [.. Copy.Select(s => s.Clone())],
+            Use = [.. Use.Select(s => s.Clone())],
+            Not = [.. Not],
+        };
+    }
+
+    object ICloneable.Clone()
+    {
+        return Clone();
+    }
+}
+
+public static class ExportManifestExtensions
+{
+    /// <summary>
+    /// Combine input export manifests together into given one. If given is null, the first one will
+    /// be cloned from the others-
+    /// </summary>
+    /// <returns>
+    /// Return `self`, or the first valid export manifest in `others`. For this reason the return
+    /// object might not be the same as `self` if `self` was originally null.
+    /// </returns>
+    public static ExportManifest? Combine(this ExportManifest? self, IEnumerable<ExportManifest>? others)
+    {
+        if (others == null || others.IsEmpty()) return self;
+        if (self == null)
+        {
+            self = others.First().Clone();
+            others = others.Skip(1);
+        }
+        foreach (var other in others)
+        {
+            self!.Add(other);
+        }
+        return self;
+    }
 }

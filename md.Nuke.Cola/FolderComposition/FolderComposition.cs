@@ -82,13 +82,36 @@ public record ImportFolderItem(AbsolutePath From, AbsolutePath ToParent, ExportM
 /// When true, file system actions are not invoked. This is useful for querying which files/folders
 /// would be handled by this operation. Logging is also disabled while pretending
 /// </param>
+/// <param name="CopyByDefault">
+/// The default behavior is to link unassumed folder when importing it. CopyByDefault will make
+/// unassuming folders to be copied instead.
+/// </param>
+/// <param name="ForceCopyLinks">
+/// Force copy folders which are listed only for linking. Only use this when it's absolutely
+/// necessary. This will also imply CopyByDefault.
+/// </param>
+/// <param name="ImplicitImport">
+/// Only used by 
+/// </param>
 /// <param name="Suffixes">
 /// Can be the desired project suffix, <see cref="ImportFolderSuffixes"/> for more details
+/// </param>
+/// <param name="AddToMain">
+/// Merge these export manifests into the one only mentioned by explicit arguments.
+/// </param>
+/// <param name="AddToAll">
+/// Merge these export manifests into all export manifests found by current import
+/// (through Use items for example).
 /// </param>
 public record ImportOptions(
     bool UseSubfolder = true,
     bool Pretend = false,
-    ImportFolderSuffixes? Suffixes = null
+    bool CopyByDefault = false,
+    bool ForceCopyLinks = false,
+    bool ImplicitImport = false,
+    ImportFolderSuffixes? Suffixes = null,
+    IEnumerable<ExportManifest>? AddToMain = null,
+    IEnumerable<ExportManifest>? AddToAll = null
 );
 
 public enum ImportMethod
@@ -206,12 +229,25 @@ public static class FolderComposition
         var manifestPath = import.From.GetFiles(import.ManifestFilePattern).FirstOrDefault();
         var to = options.UseSubfolder ? import.ToParent / import.From.Name.ProcessSuffix(options.Suffixes) : import.ToParent;
         var instructions = import.Manifest ?? manifestPath?.ReadYaml<ExportManifest>();
+        instructions = instructions.Combine(options.AddToAll);
+        if (!options.ImplicitImport)
+        {
+            instructions = instructions.Combine(options.AddToMain);
+        }
+
         var result = new List<ImportedItem>();
         
         if (instructions == null)
         {
-            if (!options.Pretend) to.LinksDirectory(import.From);
-            result.Add(new(import.From, to, ImportMethod.Link));
+            var copyByDefault = options.CopyByDefault || options.ForceCopyLinks;
+            if (!options.Pretend)
+            {
+                if (copyByDefault)
+                    import.From.Copy(to, ExistsPolicy.MergeAndOverwrite);
+                else to.LinksDirectory(import.From);
+            }
+            var importMethod = copyByDefault ? ImportMethod.Copy : ImportMethod.Link;
+            result.Add(new(import.From, to, importMethod));
             return result;
         }
 
@@ -248,37 +284,40 @@ public static class FolderComposition
             }
         }
 
-        FileSystemTask(
-            instructions.Copy,
-            (src, dst, glob) =>
-            {
-                if (!options.Pretend) src.Copy(dst, ExistsPolicy.MergeAndOverwrite);
-                return new(src, dst, ImportMethod.Copy);
-            },
-            (src, dst, glob) =>
-            {
-                if (!options.Pretend)
-                {
-                    src.Copy(dst, ExistsPolicy.FileOverwrite);
-                    if (glob.ProcessContent)
-                        dst.ProcessSuffixContent(options.Suffixes);
-                }
-                return new(src, dst, ImportMethod.Copy);
-            }
-        );
+        ImportedItem HandleDirectoriesCopy(AbsolutePath src, AbsolutePath dst, FileOrDirectory glob)
+        {
+            if (!options.Pretend) src.Copy(dst, ExistsPolicy.MergeAndOverwrite);
+            return new(src, dst, ImportMethod.Copy);
+        }
 
+        ImportedItem HandleFilesCopy(AbsolutePath src, AbsolutePath dst, FileOrDirectory glob)
+        {
+            if (!options.Pretend)
+            {
+                src.Copy(dst, ExistsPolicy.FileOverwrite);
+                if (glob.ProcessContent)
+                    dst.ProcessSuffixContent(options.Suffixes);
+            }
+            return new(src, dst, ImportMethod.Copy);
+        }
+
+        ImportedItem HandleDirectoriesLink(AbsolutePath src, AbsolutePath dst, FileOrDirectory glob)
+        {
+            if (!options.Pretend) dst.LinksDirectory(src);
+            return new(src, dst, ImportMethod.Link);
+        }
+
+        ImportedItem HandleFilesLink(AbsolutePath src, AbsolutePath dst, FileOrDirectory glob)
+        {
+            if (!options.Pretend) dst.LinksFile(src);
+            return new(src, dst, ImportMethod.Link);
+        }
+
+        FileSystemTask(instructions.Copy, HandleDirectoriesCopy, HandleFilesCopy);
         FileSystemTask(
             instructions.Link,
-            (src, dst, glob) =>
-            {
-                if (!options.Pretend) dst.LinksDirectory(src);
-                return new(src, dst, ImportMethod.Link);
-            },
-            (src, dst, glob) =>
-            {
-                if (!options.Pretend) dst.LinksFile(src);
-                return new(src, dst, ImportMethod.Link);
-            }
+            options.ForceCopyLinks ? HandleDirectoriesCopy : HandleDirectoriesLink,
+            options.ForceCopyLinks ? HandleFilesCopy : HandleFilesLink
         );
 
         foreach (var glob in instructions.Use)
@@ -326,7 +365,7 @@ public static class FolderComposition
                 result.AddRange(
                     self.ImportFolder(
                         (p, dst.Parent, Path.GetFileName(manifestGlob!)),
-                        options with { UseSubfolder = true }
+                        options with { UseSubfolder = true, ImplicitImport = true }
                     )
                 );
             });
