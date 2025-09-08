@@ -16,6 +16,30 @@ namespace Nuke.Cola;
 public static class PathExtensions
 {
     /// <summary>
+    /// A more comfortable way to make a string into an absolute path
+    /// </summary>
+    public static AbsolutePath AsPath(this string input) => AbsolutePath.Create(input);
+
+    /// <summary>
+    /// A safer version of AsPath, use it when input may not be a valid absolute path
+    /// </summary>
+    public static AbsolutePath? TryAsPath(this string? input)
+        => !string.IsNullOrWhiteSpace(input) && Path.IsPathRooted(input)
+            ? AbsolutePath.Create(input)
+            : null;
+
+    /// <summary>
+    /// A safer version of AsPath, use it when input may not be a valid string. Input can be a
+    /// relative folder to `root`
+    /// </summary>
+    public static AbsolutePath? TryAsRelativePath(this string? input, AbsolutePath? root = null)
+        => string.IsNullOrWhiteSpace(input)
+            ? null
+            : Path.IsPathRooted(input)
+            ? AbsolutePath.Create(input)
+            : (root ?? NukeBuild.RootDirectory) / input;
+
+    /// <summary>
     /// Shorthand for deleting both file or folder, we don't care
     /// </summary>
     public static void Delete(this AbsolutePath path)
@@ -156,6 +180,12 @@ public static class PathExtensions
             where filter?.Invoke(sd) ?? true
             select sd
         );
+
+    /// <summary>
+    /// Get the root of input AbsolutePath. On Windows this may be getting the "drive-letter" of
+    /// input path.
+    /// </summary>
+    public static AbsolutePath GetRoot(this AbsolutePath path) => Path.GetPathRoot(path)!.AsPath();
         
     public static bool LookAroundFor(Func<string, bool> predicate, out AbsolutePath? result, Func<AbsolutePath, bool>? directoryFilter = null, AbsolutePath? rootDirectory = null)
     {
