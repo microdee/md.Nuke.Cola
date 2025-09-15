@@ -422,10 +422,37 @@ var toolA = ToolExResolver.GetPathTool("toolA");
 var toolB = ToolExResolver.GetPathTool("toolB");
 var toolC = ToolExResolver.GetPathTool("toolC");
 
-toolA("-foo bar")
-    .Pipe(toolB)("-arg 1")
+toolA("-foo bar")!
+    .Pipe(toolB)("-arg 1")!
     .Pipe(toolC)("-log debug");
 ```
+
+We can also easily queue up inputs via extension methods. When combining tool arguments, standard-input delegates are combined with the `+` operator which is basically queuing them one after the other.
+
+```CSharp
+// A fictitious tool which just repeats back everything until stream is closed
+var parrot = ToolExResolver.GetPathTool("parrot");
+
+parrot
+    .WithInput("I'm Polly")        // Queue a single line
+    .WithInput(["Hello", "World"]) // Queue multiple lines from collection of strings
+    .CloseInput()                  // Polly is polite and extremely patient and they will wait for us until we indicate that we're finished
+    ()!                            // Execute with no arguments
+    .Pipe(parrot)()                // Repeat again.
+```
+
+Output (without additional Nuke logging):
+
+```
+I'm Polly
+Hello
+World
+I'm Polly
+Hello
+World
+```
+
+Note that unlike other 'input' extension methods, `Pipe` closes the stream by default. So when used with many tools, `ClosePipe()` or `close: true` are not needed to be repeated all the time. If you want to manipulate standard input after the results of `Pipe` add `close: false` to its arguments.
 
 ## Specific tool support
 
@@ -455,8 +482,8 @@ Multiple blocks can be distinguished by name appended:
 ```
 
 ```csharp
-Arguments.GetBlock("extra"); //-> ["extra", "arguments", "/foo", "--bar"]
-Arguments.GetBlock("foo"); //-> ["extra", "arguments", "/foo", "--bar"]
+Arguments.GetBlock("extra"); //-> ["extra", "arguments"]
+Arguments.GetBlock("foo"); //-> ["/foo", "--bar"]
 ```
 
 <div align="center">
