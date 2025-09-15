@@ -24,7 +24,9 @@ public delegate IReadOnlyCollection<Output>? ToolEx(
     Action<IProcess>? exitHandler = null,
     
     // Extension
-    Action<StreamWriter>? input = null
+    Action<StreamWriter>? input = null,
+    Encoding? standardOutputEncoding = null,
+    Encoding? standardInputEncoding = null
 );
 
 /// <summary>
@@ -32,9 +34,13 @@ public delegate IReadOnlyCollection<Output>? ToolEx(
 /// </summary>
 /// <param name="ToolArgs">Regular Tool delegate arguments</param>
 /// <param name="Input">Handle standard input stream after process creation</param>
+/// <param name="StandardOutputEncoding">Encoding for standard output. Default is UTF8 (with BOM)</param>
+/// <param name="StandardInputEncoding">Encoding for standard input. Default is UTF8 (without BOM)</param>
 public record ToolExArguments(
     ToolArguments ToolArgs,
-    Action<StreamWriter>? Input = null
+    Action<StreamWriter>? Input = null,
+    Encoding? StandardOutputEncoding = null,
+    Encoding? StandardInputEncoding = null
 ) {
     
     /// <summary>
@@ -50,10 +56,16 @@ public record ToolExArguments(
     /// <item><term>LogInvocation </term><description> is OR-ed</description></item>
     /// <item><term>Logger / ExitHandler </term><description> A + B is invoked</description></item>
     /// <item><term>Input </term><description> A + B is invoked</description></item>
+    /// <item><term>Encodings </term><description> B overrides the one from A but not when B doesn't have one</description></item>
     /// </list>
     /// </remarks>
     public static ToolExArguments operator | (ToolExArguments? a, ToolExArguments? b)
-        => new(a?.ToolArgs | b?.ToolArgs, a?.Input + b?.Input);
+        => new(
+            a?.ToolArgs | b?.ToolArgs,
+            a?.Input + b?.Input,
+            b?.StandardOutputEncoding ?? a?.StandardOutputEncoding,
+            b?.StandardInputEncoding ?? a?.StandardInputEncoding
+        );
     
     /// <summary>
     /// Merge a ToolEx and a Tool argument record together.
@@ -68,10 +80,16 @@ public record ToolExArguments(
     /// <item><term>LogInvocation </term><description> is OR-ed</description></item>
     /// <item><term>Logger / ExitHandler </term><description> A + B is invoked</description></item>
     /// <item><term>Input </term><description> Used from ToolEx arguments</description></item>
+    /// <item><term>Encodings </term><description> Used from ToolEx arguments</description></item>
     /// </list>
     /// </remarks>
     public static ToolExArguments operator | (ToolExArguments? a, ToolArguments? b)
-        => new(a?.ToolArgs | b, a?.Input);
+        => new(
+            a?.ToolArgs | b,
+            a?.Input,
+            a?.StandardOutputEncoding,
+            a?.StandardInputEncoding
+        );
     
     /// <summary>
     /// Merge a Tool and a ToolEx argument record together.
@@ -86,10 +104,16 @@ public record ToolExArguments(
     /// <item><term>LogInvocation </term><description> is OR-ed</description></item>
     /// <item><term>Logger / ExitHandler </term><description> A + B is invoked</description></item>
     /// <item><term>Input </term><description> Used from ToolEx arguments</description></item>
+    /// <item><term>Encodings </term><description> Used from ToolEx arguments</description></item>
     /// </list>
     /// </remarks>
     public static ToolExArguments operator | (ToolArguments? a, ToolExArguments? b)
-        => new(a | b?.ToolArgs, b?.Input);
+        => new(
+            a | b?.ToolArgs, 
+            b?.Input,
+            b?.StandardOutputEncoding,
+            b?.StandardInputEncoding
+        );
 }
 
 /// <summary>
@@ -111,7 +135,9 @@ public record PropagateToolExExecution(ToolEx Target, ToolExArguments? Propagate
         Action<IProcess>? exitHandler = null,
 
         // Extension
-        Action<StreamWriter>? input = null
+        Action<StreamWriter>? input = null,
+        Encoding? standardOutputEncoding = null,
+        Encoding? standardInputEncoding = null
     ) => Target.ExecuteWith(
         PropagateArguments | new ToolExArguments(
             new(
@@ -124,7 +150,9 @@ public record PropagateToolExExecution(ToolEx Target, ToolExArguments? Propagate
                 logger,
                 exitHandler
             ),
-            input
+            input,
+            standardOutputEncoding,
+            standardInputEncoding
         )
     );
 }
@@ -153,13 +181,17 @@ internal class ToolExExecutor
         Action<IProcess>? exitHandler = null,
 
         // Extension
-        Action<StreamWriter>? input = null
+        Action<StreamWriter>? input = null,
+        Encoding? standardOutputEncoding = null,
+        Encoding? standardInputEncoding = null
     )
     {
         workingDirectory ??= EnvironmentInfo.WorkingDirectory;
         logInvocation ??= true;
         logOutput ??= true;
         logger ??= ProcessTasks.DefaultLogger;
+        standardOutputEncoding ??= Encoding.UTF8;
+        standardInputEncoding ??= new UTF8Encoding(false);
         var outputFilter = arguments.GetFilter();
 
         var toolPath = _toolPath;
@@ -187,9 +219,9 @@ internal class ToolExExecutor
             RedirectStandardError = true,
             RedirectStandardInput = input != null,
             UseShellExecute = false,
-            StandardErrorEncoding = Encoding.UTF8,
-            StandardOutputEncoding = Encoding.UTF8,
-            StandardInputEncoding = Encoding.UTF8,
+            StandardErrorEncoding = standardOutputEncoding,
+            StandardOutputEncoding = standardOutputEncoding,
+            StandardInputEncoding = standardInputEncoding,
         };
         
         if (environmentVariables != null)

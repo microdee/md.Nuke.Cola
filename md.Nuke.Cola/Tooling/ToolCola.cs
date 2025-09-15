@@ -81,6 +81,7 @@ public static class ToolCola
     /// <item><term>LogInvocation </term><description> is OR-ed</description></item>
     /// <item><term>Logger / ExitHandler </term><description>A + B is invoked</description></item>
     /// <item><term>Input </term><description>A + B is invoked</description></item>
+    /// <item><term>Encodings </term><description> B overrides the one from A but not when B doesn't have one</description></item>
     /// </list>
     /// </remarks>
     public static ToolEx With(this ToolEx tool, ToolExArguments args)
@@ -100,7 +101,8 @@ public static class ToolCola
     /// <item><term>LogOutput </term><description> is OR-ed</description></item>
     /// <item><term>LogInvocation </term><description> is OR-ed</description></item>
     /// <item><term>Logger / ExitHandler </term><description>A + B is invoked</description></item>
-    /// <item><term>Input </term><description>A + B is invoked</description></item>
+    /// <item><term>Input </term><description> Used from ToolEx arguments</description></item>
+    /// <item><term>Encodings </term><description> Used from ToolEx arguments</description></item>
     /// </list>
     /// </remarks>
     public static ToolEx With(this ToolEx tool, ToolArguments args)
@@ -162,7 +164,9 @@ public static class ToolCola
     /// <param name="logInvocation"></param>
     /// <param name="logger"></param>
     /// <param name="exitHandler"></param>
-    /// <param name="input"></param>
+    /// <param name="input">Handle standard input stream after process creation</param>
+    /// <param name="standardOutputEncoding">Encoding for standard output. Default is UTF8 (with BOM)</param>
+    /// <param name="standardInputEncoding">Encoding for standard input. Default is UTF8 (without BOM)</param>
     /// <remarks>
     /// <list>
     /// <item><term>Arguments </term><description> will be concatenated</description></item>
@@ -173,6 +177,7 @@ public static class ToolCola
     /// <item><term>LogInvocation </term><description> is OR-ed</description></item>
     /// <item><term>Logger / ExitHandler </term><description>A + B is invoked</description></item>
     /// <item><term>Input </term><description>A + B is invoked</description></item>
+    /// <item><term>Encodings </term><description> B overrides the one from A but not when B doesn't have one</description></item>
     /// </list>
     /// </remarks>
     public static ToolEx With(
@@ -185,7 +190,9 @@ public static class ToolCola
         bool? logInvocation = null,
         Action<OutputType, string>? logger = null,
         Action<IProcess>? exitHandler = null,
-        Action<StreamWriter>? input = null
+        Action<StreamWriter>? input = null,
+        Encoding? standardOutputEncoding = null,
+        Encoding? standardInputEncoding = null
     ) => tool.With(new ToolExArguments(
         new(
             arguments.ToStringAndClear(),
@@ -197,7 +204,9 @@ public static class ToolCola
             logger,
             exitHandler
         ),
-        input
+        input,
+        standardOutputEncoding,
+        standardInputEncoding
     ));
 
     /// <summary>
@@ -265,16 +274,21 @@ public static class ToolCola
         });
 
     /// <summary>
-    /// Pipe the results of a tool into the standard input of the next tool. This is not exactly the same as real
-    /// command line piping, the previous process needs to be finished first to pipe its output into the next one.
-    /// This however gives the opportunity to transform / filter the output of previous tool with regular LINQ
-    /// before passing it to the next one. 
+    ///     Pipe the results of a tool into the standard input of the next tool. This is not exactly the same as real
+    ///     command line piping, the previous process needs to be finished first to pipe its output into the next one.
+    ///     This however gives the opportunity to transform / filter the output of previous tool with regular LINQ
+    ///     before passing it to the next one. 
     /// </summary>
     /// <param name="previous">The output of a previous program</param>
     /// <param name="next">Initial tool delegate of the next program</param>
     /// <param name="pipeError">Also pipe standard-error into next program</param>
+    /// <param name="close">
+    ///     If this is true, close the input stream after all the lines have been written. This is set to true by
+    ///     default for ease of usage, as most of the time a program's output is the only thing needed to be passed to
+    ///     another program. However if false don't forget to queue closing the input stream with CloseInput. 
+    /// </param>
     /// <returns>A composite ToolEx delegate</returns>
-    public static ToolEx Pipe(this IEnumerable<Output> previous, ToolEx next, bool pipeError = false)
+    public static ToolEx Pipe(this IEnumerable<Output> previous, ToolEx next, bool pipeError = false, bool close = true)
         => next.With(input: s =>
         {
             foreach (var line in previous)
@@ -282,7 +296,36 @@ public static class ToolCola
                 if (line.Type == OutputType.Std || pipeError)
                     s.WriteLine(line.Text);
             }
+            if (close) s.Close();
         });
+
+    /// <summary>
+    /// Provide lines for standard input once the program is run. If the target program waits until end-of-stream
+    /// queue closing the input stream with CloseInput.
+    /// </summary>
+    /// <param name="tool"></param>
+    /// <param name="lines"></param>
+    public static ToolEx WithInput(this ToolEx tool, IEnumerable<string> lines)
+        => tool.With(input: s =>
+        {
+            foreach (var line in lines)
+                s.WriteLine(line);
+        });
+
+    /// <summary>
+    /// Provide a single line for standard input once the program is run.
+    /// </summary>
+    /// <param name="tool"></param>
+    /// <param name="line"></param>
+    public static ToolEx WithInput(this ToolEx tool, string line)
+        => tool.With(input: s => s.WriteLine(line));
+    
+    /// <summary>
+    /// Explicitly close the standard input after other inputs have been queued. Some programs may freeze without
+    /// this step.
+    /// </summary>
+    /// <param name="tool"></param>
+    public static ToolEx CloseInput(this ToolEx tool) => tool.With(input: s => s.Close());
 
     /// <summary>
     /// Attempt to update PATH of this process from user's environment variables
