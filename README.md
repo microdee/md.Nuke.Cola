@@ -17,6 +17,8 @@ Utilities and extensions useful for any Nuke builds originally separated from Nu
   - [Exclude/ignore items](#excludeignore-items)
 - [`Tool` extensions](#tool-extensions)
   - [Tool composition with `With` extension method](#tool-composition-with-with-extension-method)
+  - [`ToolEx`](#toolex)
+    - [Standard Input / Piping](#standard-input--piping)
   - [Specific tool support](#specific-tool-support)
   - [Arguments passing from user to tool](#arguments-passing-from-user-to-tool)
 
@@ -399,6 +401,30 @@ public static Tool WithMyEnvironment(this Tool tool) => tool.With(environmentVar
 MyTool("args"); // use normally
 MyToolMode("--arg value"); // yields `my-tool my-mode --arg value`
 MyToolMode.WithMyEnvironment().WithSemanticLogging()("--arg value"); // excercise for the reader
+```
+
+## `ToolEx`
+
+A reimplementation of Nuke's `Tool` with extended features. All the tool composition features are also available for `ToolEx`.
+
+### Standard Input / Piping
+
+Feed data into a tool via standard input:
+
+```CSharp
+ToolExResolver.GetPathTool("myTool")(input: s => s.WriteLine("Hello"));
+```
+
+The `Pipe` extension method is using this feature and 'tool composition' to allow exchange between processes comfortably, like in almost all shell environments.
+
+```CSharp
+var toolA = ToolExResolver.GetPathTool("toolA");
+var toolB = ToolExResolver.GetPathTool("toolB");
+var toolC = ToolExResolver.GetPathTool("toolC");
+
+toolA("-foo bar")
+    .Pipe(toolB)("-arg 1")
+    .Pipe(toolC)("-log debug");
 ```
 
 ## Specific tool support

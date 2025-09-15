@@ -9,6 +9,9 @@ using Serilog.Events;
 
 namespace Nuke.Cola.Tooling;
 
+/// <summary>
+/// Extended copy of Tool delegate of Nuke
+/// </summary>
 public delegate IReadOnlyCollection<Output>? ToolEx(
     // Nuke Tool
     ArgumentStringHandler arguments = default,
@@ -24,20 +27,76 @@ public delegate IReadOnlyCollection<Output>? ToolEx(
     Action<StreamWriter>? input = null
 );
 
+/// <summary>
+/// A record listing Tool and ToolEx delegate parameters and provides a way to meaningfully merge multiple together
+/// </summary>
+/// <param name="ToolArgs">Regular Tool delegate arguments</param>
+/// <param name="Input">Handle standard input stream after process creation</param>
 public record ToolExArguments(
     ToolArguments ToolArgs,
     Action<StreamWriter>? Input = null
 ) {
+    
+    /// <summary>
+    /// Merge two ToolEx argument records together.
+    /// </summary>
+    /// <remarks>
+    /// <list>
+    /// <item><term>Arguments </term><description> will be concatenated</description></item>
+    /// <item><term>Working directory </term><description> B overrides the one from A but not when B doesn't have one</description></item>
+    /// <item><term>Environmnent variables </term><description> will be merged</description></item>
+    /// <item><term>TimeOut </term><description> will be maxed</description></item>
+    /// <item><term>LogOutput </term><description> is OR-ed</description></item>
+    /// <item><term>LogInvocation </term><description> is OR-ed</description></item>
+    /// <item><term>Logger / ExitHandler </term><description> A + B is invoked</description></item>
+    /// <item><term>Input </term><description> A + B is invoked</description></item>
+    /// </list>
+    /// </remarks>
     public static ToolExArguments operator | (ToolExArguments? a, ToolExArguments? b)
         => new(a?.ToolArgs | b?.ToolArgs, a?.Input + b?.Input);
     
+    /// <summary>
+    /// Merge a ToolEx and a Tool argument record together.
+    /// </summary>
+    /// <remarks>
+    /// <list>
+    /// <item><term>Arguments </term><description> will be concatenated</description></item>
+    /// <item><term>Working directory </term><description> B overrides the one from A but not when B doesn't have one</description></item>
+    /// <item><term>Environmnent variables </term><description> will be merged</description></item>
+    /// <item><term>TimeOut </term><description> will be maxed</description></item>
+    /// <item><term>LogOutput </term><description> is OR-ed</description></item>
+    /// <item><term>LogInvocation </term><description> is OR-ed</description></item>
+    /// <item><term>Logger / ExitHandler </term><description> A + B is invoked</description></item>
+    /// <item><term>Input </term><description> Used from ToolEx arguments</description></item>
+    /// </list>
+    /// </remarks>
     public static ToolExArguments operator | (ToolExArguments? a, ToolArguments? b)
         => new(a?.ToolArgs | b, a?.Input);
     
+    /// <summary>
+    /// Merge a Tool and a ToolEx argument record together.
+    /// </summary>
+    /// <remarks>
+    /// <list>
+    /// <item><term>Arguments </term><description> will be concatenated</description></item>
+    /// <item><term>Working directory </term><description> B overrides the one from A but not when B doesn't have one</description></item>
+    /// <item><term>Environmnent variables </term><description> will be merged</description></item>
+    /// <item><term>TimeOut </term><description> will be maxed</description></item>
+    /// <item><term>LogOutput </term><description> is OR-ed</description></item>
+    /// <item><term>LogInvocation </term><description> is OR-ed</description></item>
+    /// <item><term>Logger / ExitHandler </term><description> A + B is invoked</description></item>
+    /// <item><term>Input </term><description> Used from ToolEx arguments</description></item>
+    /// </list>
+    /// </remarks>
     public static ToolExArguments operator | (ToolArguments? a, ToolExArguments? b)
         => new(a | b?.ToolArgs, b?.Input);
 }
 
+/// <summary>
+/// Propagated ToolEx delegate provider for launch parameter composition.
+/// </summary>
+/// <param name="Target"></param>
+/// <param name="PropagateArguments"></param>
 public record PropagateToolExExecution(ToolEx Target, ToolExArguments? PropagateArguments = null)
 {
     public IReadOnlyCollection<Output>? Execute(
