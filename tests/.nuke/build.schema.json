@@ -25,12 +25,14 @@
       "type": "string",
       "enum": [
         "BuildPluginPoc",
+        "BuildTestProgram",
         "EnsureMainLicense",
         "EnsureOtherLicense",
         "ImportTestFolders",
         "PluginTest",
         "ProjectTest",
         "SomeOtherTarget",
+        "TestToolEx",
         "TestXRepo"
       ]
     },
