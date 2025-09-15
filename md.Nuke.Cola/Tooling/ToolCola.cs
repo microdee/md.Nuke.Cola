@@ -265,6 +265,26 @@ public static class ToolCola
         });
 
     /// <summary>
+    /// Pipe the results of a tool into the standard input of the next tool. This is not exactly the same as real
+    /// command line piping, the previous process needs to be finished first to pipe its output into the next one.
+    /// This however gives the opportunity to transform / filter the output of previous tool with regular LINQ
+    /// before passing it to the next one. 
+    /// </summary>
+    /// <param name="previous">The output of a previous program</param>
+    /// <param name="next">Initial tool delegate of the next program</param>
+    /// <param name="pipeError">Also pipe standard-error into next program</param>
+    /// <returns>A composite ToolEx delegate</returns>
+    public static ToolEx Pipe(this IEnumerable<Output> previous, ToolEx next, bool pipeError = false)
+        => next.With(input: s =>
+        {
+            foreach (var line in previous)
+            {
+                if (line.Type == OutputType.Std || pipeError)
+                    s.WriteLine(line.Text);
+            }
+        });
+
+    /// <summary>
     /// Attempt to update PATH of this process from user's environment variables
     /// </summary>
     public static void UpdatePathEnvVar()
