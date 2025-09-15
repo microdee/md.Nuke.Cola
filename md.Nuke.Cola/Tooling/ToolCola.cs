@@ -264,6 +264,44 @@ public static class ToolCola
         => tool.With(SemanticLogging(filter, normalOutputLogger));
 
     /// <summary>
+    /// A more comfortable passing of environment variables
+    /// </summary>
+    public static ToolArguments EnvVar(string key, object value) => new(
+        EnvironmentVariables: Cola.MakeDictionary((key, value!.ToString()!))
+    );
+    
+    /// <summary>
+    /// A more comfortable passing of environment variables
+    /// </summary>
+    public static ToolArguments EnvVars(params (string key, object value)[] items) => new(
+        EnvironmentVariables: items.ToDictionary(i => i.key, i => i.value!.ToString()!)
+    );
+
+    /// <summary>
+    /// A more comfortable passing of environment variables
+    /// </summary>
+    public static Tool WithEnvVar(this Tool tool, string key, object value)
+        => tool.With(EnvVar(key, value));
+
+    /// <summary>
+    /// A more comfortable passing of environment variables
+    /// </summary>
+    public static Tool WithEnvVars(this Tool tool, params (string key, object value)[] items)
+        => tool.With(EnvVars(items));
+    
+    /// <summary>
+    /// A more comfortable passing of environment variables
+    /// </summary>
+    public static ToolEx WithEnvVar(this ToolEx tool, string key, object value)
+        => tool.With(EnvVar(key, value));
+
+    /// <summary>
+    /// A more comfortable passing of environment variables
+    /// </summary>
+    public static ToolEx WithEnvVars(this ToolEx tool, params (string key, object value)[] items)
+        => tool.With(EnvVars(items));
+
+    /// <summary>
     /// Removes ANSI escape sequences from the output of a Tool (remove color data for example)
     /// </summary>
     public static IEnumerable<Output> RemoveAnsiEscape(this IEnumerable<Output> toolOutput)
