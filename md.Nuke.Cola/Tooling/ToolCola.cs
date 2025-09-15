@@ -28,6 +28,24 @@ public static class ToolCola
             args.Logger,
             args.ExitHandler
         );
+    
+    /// <summary>
+    /// Execute a tool with standard input with the arguments provided by the input record.
+    /// </summary>
+    /// <param name="tool"></param>
+    /// <param name="args"></param>
+    public static IReadOnlyCollection<Output>? ExecuteWith(this ToolEx tool, ToolExArguments args)
+        => tool(
+            $"{args.ToolArgs.Arguments:nq}",
+            args.ToolArgs.WorkingDirectory,
+            args.ToolArgs.EnvironmentVariables,
+            args.ToolArgs.Timeout,
+            args.ToolArgs.LogOutput,
+            args.ToolArgs.LogInvocation,
+            args.ToolArgs.Logger,
+            args.ToolArgs.ExitHandler,
+            args.Input
+        );
 
     /// <summary>
     /// Set individual Tool launching parameters and propagate the delegate further
@@ -47,6 +65,46 @@ public static class ToolCola
     /// </remarks>
     public static Tool With(this Tool tool, ToolArguments args)
         => new PropagateToolExecution(tool, args).Execute;
+
+    /// <summary>
+    /// Set individual Tool launching parameters and propagate the delegate further
+    /// </summary>
+    /// <param name="tool"></param>
+    /// <param name="args"></param>
+    /// <remarks>
+    /// <list>
+    /// <item><term>Arguments </term><description> will be concatenated</description></item>
+    /// <item><term>Working directory </term><description> B overrides the one from A but not when B doesn't have one</description></item>
+    /// <item><term>Environmnent variables </term><description> will be merged</description></item>
+    /// <item><term>TimeOut </term><description> will be maxed</description></item>
+    /// <item><term>LogOutput </term><description> is OR-ed</description></item>
+    /// <item><term>LogInvocation </term><description> is OR-ed</description></item>
+    /// <item><term>Logger / ExitHandler </term><description>A + B is invoked</description></item>
+    /// <item><term>Input </term><description>A + B is invoked</description></item>
+    /// </list>
+    /// </remarks>
+    public static ToolEx With(this ToolEx tool, ToolExArguments args)
+        => new PropagateToolExExecution(tool, args).Execute;
+    
+    /// <summary>
+    /// Set individual Tool launching parameters and propagate the delegate further
+    /// </summary>
+    /// <param name="tool"></param>
+    /// <param name="args"></param>
+    /// <remarks>
+    /// <list>
+    /// <item><term>Arguments </term><description> will be concatenated</description></item>
+    /// <item><term>Working directory </term><description> B overrides the one from A but not when B doesn't have one</description></item>
+    /// <item><term>Environmnent variables </term><description> will be merged</description></item>
+    /// <item><term>TimeOut </term><description> will be maxed</description></item>
+    /// <item><term>LogOutput </term><description> is OR-ed</description></item>
+    /// <item><term>LogInvocation </term><description> is OR-ed</description></item>
+    /// <item><term>Logger / ExitHandler </term><description>A + B is invoked</description></item>
+    /// <item><term>Input </term><description>A + B is invoked</description></item>
+    /// </list>
+    /// </remarks>
+    public static ToolEx With(this ToolEx tool, ToolArguments args)
+        => new PropagateToolExExecution(tool, new(args)).Execute;
 
     /// <summary>
     /// Set individual Tool launching parameters and propagate the delegate further
@@ -93,14 +151,63 @@ public static class ToolCola
     ));
 
     /// <summary>
+    /// Set individual Tool launching parameters and propagate the delegate further
+    /// </summary>
+    /// <param name="tool"></param>
+    /// <param name="arguments"></param>
+    /// <param name="workingDirectory"></param>
+    /// <param name="environmentVariables"></param>
+    /// <param name="timeout"></param>
+    /// <param name="logOutput"></param>
+    /// <param name="logInvocation"></param>
+    /// <param name="logger"></param>
+    /// <param name="exitHandler"></param>
+    /// <param name="input"></param>
+    /// <remarks>
+    /// <list>
+    /// <item><term>Arguments </term><description> will be concatenated</description></item>
+    /// <item><term>Working directory </term><description> B overrides the one from A but not when B doesn't have one</description></item>
+    /// <item><term>Environmnent variables </term><description> will be merged</description></item>
+    /// <item><term>TimeOut </term><description> will be maxed</description></item>
+    /// <item><term>LogOutput </term><description> is OR-ed</description></item>
+    /// <item><term>LogInvocation </term><description> is OR-ed</description></item>
+    /// <item><term>Logger / ExitHandler </term><description>A + B is invoked</description></item>
+    /// <item><term>Input </term><description>A + B is invoked</description></item>
+    /// </list>
+    /// </remarks>
+    public static ToolEx With(
+        this ToolEx tool,
+        ArgumentStringHandler arguments = default,
+        string? workingDirectory = null,
+        IReadOnlyDictionary<string, string>? environmentVariables = null,
+        int? timeout = null,
+        bool? logOutput = null,
+        bool? logInvocation = null,
+        Action<OutputType, string>? logger = null,
+        Action<IProcess>? exitHandler = null,
+        Action<StreamWriter>? input = null
+    ) => tool.With(new ToolExArguments(
+        new(
+            arguments.ToStringAndClear(),
+            workingDirectory,
+            environmentVariables,
+            timeout,
+            logOutput,
+            logInvocation,
+            logger,
+            exitHandler
+        ),
+        input
+    ));
+
+    /// <summary>
     /// Mark app output Debug/Info/Warning/Error based on its content rather than the stream
     /// they were added to.
     /// </summary>
-    /// <param name="tool"></param>
     /// <param name="filter"></param>
     /// <param name="normalOutputLogger"></param>
-    public static Tool WithSemanticLogging(this Tool tool, Func<string, bool>? filter = null, Action<OutputType, string>? normalOutputLogger = null)
-        => tool.With(logger: (t, l) =>
+    public static ToolArguments SemanticLogging(Func<string, bool>? filter = null, Action<OutputType, string>? normalOutputLogger = null)
+        => new(Logger: (t, l) =>
         {
             if (!(filter?.Invoke(l) ?? true)) return;
 
@@ -126,6 +233,26 @@ public static class ToolCola
                 }
             }
         });
+
+    /// <summary>
+    /// Mark app output Debug/Info/Warning/Error based on its content rather than the stream
+    /// they were added to.
+    /// </summary>
+    /// <param name="tool"></param>
+    /// <param name="filter"></param>
+    /// <param name="normalOutputLogger"></param>
+    public static Tool WithSemanticLogging(this Tool tool, Func<string, bool>? filter = null, Action<OutputType, string>? normalOutputLogger = null)
+        => tool.With(SemanticLogging(filter, normalOutputLogger));
+
+    /// <summary>
+    /// Mark app output Debug/Info/Warning/Error based on its content rather than the stream
+    /// they were added to.
+    /// </summary>
+    /// <param name="tool"></param>
+    /// <param name="filter"></param>
+    /// <param name="normalOutputLogger"></param>
+    public static ToolEx WithSemanticLogging(this ToolEx tool, Func<string, bool>? filter = null, Action<OutputType, string>? normalOutputLogger = null)
+        => tool.With(SemanticLogging(filter, normalOutputLogger));
 
     /// <summary>
     /// Removes ANSI escape sequences from the output of a Tool (remove color data for example)
