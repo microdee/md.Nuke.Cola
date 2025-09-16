@@ -61,10 +61,11 @@ public static class Plugins
         BuildContext context = new(NukeBuild.TemporaryDirectory, NukeBuild.RootDirectory);
         var intermediateScriptPath = context.Temporary / "Intermediate.csx";
         var intermediateAssembliesRoot = context.Temporary / "IntermediateAssemblies";
+        var noPluginsFoundIndicator = context.Temporary / "NoPlugins.txt";
         
         if (AttemptReuseCompiledPlugins())
         {
-            if ((context.Temporary / "NoPlugins.txt").FileExists())
+            if (noPluginsFoundIndicator.FileExists())
             {
                 $"Skipped building build plugins entirely. Executing build from {typeof(T).Name}".Log();
                 return defaultExecute();
@@ -83,6 +84,8 @@ public static class Plugins
                 }
             }
         }
+        
+        noPluginsFoundIndicator.ExistingFile()?.DeleteFile();
         
         var engines = new IProvidePlugins[]
         {
@@ -104,6 +107,7 @@ public static class Plugins
         if (sources.IsEmpty())
         {
             $"No build plugins were found. Executing build from {typeof(T).Name}".Log();
+            noPluginsFoundIndicator.WriteAllText("1");
             return defaultExecute();
         }
 
