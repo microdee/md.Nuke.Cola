@@ -221,8 +221,9 @@ internal class ToolExExecutor
             UseShellExecute = false,
             StandardErrorEncoding = standardOutputEncoding,
             StandardOutputEncoding = standardOutputEncoding,
-            StandardInputEncoding = standardInputEncoding,
         };
+        if (input != null)
+            startInfo.StandardInputEncoding = standardInputEncoding;
         
         if (environmentVariables != null)
         {
