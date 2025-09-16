@@ -13,6 +13,12 @@ using Microsoft.CodeAnalysis;
 
 namespace Nuke.Cola.BuildPlugins;
 
+internal record ScriptDllLocation(
+    AbsolutePath Path,
+    ulong ContentHash,
+    uint PathHash
+);
+
 internal static class DotnetCommon
 {
     private static LogFactory? DotnetScriptLogFactoryInstance = null;
@@ -21,7 +27,16 @@ internal static class DotnetCommon
         {
             if (level > LogLevel.Debug)
                 message.Log();
-}       );
+        });
+
+    internal static ScriptDllLocation GetDllLocationOfScript(AbsolutePath scriptPath, AbsolutePath outputDirIn)
+    {
+        uint pathHash = xxHash32.ComputeHash(scriptPath);
+        ulong hash = xxHash64.ComputeHash(scriptPath.ReadAllText());
+        var dllName = hash.ToString();
+        var outputDir = outputDirIn / (pathHash.ToString() + "_" + dllName);
+        return new(outputDir / (dllName + ".dll"), hash, pathHash);
+    }
 
     /// <summary>
     /// Compiles a C# script into a DLL with dotnet-script, which needs to be installed
@@ -35,22 +50,18 @@ internal static class DotnetCommon
     /// <returns>The path of the newly created DLL</returns>
     internal static AbsolutePath CompileScript(AbsolutePath scriptPath, AbsolutePath outputDirIn)
     {
-        uint pathHash = xxHash32.ComputeHash(scriptPath);
-        ulong hash = xxHash64.ComputeHash(scriptPath.ReadAllText());
-        var dllName = hash.ToString();
-        var outputDir = outputDirIn / (pathHash.ToString() + "_" + dllName);
-        var dllPath = outputDir / (dllName + ".dll");
+        var (dllPath, contentHash, pathHash) = GetDllLocationOfScript(scriptPath, outputDirIn);
 
         if (dllPath.FileExists())
             return dllPath;
 
         $"Compiling script {scriptPath}".Log();
 
-        outputDir.CreateOrCleanDirectory();
+        dllPath.Parent.CreateOrCleanDirectory();
         new PublishCommand(ScriptConsole.Default, DotnetScriptLogFactory).Execute(new(
             new(scriptPath),
-            outputDir,
-            dllName,
+            dllPath.Parent,
+            contentHash.ToString(),
             PublishType.Library,
             OptimizationLevel.Debug,
             [],
@@ -61,7 +72,7 @@ internal static class DotnetCommon
         // Remove residue of previous build results
         outputDirIn
             .GlobDirectories($"{pathHash}_*")
-            .Where(p => !p.Name.Contains(hash.ToString()))
+            .Where(p => !p.Name.Contains(contentHash.ToString()))
             .ForEach(p => p.DeleteDirectory());
 
         return dllPath;

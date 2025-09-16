@@ -10,8 +10,7 @@ using Serilog;
 namespace Nuke.Cola.Tooling;
 
 /// <summary>
-/// A record collecting together Tool delegate parameters and provides a way to usefully
-/// merge multiple together
+/// A record listing Tool delegate parameters and provides a way to meaningfully merge multiple together
 /// </summary>
 /// <param name="Arguments"></param>
 /// <param name="WorkingDirectory"></param>

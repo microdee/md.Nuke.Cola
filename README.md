@@ -11,12 +11,15 @@ Utilities and extensions useful for any Nuke builds originally separated from Nu
   - [`[ImplicitBuildInterface]` plugins](#implicitbuildinterface-plugins)
   - [`*.nuke.csx` C# script plugins](#nukecsx-c-script-plugins)
   - [`*.Nuke.csproj` C# project plugins](#nukecsproj-c-project-plugins)
+  - [Disable re-discovering plugins](#disable-re-discovering-plugins)
 - [Folder Composition](#folder-composition)
   - [Regular folders](#regular-folders)
   - [Folders with export manifest](#folders-with-export-manifest)
   - [Exclude/ignore items](#excludeignore-items)
 - [`Tool` extensions](#tool-extensions)
   - [Tool composition with `With` extension method](#tool-composition-with-with-extension-method)
+  - [`ToolEx`](#toolex)
+    - [Standard Input / Piping](#standard-input--piping)
   - [Specific tool support](#specific-tool-support)
   - [Arguments passing from user to tool](#arguments-passing-from-user-to-tool)
 
@@ -213,6 +216,14 @@ and then you can proceed as with any other dotnet class library.
 > [!NOTE]
 > Unlike scripts, each C# project build plugin needs to be named uniquely in one project.
 
+## Disable re-discovering plugins
+
+Building plugins can take a long time, and if nuke is run repeatedly this can get worse pretty quickly. For this reason if `REUSE_COMPILED` environment variable is set to 1 or `--ReuseCompiled` is present in command line arguments, plugins are only re-built / re-discovered the first time they're needed. Consecutive runs assume that nothing is changed.
+
+This is useful for CI runs or when nuke is run frequently locally.
+
+As an extra Nuke.Cola provides `build.ps1` / `build.sh` entry points which also respect these indicators, so they can skip directly to executing the build without going through all the checks and preparations.
+
 # Folder Composition
 
 There are cases when one project needs to compose from one pre-existing rigid folder structure of one dependency to another rigid folder structure of the current project. For scenarios like this Nuke.Cola provides `ImportFolder` build class extension method which will copy/link the target folder and its contents according to some instructions expressed by either a YAML manifest file (by default `export.yml`) in the imported folder or provided explicitly to the `ImportFolder` extension method.
@@ -401,6 +412,57 @@ MyToolMode("--arg value"); // yields `my-tool my-mode --arg value`
 MyToolMode.WithMyEnvironment().WithSemanticLogging()("--arg value"); // excercise for the reader
 ```
 
+## `ToolEx`
+
+A reimplementation of Nuke's `Tool` with extended features. All the tool composition features are also available for `ToolEx`.
+
+### Standard Input / Piping
+
+Feed data into a tool via standard input:
+
+```CSharp
+ToolExResolver.GetPathTool("myTool")(input: s => s.WriteLine("Hello"));
+```
+
+The `Pipe` extension method is using this feature and 'tool composition' to allow exchange between processes comfortably, like in almost all shell environments.
+
+```CSharp
+var toolA = ToolExResolver.GetPathTool("toolA");
+var toolB = ToolExResolver.GetPathTool("toolB");
+var toolC = ToolExResolver.GetPathTool("toolC");
+
+toolA("-foo bar")!
+    .Pipe(toolB)("-arg 1")!
+    .Pipe(toolC)("-log debug");
+```
+
+We can also easily queue up inputs via extension methods. When combining tool arguments, standard-input delegates are combined with the `+` operator which is basically queuing them one after the other.
+
+```CSharp
+// A fictitious tool which just repeats back everything until stream is closed
+var parrot = ToolExResolver.GetPathTool("parrot");
+
+parrot
+    .WithInput("I'm Polly")        // Queue a single line
+    .WithInput(["Hello", "World"]) // Queue multiple lines from collection of strings
+    .CloseInput()                  // Polly is polite and extremely patient and they will wait for us until we indicate that we're finished
+    ()!                            // Execute with no arguments
+    .Pipe(parrot)()                // Repeat again.
+```
+
+Output (without additional Nuke logging):
+
+```
+I'm Polly
+Hello
+World
+I'm Polly
+Hello
+World
+```
+
+Note that unlike other 'input' extension methods, `Pipe` closes the stream by default. So when used with many tools, `ClosePipe()` or `close: true` are not needed to be repeated all the time. If you want to manipulate standard input after the results of `Pipe` add `close: false` to its arguments.
+
 ## Specific tool support
 
 Nuke.Cola comes with explicit support of some tools
@@ -429,8 +491,8 @@ Multiple blocks can be distinguished by name appended:
 ```
 
 ```csharp
-Arguments.GetBlock("extra"); //-> ["extra", "arguments", "/foo", "--bar"]
-Arguments.GetBlock("foo"); //-> ["extra", "arguments", "/foo", "--bar"]
+Arguments.GetBlock("extra"); //-> ["extra", "arguments"]
+Arguments.GetBlock("foo"); //-> ["/foo", "--bar"]
 ```
 
 <div align="center">
