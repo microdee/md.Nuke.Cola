@@ -11,6 +11,7 @@ Utilities and extensions useful for any Nuke builds originally separated from Nu
   - [`[ImplicitBuildInterface]` plugins](#implicitbuildinterface-plugins)
   - [`*.nuke.csx` C# script plugins](#nukecsx-c-script-plugins)
   - [`*.Nuke.csproj` C# project plugins](#nukecsproj-c-project-plugins)
+  - [Disable re-discovering plugins](#disable-re-discovering-plugins)
 - [Folder Composition](#folder-composition)
   - [Regular folders](#regular-folders)
   - [Folders with export manifest](#folders-with-export-manifest)
@@ -214,6 +215,14 @@ and then you can proceed as with any other dotnet class library.
 
 > [!NOTE]
 > Unlike scripts, each C# project build plugin needs to be named uniquely in one project.
+
+## Disable re-discovering plugins
+
+Building plugins can take a long time, and if nuke is run repeatedly this can get worse pretty quickly. For this reason if `REUSE_COMPILED` environment variable is set to 1 or `--ReuseCompiled` is present in command line arguments, plugins are only re-built / re-discovered the first time they're needed. Consecutive runs assume that nothing is changed.
+
+This is useful for CI runs or when nuke is run frequently locally.
+
+As an extra Nuke.Cola provides `build.ps1` / `build.sh` entry points which also respect these indicators, so they can skip directly to executing the build without going through all the checks and preparations.
 
 # Folder Composition
 
