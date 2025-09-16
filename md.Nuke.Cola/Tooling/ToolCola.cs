@@ -271,25 +271,45 @@ public static class ToolCola
     /// <summary>
     /// A more comfortable passing of environment variables. This will also pass on parent environment
     /// </summary>
-    public static ToolArguments EnvVar(string key, object value)
-        => CurrentEnvironment | new ToolArguments(
-            EnvironmentVariables: Cola.MakeDictionary((key, value.ToString()!))
-        );
+    public static ToolArguments EnvVar(string key, object value, bool includeParentEnvironment = true)
+    {
+        var result = includeParentEnvironment
+            ? EnvironmentInfo.Variables.ToDictionary()
+            : new();
+        
+        result[key] = value.ToString();
+        return new(EnvironmentVariables: result);
+    }
+
+    /// <summary>
+    /// A more comfortable passing of environment variables. This will also pass on parent environment
+    /// </summary>
+    public static ToolArguments EnvVars(bool includeParentEnvironment, params (string key, object value)[] items)
+    {
+        var parent = includeParentEnvironment
+            ? EnvironmentInfo.Variables.ToDictionary()
+            : null;
+        var itemsDict = items.ToDictionary(i => i.key, i => i.value!.ToString()!);
+        return new(EnvironmentVariables: parent.Merge(itemsDict));
+    }
+
+    /// <summary>
+    /// A more comfortable passing of environment variables. This will also pass on parent environment
+    /// </summary>
+    public static ToolArguments EnvVars(params (string key, object value)[] items) => EnvVars(true, items);
+
+    /// <summary>
+    /// A more comfortable passing of environment variables. This will also pass on parent environment
+    /// </summary>
+    public static Tool WithEnvVar(this Tool tool, string key, object value, bool includeParentEnvironment = true)
+        => tool.With(EnvVar(key, value, includeParentEnvironment));
+
+    /// <summary>
+    /// A more comfortable passing of environment variables. This will also pass on parent environment
+    /// </summary>
+    public static Tool WithEnvVars(this Tool tool, bool includeParentEnvironment, params (string key, object value)[] items)
+        => tool.With(EnvVars(includeParentEnvironment, items));
     
-    /// <summary>
-    /// A more comfortable passing of environment variables. This will also pass on parent environment
-    /// </summary>
-    public static ToolArguments EnvVars(params (string key, object value)[] items)
-        => CurrentEnvironment | new ToolArguments(
-            EnvironmentVariables: items.ToDictionary(i => i.key, i => i.value!.ToString()!)
-        );
-
-    /// <summary>
-    /// A more comfortable passing of environment variables. This will also pass on parent environment
-    /// </summary>
-    public static Tool WithEnvVar(this Tool tool, string key, object value)
-        => tool.With(EnvVar(key, value));
-
     /// <summary>
     /// A more comfortable passing of environment variables. This will also pass on parent environment
     /// </summary>
@@ -299,14 +319,20 @@ public static class ToolCola
     /// <summary>
     /// A more comfortable passing of environment variables. This will also pass on parent environment
     /// </summary>
-    public static ToolEx WithEnvVar(this ToolEx tool, string key, object value)
-        => tool.With(EnvVar(key, value));
+    public static ToolEx WithEnvVar(this ToolEx tool, string key, object value, bool includeParentEnvironment = true)
+        => tool.With(EnvVar(key, value, includeParentEnvironment));
 
     /// <summary>
     /// A more comfortable passing of environment variables. This will also pass on parent environment
     /// </summary>
     public static ToolEx WithEnvVars(this ToolEx tool, params (string key, object value)[] items)
         => tool.With(EnvVars(items));
+
+    /// <summary>
+    /// A more comfortable passing of environment variables. This will also pass on parent environment
+    /// </summary>
+    public static ToolEx WithEnvVars(this ToolEx tool, bool includeParentEnvironment, params (string key, object value)[] items)
+        => tool.With(EnvVars(includeParentEnvironment, items));
 
     /// <summary>
     /// Removes ANSI escape sequences from the output of a Tool (remove color data for example)

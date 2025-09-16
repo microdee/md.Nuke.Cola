@@ -76,11 +76,15 @@ public class Build : NukeBuild
             testProgram
                 .WithInput("Hello")
                 .WithInput("World")
+                .WithEnvVar("FOO", "bar")
+                .WithEnvVar("HELLO", "mom")
                 .CloseInput()
                 ("input-length");
 
             testProgram.WithInput(["jazz", "stuff"]).CloseInput()("repeat-line")!
                 .Pipe(testProgram)("repeat-line")!
                 .Pipe(testProgram)("repeat-line");
+
+            testProgram("foobar");
         });
 }

@@ -58,10 +58,7 @@ public record ToolArguments(
                 ? a?.WorkingDirectory
                 : b?.WorkingDirectory,
             
-            EnvironmentVariables = (a?.EnvironmentVariables == null && b?.EnvironmentVariables == null)
-                ? null
-                : (a?.EnvironmentVariables?.ToDictionary() ?? [])
-                    .AddDictionary(b?.EnvironmentVariables?.ToDictionary() ?? []),
+            EnvironmentVariables = a?.EnvironmentVariables.Merge(b?.EnvironmentVariables),
 
             Timeout = timeOut < 0 ? null : timeOut,
 
