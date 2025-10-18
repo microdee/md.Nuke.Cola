@@ -9,7 +9,7 @@ namespace Nuke.Cola;
 /// <summary>
 /// A record that can represent an attempt at an arbitrary action
 /// </summary>
-public record Attempt(Exception[]? Error = null)
+public record class Attempt(Exception[]? Error = null)
 {
     public static implicit operator Attempt (Exception[] e) => new(Error: e);
     public static implicit operator Attempt (Exception e) => new(Error: [e]);
@@ -20,7 +20,7 @@ public record Attempt(Exception[]? Error = null)
 /// <summary>
 /// A union that can hold either a correct value or an array of errors
 /// </summary>
-public record ValueOrError<T>(T? Value = default, Exception[]? Error = null)
+public record class ValueOrError<T>(T? Value = default, Exception[]? Error = null)
 {
     public static implicit operator ValueOrError<T> (T val) => new(val);
     public static implicit operator ValueOrError<T> (Exception[]? e) => new(Error: e);

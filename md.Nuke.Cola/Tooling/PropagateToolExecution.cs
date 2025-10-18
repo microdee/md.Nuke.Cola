@@ -15,7 +15,7 @@ namespace Nuke.Cola.Tooling;
 /// </summary>
 /// <param name="Target"></param>
 /// <param name="PropagateArguments"></param>
-public record PropagateToolExecution(Tool Target, ToolArguments? PropagateArguments = null)
+public record class PropagateToolExecution(Tool Target, ToolArguments? PropagateArguments = null)
 {
     public IReadOnlyCollection<Output> Execute(
         ArgumentStringHandler arguments = default,

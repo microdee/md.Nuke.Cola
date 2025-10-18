@@ -15,7 +15,7 @@ namespace Nuke.Cola.BuildPlugins;
 /// When true the intermediate script will use `#load "&lt;source&gt;"` directive instead of `#r "&lt;dll&gt;"`
 /// when importing the build plugin. This was only intended to be used with C# script plugins.
 /// </param>
-public record Importable(Type Interface, AbsolutePath? Source = null, bool ImportViaSource = false)
+public record class Importable(Type Interface, AbsolutePath? Source = null, bool ImportViaSource = false)
 {
     public override string ToString() => Source == null
         ? ""

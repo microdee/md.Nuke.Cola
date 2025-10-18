@@ -20,7 +20,7 @@ namespace Nuke.Cola.Tooling;
 /// <param name="LogInvocation"></param>
 /// <param name="Logger"></param>
 /// <param name="ExitHandler"></param>
-public record ToolArguments(
+public record class ToolArguments(
     string? Arguments = null,
     string? WorkingDirectory = null,
     IReadOnlyDictionary<string, string>? EnvironmentVariables = null,
