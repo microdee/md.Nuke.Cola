@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['ignore_20items_0',['Exclude/ignore items',['../da/d82/FolderComposition.html#autotoc_md6',1,'']]],
+  ['ihaveplugin_1',['IHavePlugin',['../da/dda/interfaceNuke_1_1Cola_1_1BuildPlugins_1_1IHavePlugin.html',1,'Nuke::Cola::BuildPlugins']]],
+  ['ilicensecommenttemplate_2',['ILicenseCommentTemplate',['../d2/d4e/interfaceNuke_1_1Cola_1_1ILicenseCommentTemplate.html',1,'Nuke::Cola']]],
+  ['implicitbuildinterface_20plugins_3',['ImplicitBuildInterface plugins',['../de/d4b/BuildPlugins.html#autotoc_md0',1,'']]],
+  ['implicitbuildinterfaceattribute_4',['ImplicitBuildInterfaceAttribute',['../d1/dd4/classNuke_1_1Cola_1_1BuildPlugins_1_1ImplicitBuildInterfaceAttribute.html',1,'Nuke::Cola::BuildPlugins']]],
+  ['implicitbuildinterfaceplugin_5',['ImplicitBuildInterfacePlugin',['../df/d0d/classNuke_1_1Cola_1_1BuildPlugins_1_1ImplicitBuildInterfacePlugin.html',1,'Nuke::Cola::BuildPlugins']]],
+  ['implicitbuildinterfacepluginprovider_6',['ImplicitBuildInterfacePluginProvider',['../d9/de5/classNuke_1_1Cola_1_1BuildPlugins_1_1ImplicitBuildInterfacePluginProvider.html',1,'Nuke::Cola::BuildPlugins']]],
+  ['importable_7',['Importable',['../df/d39/namespaceNuke_1_1Cola_1_1BuildPlugins.html#acd643ae3cc40d4225eaeaf34658b6356',1,'Nuke::Cola::BuildPlugins']]],
+  ['importfolder_8',['ImportFolder',['../d6/dc6/classNuke_1_1Cola_1_1FolderComposition_1_1FolderComposition.html#a69e9bbf22618ad62118558a792e22a59',1,'Nuke::Cola::FolderComposition::FolderComposition']]],
+  ['importfolderitem_9',['ImportFolderItem',['../d8/d9a/namespaceNuke_1_1Cola_1_1FolderComposition.html#af4433ef921fe25eac4c9eaf1301a3fb3',1,'Nuke::Cola::FolderComposition']]],
+  ['importfolders_10',['ImportFolders',['../d6/dc6/classNuke_1_1Cola_1_1FolderComposition_1_1FolderComposition.html#a6c273ebe4201d880984bb37d630d416b',1,'Nuke.Cola.FolderComposition.FolderComposition.ImportFolders(this INukeBuild self, ImportOptions? options, params ImportFolderItem[] imports)'],['../d6/dc6/classNuke_1_1Cola_1_1FolderComposition_1_1FolderComposition.html#a8b2dbac90396d6addfcc78cb684378f3',1,'Nuke.Cola.FolderComposition.FolderComposition.ImportFolders(this INukeBuild self, params ImportFolderItem[] imports)']]],
+  ['importfoldersuffixes_11',['ImportFolderSuffixes',['../d8/d9a/namespaceNuke_1_1Cola_1_1FolderComposition.html#ab0402f06022e81351c4973b10d06ffcf',1,'Nuke::Cola::FolderComposition']]],
+  ['importoptions_12',['ImportOptions',['../d8/d9a/namespaceNuke_1_1Cola_1_1FolderComposition.html#a67abad6b5ec094eabb9dbf0c8717eac4',1,'Nuke::Cola::FolderComposition']]],
+  ['info_13',['Info',['../d2/d8d/classNuke_1_1Cola_1_1Tooling_1_1XRepoTasks.html#adba486c66012649df67ad3ffa71c8855',1,'Nuke::Cola::Tooling::XRepoTasks']]],
+  ['initializeengine_14',['InitializeEngine',['../d5/d57/classNuke_1_1Cola_1_1BuildPlugins_1_1CSharpScriptPluginProvider.html#a2b0bb6447d6bbd48a02d073a5aaf100c',1,'Nuke.Cola.BuildPlugins.CSharpScriptPluginProvider.InitializeEngine()'],['../d4/deb/classNuke_1_1Cola_1_1BuildPlugins_1_1DotnetProjectPluginProvider.html#a1382036c064e7c6e58920bf9175e10ef',1,'Nuke.Cola.BuildPlugins.DotnetProjectPluginProvider.InitializeEngine()'],['../d9/de5/classNuke_1_1Cola_1_1BuildPlugins_1_1ImplicitBuildInterfacePluginProvider.html#af0901f88cec5951f942e652e65ffa8d1',1,'Nuke.Cola.BuildPlugins.ImplicitBuildInterfacePluginProvider.InitializeEngine()'],['../d2/da7/interfaceNuke_1_1Cola_1_1BuildPlugins_1_1IProvidePlugins.html#a722b2230e403db19e4b632e0f2225798',1,'Nuke.Cola.BuildPlugins.IProvidePlugins.InitializeEngine()']]],
+  ['input_20piping_15',['Standard Input / Piping',['../d0/d79/ToolExtensions.html#autotoc_md9',1,'']]],
+  ['install_16',['Install',['../d2/d8d/classNuke_1_1Cola_1_1Tooling_1_1XRepoTasks.html#a20cd0a11a5c6d89e57ffe7a5a6e0fc18',1,'Nuke::Cola::Tooling::XRepoTasks']]],
+  ['invalid_17',['Invalid',['../dd/dd5/classNuke_1_1Cola_1_1Tooling_1_1XRepoItem.html#a004e252fe3b048f8c20756ec486d9d58a4bbb8f967da6d1a610596d7257179c2b',1,'Nuke::Cola::Tooling::XRepoItem']]],
+  ['iprovideplugins_18',['IProvidePlugins',['../d2/da7/interfaceNuke_1_1Cola_1_1BuildPlugins_1_1IProvidePlugins.html',1,'Nuke::Cola::BuildPlugins']]],
+  ['ipublishnugets_19',['IPublishNugets',['../d5/d8a/interfaceNuke_1_1Cola_1_1IPublishNugets.html',1,'Nuke::Cola']]],
+  ['isearchfilesystem_20',['ISearchFileSystem',['../da/dfb/interfaceNuke_1_1Cola_1_1Search_1_1ISearchFileSystem.html',1,'Nuke::Cola::Search']]],
+  ['itemkind_21',['ItemKind',['../dd/dd5/classNuke_1_1Cola_1_1Tooling_1_1XRepoItem.html#a71e283b3b6c67af4a495efe33b73c849',1,'Nuke::Cola::Tooling::XRepoItem']]],
+  ['items_22',['Exclude/ignore items',['../da/d82/FolderComposition.html#autotoc_md6',1,'']]]
+];

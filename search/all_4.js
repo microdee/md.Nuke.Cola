@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['else_0',['Else',['../db/de1/classNuke_1_1Cola_1_1ErrorHandling.html#a960ee0c112e27d6d066a3f2730680c3f',1,'Nuke.Cola.ErrorHandling.Else(this Attempt self, Action action, Action&lt; Exception &gt;? onFailure=null)'],['../db/de1/classNuke_1_1Cola_1_1ErrorHandling.html#a8ebee7b9dfc66e571dfe97c74e08178f',1,'Nuke.Cola.ErrorHandling.Else(this Attempt self, bool condition, Action action, Action&lt; Exception &gt;? onFailure=null)'],['../dc/dd0/classNuke_1_1Cola_1_1TextExtensions.html#a469fac78b6e43ad905adea3e55a13a8e',1,'Nuke.Cola.TextExtensions.Else()']]],
+  ['else_3c_20t_20_3e_1',['Else&lt; T &gt;',['../db/de1/classNuke_1_1Cola_1_1ErrorHandling.html#a7adb63ceb1c23ac30b87341fed21ae46',1,'Nuke.Cola.ErrorHandling.Else&lt; T &gt;(this ValueOrError&lt; T &gt; self, Func&lt; T &gt; getter, Action&lt; Exception &gt;? onFailure=null)'],['../db/de1/classNuke_1_1Cola_1_1ErrorHandling.html#ab2c89fbf363f6b5ede9f4bd1e9766453',1,'Nuke.Cola.ErrorHandling.Else&lt; T &gt;(this ValueOrError&lt; T &gt; self, bool condition, Func&lt; T &gt; getter, Action&lt; Exception &gt;? onFailure=null)']]],
+  ['elsetrysetup_2',['ElseTrySetup',['../d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#a5f1151e6850cb70e2a9093dd7001cef0',1,'Nuke.Cola.Tooling.ToolCola.ElseTrySetup(this ValueOrError&lt; Tool &gt; result, bool condition, string tool, Action setup)'],['../d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#afd709d55a652f5c88f59b1fa69bc85dd',1,'Nuke.Cola.Tooling.ToolCola.ElseTrySetup(this ValueOrError&lt; Tool &gt; result, string tool, Action setup)']]],
+  ['ensurevcpkg_3',['EnsureVcpkg',['../df/d5f/classNuke_1_1Cola_1_1Vcpkg_1_1VcpkgTasks.html#a5aa303feeae49d12292afd752060ea36',1,'Nuke::Cola::Vcpkg::VcpkgTasks']]],
+  ['ensurewinget_4',['EnsureWinget',['../d0/d0b/classNuke_1_1Cola_1_1Tooling_1_1WingetTasks.html#a244cecd5ebf8a4d238300e5ef65bdb14',1,'Nuke::Cola::Tooling::WingetTasks']]],
+  ['ensurexrepo_5',['EnsureXRepo',['../d2/d8d/classNuke_1_1Cola_1_1Tooling_1_1XRepoTasks.html#ac9370dbaf5cc5501b2d800b40581b25c',1,'Nuke::Cola::Tooling::XRepoTasks']]],
+  ['envvar_6',['EnvVar',['../d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#a42282879f49a2835fb418333bb9fb1e9',1,'Nuke::Cola::Tooling::ToolCola']]],
+  ['envvars_7',['EnvVars',['../d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#a9d48e41be1dc5d79ea1849ea7c75a728',1,'Nuke.Cola.Tooling.ToolCola.EnvVars(bool includeParentEnvironment, params(string key, object value)[] items)'],['../d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#acec652a8d271eb600c290efe072e29af',1,'Nuke.Cola.Tooling.ToolCola.EnvVars(params(string key, object value)[] items)']]],
+  ['errorhandling_8',['ErrorHandling',['../db/de1/classNuke_1_1Cola_1_1ErrorHandling.html',1,'Nuke::Cola']]],
+  ['everythingglobbing_9',['EverythingGlobbing',['../d0/d8a/classNuke_1_1Cola_1_1Search_1_1EverythingGlobbing.html',1,'Nuke::Cola::Search']]],
+  ['exclude_20ignore_20items_10',['Exclude/ignore items',['../da/d82/FolderComposition.html#autotoc_md6',1,'']]],
+  ['execute_3c_20t_20_3e_11',['Execute&lt; T &gt;',['../da/dd3/classNuke_1_1Cola_1_1BuildPlugins_1_1Plugins.html#ad66da497ddd866dd05d68b4bf6e9308c',1,'Nuke::Cola::BuildPlugins::Plugins']]],
+  ['executewith_12',['ExecuteWith',['../d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#a8aedcb61732c8d71fdf4b66ec253d76e',1,'Nuke.Cola.Tooling.ToolCola.ExecuteWith(this Tool tool, ToolArguments args)'],['../d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#a724ac3c7c346c7daaa0098438b4c2fc9',1,'Nuke.Cola.Tooling.ToolCola.ExecuteWith(this ToolEx tool, ToolExArguments args)']]],
+  ['export_20manifest_13',['Folders with export manifest',['../da/d82/FolderComposition.html#autotoc_md5',1,'']]],
+  ['exportmanifest_14',['ExportManifest',['../d9/dd3/classNuke_1_1Cola_1_1FolderComposition_1_1ExportManifest.html',1,'Nuke::Cola::FolderComposition']]],
+  ['exportmanifestextensions_15',['ExportManifestExtensions',['../dc/d6d/classNuke_1_1Cola_1_1FolderComposition_1_1ExportManifestExtensions.html',1,'Nuke::Cola::FolderComposition']]],
+  ['extensions_16',['Tool Extensions',['../d0/d79/ToolExtensions.html',1,'']]]
+];
