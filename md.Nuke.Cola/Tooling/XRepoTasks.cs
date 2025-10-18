@@ -20,12 +20,13 @@ namespace Nuke.Cola.Tooling;
 public static class XRepoTasks
 {
     /// <summary>
-    /// Get XRepo or an error if setup has failed.
+    /// Get XRepo or an error if downloading it has failed.
     /// </summary>
-    public static ValueOrError<Tool> EnsureXRepo => ToolCola.Use("xrepo", XMakeTasks.Setup);
+    public static ValueOrError<Tool> EnsureXRepo => XMakeTasks.EnsureXMake
+        .Transform(t => t.With("lua private.xrepo"));
     
     /// <summary>
-    /// Get XRepo. It throws an exception if setup has failed.
+    /// Get XRepo. It throws an exception if downloading it has failed.
     /// </summary>
     public static Tool XRepo => EnsureXRepo.Get();
 
@@ -36,12 +37,7 @@ public static class XRepoTasks
             VcpkgTasks.EnsureVcpkg.Get($"VCPKG is needed for package(s) {package} but it couldn't be installed");
             if (VcpkgTasks.VcpkgPathInProject.DirectoryExists())
             {
-                // xrepo = xrepo.With(
-                //     environmentVariables: Cola.MakeDictionary(
-                //         ("VCPKG_ROOT", VcpkgTasks.VcpkgPathInProject.ToString())
-                //     )
-                // );
-                Environment.SetEnvironmentVariable("VCPKG_ROOT", VcpkgTasks.VcpkgPathInProject);
+                xrepo = xrepo.WithEnvVar("VCPKG_ROOT", VcpkgTasks.VcpkgPathInProject);
             }
         }
         else if (package.Contains("conan::"))
