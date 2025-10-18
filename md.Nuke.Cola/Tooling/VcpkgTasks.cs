@@ -48,15 +48,10 @@ public class VcpkgTasks
 
         if (vcpkgPath.FileExists())
             return ToolResolver.GetTool(vcpkgPath);
-
-        return ErrorHandling.TryGet(() => ToolResolver.GetPathTool("vcpkg"))
-            .Else(() =>
-            {
-                Log.Warning("VCPKG was not installed or not yet setup for this project. Setting up a project specific instance");
-                Setup();
-                return ToolResolver.GetTool(vcpkgPath);
-            })
-            .Get();
+            
+        Log.Warning("Installing VCPKG for this project in {0}", VcpkgPathInProject);
+        Setup();
+        return ToolResolver.GetTool(vcpkgPath);
     }}
 
     /// <summary>
