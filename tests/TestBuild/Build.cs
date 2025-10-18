@@ -57,6 +57,12 @@ public class Build : NukeBuild
             Log.Information("Linkdirs: {0}", conanSpdlogInfo[conanSpdlogSpec]?["fetchinfo"]?["linkdirs"]?.Value);
         });
 
+    public Target TestCMake => _ => _
+        .Executes(() =>
+        {
+            CMakeTasks.CMake("--version");
+        });
+
     public Target BuildTestProgram => _ => _
         .Executes(() =>
         {
