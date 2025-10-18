@@ -65,6 +65,8 @@ public static class CMakeTasks
                 $"https://github.com/Kitware/CMake/releases/download/v{LatestVersion}/{archiveName}",
                 downloadPath
             );
+
+            Log.Information("Extracting CMake {0}", subfolderName);
             if (archiveName.EndsWithOrdinalIgnoreCase(".zip"))
             {
                 downloadPath.UnZipTo(localPath);
