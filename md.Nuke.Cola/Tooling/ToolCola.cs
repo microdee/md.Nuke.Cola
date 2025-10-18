@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Nuke.Common;
+using Nuke.Common.IO;
 using Nuke.Common.Tooling;
 using Nuke.Common.Utilities;
 using Serilog;
@@ -315,6 +316,15 @@ public static class ToolCola
     /// </summary>
     public static Tool WithEnvVars(this Tool tool, params (string key, object value)[] items)
         => tool.With(EnvVars(items));
+
+    /// <summary>
+    /// Add an input path to this tool's PATH list. It won't be added if input path is already in there.
+    /// </summary>
+    public static Tool WithPathVar(this Tool tool, AbsolutePath path)
+        => tool.WithEnvVar(
+            "PATH",
+            EnvironmentInfo.Paths.Union([ path.ToString() ]).JoinSemicolon()
+        );
     
     /// <summary>
     /// A more comfortable passing of environment variables. This will also pass on parent environment
@@ -333,6 +343,15 @@ public static class ToolCola
     /// </summary>
     public static ToolEx WithEnvVars(this ToolEx tool, bool includeParentEnvironment, params (string key, object value)[] items)
         => tool.With(EnvVars(includeParentEnvironment, items));
+
+    /// <summary>
+    /// Add an input path to this tool's PATH list. It won't be added if input path is already in there.
+    /// </summary>
+    public static ToolEx WithPathVar(this ToolEx tool, AbsolutePath path)
+        => tool.WithEnvVar(
+            "PATH",
+            EnvironmentInfo.Paths.Union([ path.ToString() ]).JoinSemicolon()
+        );
 
     /// <summary>
     /// Removes ANSI escape sequences from the output of a Tool (remove color data for example)
