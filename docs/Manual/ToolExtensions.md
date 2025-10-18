@@ -1,5 +1,7 @@
 # Tool Extensions {#ToolExtensions}
 
+[TOC]
+
 ## Tool Composition
 
 Whenever the Nuke Tooling API gives you a Tool delegate it is a clean slate, meaning you need to provide it your arguments, environment variables, how one reacts to its output etc. With the intended usage once these parameters are given to the `Tool` delegate it immediately executes the tool it represents.
@@ -22,7 +24,7 @@ MyToolMode
     .WithSemanticLogging()("--arg value"); // excercise for the reader
 ```
 
-## `ToolEx`
+## ToolEx
 
 A reimplementation of Nuke's `Tool` with extended features. All the tool composition features are also available for `ToolEx`.
 

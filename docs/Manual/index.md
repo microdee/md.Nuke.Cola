@@ -16,9 +16,9 @@ Name comes from Nuka Cola of the Fallout franchise.
 
 Highlighted features:
 
-* Automatically discovered build-plugins
-* Declarative folder-to-folder mapping (Folder composition)
-* Extensions for the `Tool` delegate
+* [Automatically discovered build-plugins](@ref BuildPlugins)
+* [Declarative folder-to-folder mapping (Folder composition)](@ref FolderComposition)
+* [Extensions for the `Tool` delegate](@ref ToolExtensions)
 
 Use the sidebar to read further details about them.
 

@@ -401,7 +401,7 @@ AUTOLINK_SUPPORT       = YES
 # using \# or the \link or commands.
 # This tag requires that the tag AUTOLINK_SUPPORT is set to YES.
 
-AUTOLINK_IGNORE_WORDS  =
+AUTOLINK_IGNORE_WORDS  = Nuke
 
 # If you use STL classes (i.e. std::string, std::vector, etc.) but do not want
 # to include (a tag file for) the STL sources as input, then you should set this
