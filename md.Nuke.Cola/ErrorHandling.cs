@@ -23,7 +23,7 @@ public record Attempt(Exception[]? Error = null)
 public record ValueOrError<T>(T? Value = default, Exception[]? Error = null)
 {
     public static implicit operator ValueOrError<T> (T val) => new(val);
-    public static implicit operator ValueOrError<T> (Exception[] e) => new(Error: e);
+    public static implicit operator ValueOrError<T> (Exception[]? e) => new(Error: e);
     public static implicit operator ValueOrError<T> (Exception e) => new(Error: [e]);
     public static implicit operator T? (ValueOrError<T> from) => from.Value;
     public static implicit operator Exception? (ValueOrError<T> from) => from.Error?[0];
@@ -49,6 +49,21 @@ public static class ErrorHandling
             var prevErrors = previousErrors ?? [];
             return prevErrors.Prepend(e).ToArray();
         }
+    }
+
+    /// <summary>
+    /// Work on the value inside a ValueOrError but only if input ValueOrError is valid. Return aggregated errors
+    /// otherwise.
+    /// </summary>
+    /// <param name="self"></param>
+    /// <param name="transform"></param>
+    /// <typeparam name="TResult"></typeparam>
+    /// <typeparam name="TInput"></typeparam>
+    /// <returns></returns>
+    public static ValueOrError<TResult> Transform<TResult, TInput>(this ValueOrError<TInput> self, Func<TInput, TResult> transform)
+    {
+        if (!self) return self.Error;
+        return TryGet(() => transform(self.Get()));
     }
 
     /// <summary>
