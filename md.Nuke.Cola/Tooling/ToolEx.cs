@@ -36,7 +36,7 @@ public delegate IReadOnlyCollection<Output>? ToolEx(
 /// <param name="Input">Handle standard input stream after process creation</param>
 /// <param name="StandardOutputEncoding">Encoding for standard output. Default is UTF8 (with BOM)</param>
 /// <param name="StandardInputEncoding">Encoding for standard input. Default is UTF8 (without BOM)</param>
-public record ToolExArguments(
+public record class ToolExArguments(
     ToolArguments ToolArgs,
     Action<StreamWriter>? Input = null,
     Encoding? StandardOutputEncoding = null,
@@ -121,7 +121,7 @@ public record ToolExArguments(
 /// </summary>
 /// <param name="Target"></param>
 /// <param name="PropagateArguments"></param>
-public record PropagateToolExExecution(ToolEx Target, ToolExArguments? PropagateArguments = null)
+public record class PropagateToolExExecution(ToolEx Target, ToolExArguments? PropagateArguments = null)
 {
     public IReadOnlyCollection<Output>? Execute(
         // Nuke Tool

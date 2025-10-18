@@ -1,11 +1,17 @@
 <div align="center">
 
-<img width="400px" src="docs/nuke.cola.text.onLight.svg#gh-light-mode-only" />
-<img width="400px" src="docs/nuke.cola.text.onDark.svg#gh-dark-mode-only" />
+<img width="400px" src="docs/Images/nuke.cola.text.onLight.svg#gh-light-mode-only" />
+<img width="400px" src="docs/Images/nuke.cola.text.onDark.svg#gh-dark-mode-only" />
 
 Utilities and extensions useful for any Nuke builds originally separated from Nuke.Unreal.
 
+### [Documentation](https://mcro.de/md.Nuke.Cola)
+
 </div>
+
+### This README file is now deprecated
+> [!IMPORTANT]
+> Documentation is migrated over to https://mcro.de/md.Nuke.Cola which is nicer than this readme file. This README is now deprecated and won't be updated. However external links may direct to this README file. For this reason its contents of will be kept until October 2026.
 
 - [Build Plugins](#build-plugins)
   - [`[ImplicitBuildInterface]` plugins](#implicitbuildinterface-plugins)
@@ -495,9 +501,12 @@ Arguments.GetBlock("extra"); //-> ["extra", "arguments"]
 Arguments.GetBlock("foo"); //-> ["/foo", "--bar"]
 ```
 
+> [!IMPORTANT]
+> Documentation is migrated over to https://mcro.de/md.Nuke.Cola which is nicer than this readme file. This README is now deprecated and won't be updated. However external links may direct to this README file. For this reason its contents of will be kept until October 2026.
+
 <div align="center">
 
-<img width="400px" src="docs/nuke.cola.full.onLight.svg#gh-light-mode-only" />
-<img width="400px" src="docs/nuke.cola.full.onDark.svg#gh-dark-mode-only" />
+<img width="400px" src="docs/Images/nuke.cola.full.onLight.svg#gh-light-mode-only" />
+<img width="400px" src="docs/Images/nuke.cola.full.onDark.svg#gh-dark-mode-only" />
 
 </div>

@@ -20,7 +20,7 @@ namespace Nuke.Cola.FolderComposition;
 /// <param name="To">The target suffix desired by the importing project</param>
 /// <param name="From">The original suffix inside the source folder</param>
 /// <returns></returns>
-public record ImportFolderSuffixes(string To, string From = "Origin")
+public record class ImportFolderSuffixes(string To, string From = "Origin")
 {
     public static implicit operator ImportFolderSuffixes (string from)
         => new(from);
@@ -47,7 +47,7 @@ public record ImportFolderSuffixes(string To, string From = "Origin")
 /// symlinked.
 /// </param>
 /// <returns></returns>
-public record ImportFolderItem(AbsolutePath From, AbsolutePath ToParent, ExportManifest? Manifest = null, string ManifestFilePattern = "export.y*ml")
+public record class ImportFolderItem(AbsolutePath From, AbsolutePath ToParent, ExportManifest? Manifest = null, string ManifestFilePattern = "export.y*ml")
 {
     public static implicit operator ImportFolderItem ((AbsolutePath from, AbsolutePath toParent) from)
         => new(from.from, from.toParent);
@@ -103,7 +103,7 @@ public record ImportFolderItem(AbsolutePath From, AbsolutePath ToParent, ExportM
 /// Merge these export manifests into all export manifests found by current import
 /// (through Use items for example).
 /// </param>
-public record ImportOptions(
+public record class ImportOptions(
     bool UseSubfolder = true,
     bool Pretend = false,
     bool CopyByDefault = false,
@@ -120,7 +120,7 @@ public enum ImportMethod
     Link
 }
 
-public record ImportedItem(AbsolutePath From, AbsolutePath To, ImportMethod Method);
+public record class ImportedItem(AbsolutePath From, AbsolutePath To, ImportMethod Method);
 
 public static class FolderComposition
 {
