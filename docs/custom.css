@@ -1,3 +1,13 @@
 #projectalign {
     display: none;
 }
+
+html.dark-mode img[src*="gh-light-mode-only"]
+{
+    display: none !important;
+}
+
+html.light-mode img[src*="gh-dark-mode-only"]
+{
+    display: none !important;
+}
