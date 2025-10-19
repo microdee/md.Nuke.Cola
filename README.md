@@ -9,9 +9,21 @@ Utilities and extensions useful for any Nuke builds originally separated from Nu
 
 </div>
 
+Name comes from Nuka Cola of the Fallout franchise.
+
+Highlighted features:
+
+* [Automatically discovered build-plugins](https://mcro.de/md.Nuke.Cola/de/d4b/BuildPlugins.html)
+* [Declarative folder-to-folder mapping (Folder composition)](https://mcro.de/md.Nuke.Cola/da/d82/FolderComposition.html)
+* [Extensions for the `Tool` delegate](https://mcro.de/md.Nuke.Cola/d0/d79/ToolExtensions.html)
+
 ### This README file is now deprecated
 > [!IMPORTANT]
 > Documentation is migrated over to https://mcro.de/md.Nuke.Cola which is nicer than this readme file. This README is now deprecated and won't be updated. However external links may direct to this README file. For this reason its contents of will be kept until October 2026.
+
+---
+
+&nbsp;
 
 - [Build Plugins](#build-plugins)
   - [`[ImplicitBuildInterface]` plugins](#implicitbuildinterface-plugins)
@@ -500,6 +512,10 @@ Multiple blocks can be distinguished by name appended:
 Arguments.GetBlock("extra"); //-> ["extra", "arguments"]
 Arguments.GetBlock("foo"); //-> ["/foo", "--bar"]
 ```
+
+&nbsp;
+
+---
 
 > [!IMPORTANT]
 > Documentation is migrated over to https://mcro.de/md.Nuke.Cola which is nicer than this readme file. This README is now deprecated and won't be updated. However external links may direct to this README file. For this reason its contents of will be kept until October 2026.
