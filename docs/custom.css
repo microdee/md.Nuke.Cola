@@ -11,3 +11,13 @@ html.light-mode img[src*="gh-dark-mode-only"]
 {
     display: none !important;
 }
+
+html.dark-mode img[alt*="light-mode"]
+{
+    display: none !important;
+}
+
+html.light-mode img[alt*="dark-mode"]
+{
+    display: none !important;
+}

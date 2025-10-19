@@ -2,8 +2,8 @@
 
 <div align="center">
 
-<img width="400px" src="nuke.cola.full.onLight.svg#gh-light-mode-only" />
-<img width="400px" src="nuke.cola.full.onDark.svg#gh-dark-mode-only" />
+<img width="400px" src="nuke.cola.full.onLight.svg" alt="light-mode" />
+<img width="400px" src="nuke.cola.full.onDark.svg" alt="dark-mode" />
 
 Utilities and extensions useful for any [Nuke](https://nuke.build) builds originally separated from Nuke.Unreal.
 
