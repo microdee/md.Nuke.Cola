@@ -43,14 +43,12 @@ public ref struct ArgumentStringHandlerEx
                 AppendFormatted(value, alignment, format);
             break;
             case IAbsolutePathHolder holder: AppendFormatted(holder, alignment, format); break;
-            case ValueTuple<string, object?> optionalParam:
-                var (param, arg) = optionalParam;
-                if (string.IsNullOrWhiteSpace(arg?.ToString()))
-                {
-                    return;
-                }
+            case (string, ""): return;
+            case (string, null): return;
+            case (string param, {} arg and not ""):
                 (var stringArg, format) = GetObjectString(arg, alignment, format);
                 AppendFormatted(param + stringArg, alignment, format);
+            break;
             break;
             default: AppendFormatted(obj?.ToString(), alignment, format); break;
         }
