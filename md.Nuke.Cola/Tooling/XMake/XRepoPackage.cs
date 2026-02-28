@@ -75,10 +75,12 @@ public record class XRepoPackage(
     string? Name = null,
 
     [JsonProperty(PropertyName = "links")]
-    string[]? Links = null,
+    [JsonConverter(typeof(OneOrManyConverter<string>))]
+    List<string>? Links = null,
 
     [JsonProperty(PropertyName = "syslinks")]
-    string[]? SysLinks = null,
+    [JsonConverter(typeof(OneOrManyConverter<string>))]
+    List<string>? SysLinks = null,
 
     [JsonProperty(PropertyName = "program")]
     AbsolutePath? Program = null,
@@ -112,7 +114,7 @@ public record class XRepoPackage(
     /// Get the parsed path of this package. This is only available for libraries
     /// </summary>
     /// <returns></returns>
-    XRepoPackagePath? GetPath()
+    public XRepoPackagePath? GetPath()
     {
         foreach (var includeDir in IncludeDirs ?? [])
         {
