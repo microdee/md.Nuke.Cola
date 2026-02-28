@@ -1,5 +1,6 @@
 var dir_ade6f3dc4c582c6658408fb9b2056a90 =
 [
+    [ "ArgumentStringHandlerEx.cs", "d4/dd3/ArgumentStringHandlerEx_8cs_source.html", null ],
     [ "CMakeTasks.cs", "d8/d0e/CMakeTasks_8cs_source.html", null ],
     [ "PropagateToolExecution.cs", "df/dbc/PropagateToolExecution_8cs_source.html", null ],
     [ "PythonTasks.cs", "d8/d33/PythonTasks_8cs_source.html", null ],

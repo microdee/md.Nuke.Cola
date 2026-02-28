@@ -28,6 +28,7 @@ var annotated_dup =
           [ "SearchFileSystem", "d2/de4/classNuke_1_1Cola_1_1Search_1_1SearchFileSystem.html", "d2/de4/classNuke_1_1Cola_1_1Search_1_1SearchFileSystem" ]
         ] ],
         [ "Tooling", "d4/daf/namespaceNuke_1_1Cola_1_1Tooling.html", [
+          [ "ArgumentStringHandlerEx", "db/d9b/structNuke_1_1Cola_1_1Tooling_1_1ArgumentStringHandlerEx.html", null ],
           [ "CMakeTasks", "dc/d54/classNuke_1_1Cola_1_1Tooling_1_1CMakeTasks.html", "dc/d54/classNuke_1_1Cola_1_1Tooling_1_1CMakeTasks" ],
           [ "PythonTasks", "de/d71/classNuke_1_1Cola_1_1Tooling_1_1PythonTasks.html", null ],
           [ "ToolCola", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola" ],

@@ -1,5 +1,6 @@
 var namespaceNuke_1_1Cola_1_1Tooling =
 [
+    [ "ArgumentStringHandlerEx", "db/d9b/structNuke_1_1Cola_1_1Tooling_1_1ArgumentStringHandlerEx.html", null ],
     [ "CMakeTasks", "dc/d54/classNuke_1_1Cola_1_1Tooling_1_1CMakeTasks.html", "dc/d54/classNuke_1_1Cola_1_1Tooling_1_1CMakeTasks" ],
     [ "PythonTasks", "de/d71/classNuke_1_1Cola_1_1Tooling_1_1PythonTasks.html", null ],
     [ "ToolCola", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola" ],
@@ -12,6 +13,6 @@ var namespaceNuke_1_1Cola_1_1Tooling =
     [ "PropagateToolExecution", "d4/daf/namespaceNuke_1_1Cola_1_1Tooling.html#ae8dcea104f8cfbb83ad50ac8ef7881e7", null ],
     [ "PropagateToolExExecution", "d4/daf/namespaceNuke_1_1Cola_1_1Tooling.html#a4625bbe27766c9063be21dcaff551874", null ],
     [ "ToolArguments", "d4/daf/namespaceNuke_1_1Cola_1_1Tooling.html#a8107a196ecbd24d970f46b0f68a7af2e", null ],
-    [ "ToolEx", "d4/daf/namespaceNuke_1_1Cola_1_1Tooling.html#a78cfb5681ed8643a4badd92320871ff7", null ],
+    [ "ToolEx", "d4/daf/namespaceNuke_1_1Cola_1_1Tooling.html#aa50a79cc8c4f08ef1d597935c0f744fd", null ],
     [ "ToolExArguments", "d4/daf/namespaceNuke_1_1Cola_1_1Tooling.html#add3e22ef1f1256aae15373592fd352f8", null ]
 ];

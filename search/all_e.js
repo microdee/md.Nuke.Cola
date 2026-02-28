@@ -8,5 +8,6 @@ var searchData=
   ['semanticlogging_5',['SemanticLogging',['../d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#a04a6b6787f26c6248ab3bbd401bfc830',1,'Nuke::Cola::Tooling::ToolCola']]],
   ['sourcepath_6',['SourcePath',['../d5/d75/classNuke_1_1Cola_1_1BuildPlugins_1_1CSharpScriptPlugin.html#a2fe5636fd76f777105324c8ea20ee4ad',1,'Nuke.Cola.BuildPlugins.CSharpScriptPlugin.SourcePath'],['../d5/d3f/classNuke_1_1Cola_1_1BuildPlugins_1_1DotnetProjectPlugin.html#a97dd5ca76b00b8e0c131ea9491f11458',1,'Nuke.Cola.BuildPlugins.DotnetProjectPlugin.SourcePath'],['../da/dda/interfaceNuke_1_1Cola_1_1BuildPlugins_1_1IHavePlugin.html#a943445562dd5ea1e76a26c08736a8ead',1,'Nuke.Cola.BuildPlugins.IHavePlugin.SourcePath'],['../df/d0d/classNuke_1_1Cola_1_1BuildPlugins_1_1ImplicitBuildInterfacePlugin.html#a993e3ca194326ced47e406f5dfd2ae89',1,'Nuke.Cola.BuildPlugins.ImplicitBuildInterfacePlugin.SourcePath']]],
   ['standard_20input_20piping_7',['Standard Input / Piping',['../d0/d79/ToolExtensions.html#autotoc_md9',1,'']]],
-  ['support_8',['Tool Support',['../d7/dd8/ToolSupport.html',1,'']]]
+  ['stderrorisnoterror_8',['StdErrorIsNotError',['../d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#ada796fb9485ea47187698d5f436b29a2',1,'Nuke::Cola::Tooling::ToolCola']]],
+  ['support_9',['Tool Support',['../d7/dd8/ToolSupport.html',1,'']]]
 ];

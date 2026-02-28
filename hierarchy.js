@@ -1,6 +1,7 @@
 var hierarchy =
 [
     [ "Nuke.Cola.Arguments", "d7/d3e/classNuke_1_1Cola_1_1Arguments.html", null ],
+    [ "Nuke.Cola.Tooling.ArgumentStringHandlerEx", "db/d9b/structNuke_1_1Cola_1_1Tooling_1_1ArgumentStringHandlerEx.html", null ],
     [ "Attribute", null, [
       [ "Nuke.Cola.BuildPlugins.ImplicitBuildInterfaceAttribute", "d1/dd4/classNuke_1_1Cola_1_1BuildPlugins_1_1ImplicitBuildInterfaceAttribute.html", null ]
     ] ],
