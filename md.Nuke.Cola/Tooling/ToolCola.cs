@@ -14,6 +14,14 @@ namespace Nuke.Cola.Tooling;
 public static class ToolCola
 {
     /// <summary>
+    /// A tool output logger which doesn't treat standard error as error logs. Many tools for example send progress
+    /// information to standard-error which shouldn't be treated as a real error or warning.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="output"></param>
+    public static void StdErrorIsNotError(OutputType type, string output) => Log.Debug(output);
+
+    /// <summary>
     /// Execute a tool with the arguments provided by the input record.
     /// </summary>
     /// <param name="tool"></param>
@@ -45,7 +53,9 @@ public static class ToolCola
             args.ToolArgs.LogInvocation,
             args.ToolArgs.Logger,
             args.ToolArgs.ExitHandler,
-            args.Input
+            args.Input,
+            args.StandardOutputEncoding,
+            args.StandardInputEncoding
         );
 
     /// <summary>
@@ -134,7 +144,7 @@ public static class ToolCola
     /// </remarks>
     public static Tool With(
         this Tool tool,
-        ArgumentStringHandler arguments = default,
+        ArgumentStringHandlerEx arguments = default,
         string? workingDirectory = null,
         IReadOnlyDictionary<string, string>? environmentVariables = null,
         int? timeout = null,
@@ -183,7 +193,7 @@ public static class ToolCola
     /// </remarks>
     public static ToolEx With(
         this ToolEx tool,
-        ArgumentStringHandler arguments = default,
+        ArgumentStringHandlerEx arguments = default,
         string? workingDirectory = null,
         IReadOnlyDictionary<string, string>? environmentVariables = null,
         int? timeout = null,

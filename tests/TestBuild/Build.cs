@@ -76,9 +76,11 @@ public class Build : NukeBuild
         .DependsOn(BuildTestProgram)
         .Executes(() =>
         {
-            var testProgramPath = RootDirectory / "TestProgram" / "bin" / "Debug" / "net9.0" / "TestProgram.exe";
+            var testProgramPath = RootDirectory / "TestProgram/bin/Debug/net9.0/TestProgram.exe";
             var testProgram = ToolExResolver.GetTool(testProgramPath);
+            var testProgramVanilla = ToolResolver.GetTool(testProgramPath);
 
+            Log.Information("Test streams");
             testProgram
                 .WithInput("Hello")
                 .WithInput("World")
@@ -91,6 +93,74 @@ public class Build : NukeBuild
                 .Pipe(testProgram)("repeat-line")!
                 .Pipe(testProgram)("repeat-line");
 
-            testProgram("foobar");
+            Log.Information("Test arguments (ToolEx)");
+            Log.Information("Regular");
+            testProgram("foo bar");
+            Log.Information("Multiline");
+            testProgram(
+                """
+                Foo
+                Bar
+                Lorem
+                Ipsum
+                Dolor
+                Sit amet
+                """
+            );
+            var regularValue = "asdasd";
+            var valueWithSpaces = "asdasd asdasd";
+            var multilineValue =
+                """
+                Hello!
+                How is it going?
+                """
+            ;
+            Log.Information("Interpolated");
+            testProgram(
+                $"""
+                Foo={regularValue:q}
+                Bar={valueWithSpaces:q}
+                Lorem={multilineValue:q}
+                """
+            );
+            Log.Information("Test arguments (Tool)");
+            Log.Information("Regular");
+            testProgramVanilla("foo bar");
+            Log.Information("Regular (With)");
+            testProgramVanilla.With("foo bar")("");
+            Log.Information("Multiline (AsSingleLine)");
+            testProgramVanilla(
+                """
+                Foo
+                Bar
+                Lorem
+                Ipsum
+                Dolor
+                Sit amet
+                """.AsSingleLine()
+            );
+            Log.Information("Multiline (With)");
+            testProgramVanilla.With(
+                """
+                Foo
+                Bar
+                Lorem
+                Ipsum
+                Dolor
+                Sit amet
+                """
+            )("");
+            Log.Information("Vanilla interpolation features");
+            testProgramVanilla(
+                $"Foo={regularValue} Bar={valueWithSpaces} Lorem={multilineValue}"
+            );
+            Log.Information("Nuke.Cola interpolation features");
+            testProgramVanilla.With(
+                $"""
+                Foo={regularValue}
+                Bar={valueWithSpaces:q}
+                Lorem={multilineValue:q}
+                """
+            )("");
         });
 }

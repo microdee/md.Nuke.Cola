@@ -14,7 +14,7 @@ namespace Nuke.Cola.Tooling;
 /// </summary>
 public delegate IReadOnlyCollection<Output>? ToolEx(
     // Nuke Tool
-    ArgumentStringHandler arguments = default,
+    ArgumentStringHandlerEx arguments = default,
     string? workingDirectory = null,
     IReadOnlyDictionary<string, string>? environmentVariables = null,
     int? timeout = null,
@@ -125,7 +125,7 @@ public record class PropagateToolExExecution(ToolEx Target, ToolExArguments? Pro
 {
     public IReadOnlyCollection<Output>? Execute(
         // Nuke Tool
-        ArgumentStringHandler arguments = default,
+        ArgumentStringHandlerEx arguments = default,
         string? workingDirectory = null,
         IReadOnlyDictionary<string, string>? environmentVariables = null,
         int? timeout = null,
@@ -159,8 +159,7 @@ public record class PropagateToolExExecution(ToolEx Target, ToolExArguments? Pro
 
 internal class ToolExExecutor
 {
-    private static readonly char[] s_pathSeparators = { EnvironmentInfo.IsWin ? ';' : ':' };
-    private static readonly object s_lock = new();
+    private static readonly object _lock = new();
     
     private readonly string _toolPath;
 
@@ -171,7 +170,7 @@ internal class ToolExExecutor
 
     public IReadOnlyCollection<Output>? Execute(
         // Nuke Tool
-        ArgumentStringHandler arguments = default,
+        ArgumentStringHandlerEx arguments = default,
         string? workingDirectory = null,
         IReadOnlyDictionary<string, string>? environmentVariables = null,
         int? timeout = null,
@@ -298,7 +297,7 @@ internal class ToolExExecutor
     
     private static void LogInvocation(ProcessStartInfo startInfo, Func<string, string> outputFilter)
     {
-        lock (s_lock)
+        lock (_lock)
         {
             Log.Information("> {ToolPath} {Arguments}", startInfo.FileName.DoubleQuoteIfNeeded(), outputFilter(startInfo.Arguments));
             Log.Write(

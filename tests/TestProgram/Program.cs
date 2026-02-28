@@ -12,6 +12,10 @@
     break;
     
     default:
-        Console.WriteLine($"Wrong input: {string.Join(' ', args)}");
+        Console.WriteLine("Arguments:");
+        for (int i = 0; i < args.Length; ++i)
+        {
+            Console.WriteLine($"[{i}] : {args[i]}");
+        }
     break;
 }
