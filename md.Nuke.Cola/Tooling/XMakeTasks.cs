@@ -20,7 +20,7 @@ namespace Nuke.Cola.Tooling;
 /// </summary>
 public static class XMakeTasks
 {
-    public const string LatestVersion = "3.0.4";
+    public const string LatestVersion = "3.0.7";
     internal static string GetBundleAppName(string version = LatestVersion)
         => (plat: EnvironmentInfo.Platform, arch: RuntimeInformation.OSArchitecture) switch
         {
