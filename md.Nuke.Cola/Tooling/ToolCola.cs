@@ -445,14 +445,14 @@ public static class ToolCola
     /// Get a tool which should be in PATH, and provide an optional way to set it up automatically if it wasn't
     /// </summary>
     /// <returns>The Tool or an error if it wasn't in PATH and the setup had failed</returns>
-    public static ValueOrError<Tool> Use(string tool, Action? setup = null)
-        => ErrorHandling.TryGet(() => ToolResolver.GetPathTool(tool))
+    public static ValueOrError<ToolEx> Use(string tool, Action? setup = null)
+        => ErrorHandling.TryGet(() => ToolExResolver.GetPathTool(tool))
             .Else(setup != null, () =>
             {
                 Log.Warning($"{tool} was not installed, but it's OK we're installing it now.");
                 setup!();
                 UpdatePathEnvVar();
-                return ToolResolver.GetPathTool(tool);
+                return ToolExResolver.GetPathTool(tool);
             });
 
     /// <summary>
@@ -462,13 +462,13 @@ public static class ToolCola
     /// <param name="condition">Only attempt this method of setup when condition is met</param>
     /// <param name="tool">The name of the tool</param>
     /// <param name="setup">Setup the tool for the caller</param>
-    /// <returns>The Tool or an error if it this or previous setup attempts have failed</returns>
-    public static ValueOrError<Tool> ElseTrySetup(this ValueOrError<Tool> result, bool condition, string tool, Action setup)
+    /// <returns>The Tool or an error if this or previous setup attempts have failed</returns>
+    public static ValueOrError<ToolEx> ElseTrySetup(this ValueOrError<ToolEx> result, bool condition, string tool, Action setup)
         => result.Else(condition, () =>
         {
             setup();
             UpdatePathEnvVar();
-            return ToolResolver.GetPathTool(tool);
+            return ToolExResolver.GetPathTool(tool);
         });
         
     /// <summary>
@@ -477,7 +477,7 @@ public static class ToolCola
     /// <param name="result">Result of the previous attempt</param>
     /// <param name="tool">The name of the tool</param>
     /// <param name="setup">Setup the tool for the caller</param>
-    /// <returns>The Tool or an error if it this or previous setup attempts have failed</returns>
-    public static ValueOrError<Tool> ElseTrySetup(this ValueOrError<Tool> result, string tool, Action setup)
+    /// <returns>The Tool or an error if this or previous setup attempts have failed</returns>
+    public static ValueOrError<ToolEx> ElseTrySetup(this ValueOrError<ToolEx> result, string tool, Action setup)
         => result.ElseTrySetup(true, tool, setup);
 }

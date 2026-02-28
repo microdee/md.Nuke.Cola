@@ -56,10 +56,10 @@ public static class WingetTasks
     /// <summary>
     /// Get Winget or an error if setup has failed (or if we're not running on Windows).
     /// </summary>
-    public static ValueOrError<Tool> EnsureWinget => ToolCola.Use("winget", Setup);
+    public static ValueOrError<ToolEx> EnsureWinget => ToolCola.Use("winget", Setup);
     
     /// <summary>
     /// Get Winget. It throws an exception if setup has failed (or if we're not running on Windows).
     /// </summary>
-    public static Tool Winget => EnsureWinget.Get();
+    public static ToolEx Winget => EnsureWinget.Get();
 }

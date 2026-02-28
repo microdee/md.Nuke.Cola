@@ -49,7 +49,7 @@ public static class CMakeTasks
     /// <summary>
     /// Get CMake or an error if downloading it has failed.
     /// </summary>
-    public static ValueOrError<Tool> TryGetCMake(string version = LatestVersion) => ErrorHandling.TryGet(() =>
+    public static ValueOrError<ToolEx> TryGetCMake(string version = LatestVersion) => ErrorHandling.TryGet(() =>
     {
         var archiveName = GetArchiveName(version);
         var subfolderName = archiveName
@@ -83,13 +83,13 @@ public static class CMakeTasks
             PlatformFamily.OSX => localPath / subfolderName / "CMake.app",
             var other => throw new Exception($"Trying to use CMake on an unsupported platform: {other}")
         };
-        return ToolResolver.GetTool(programPath);
+        return ToolExResolver.GetTool(programPath);
     });
 
-    public static ValueOrError<Tool> EnsureCMake => TryGetCMake();
+    public static ValueOrError<ToolEx> EnsureCMake => TryGetCMake();
 
     /// <summary>
     /// Get CMake. It throws an exception if setup has failed.
     /// </summary>
-    public static Tool CMake => EnsureCMake.Get();
+    public static ToolEx CMake => EnsureCMake.Get();
 }

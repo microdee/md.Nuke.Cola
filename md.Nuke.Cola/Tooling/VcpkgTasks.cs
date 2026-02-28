@@ -8,7 +8,7 @@ using Nuke.Common.Tooling;
 using Nuke.Common.Tools.Git;
 using Serilog;
 
-namespace Nuke.Cola.Vcpkg;
+namespace Nuke.Cola.Tooling;
 
 /// <summary>
 /// Wrapper class for VCPKG a C++ package manager by Microsoft
@@ -40,22 +40,22 @@ public class VcpkgTasks
     /// <summary>
     /// Get an instance of VCPKG or an error if setup has failed.
     /// </summary>
-    public static ValueOrError<Tool> EnsureVcpkg { get
+    public static ValueOrError<ToolEx> EnsureVcpkg { get
     {
         var vcpkgPath = EnvironmentInfo.Platform == PlatformFamily.Windows
             ? VcpkgPathInProject / "vcpkg.exe"
             : VcpkgPathInProject / "vcpkg";
 
         if (vcpkgPath.FileExists())
-            return ToolResolver.GetTool(vcpkgPath);
+            return ToolExResolver.GetTool(vcpkgPath);
             
         Log.Warning("Installing VCPKG for this project in {0}", VcpkgPathInProject);
         Setup();
-        return ToolResolver.GetTool(vcpkgPath);
+        return ToolExResolver.GetTool(vcpkgPath);
     }}
 
     /// <summary>
     /// Get an instance of VCPKG. It throws an exception if setup has failed.
     /// </summary>
-    public static Tool Vcpkg => EnsureVcpkg.Get();
+    public static ToolEx Vcpkg => EnsureVcpkg.Get();
 }
