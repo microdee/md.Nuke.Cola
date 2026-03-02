@@ -1,5 +1,8 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Dynamic;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Nuke.Common;
 using Nuke.Common.IO;
 using Nuke.Common.Tooling;
 using Nuke.Common.Utilities;
@@ -60,6 +63,35 @@ public partial record class XRepoPackagePath(
 }
 
 /// <summary>
+/// Mirror of package-repo object which may be returned by xrepo fetch.
+/// </summary>
+[JsonObject(MemberSerialization.OptIn)]
+public record class XRepoPackageRepo(
+
+    [JsonProperty(PropertyName = "commit")]
+    string Commit,
+
+    [JsonProperty(PropertyName = "url")]
+    string Url,
+
+    [JsonProperty(PropertyName = "branch")]
+    string Branch,
+
+    [JsonProperty(PropertyName = "name")]
+    string Name
+);
+
+/// <summary>
+/// Mirror of package-artifact object which may be returned by xrepo fetch.
+/// </summary>
+[JsonObject(MemberSerialization.OptIn)]
+public record class XRepoPackageArtifact(
+
+    [JsonProperty(PropertyName = "installdir")]
+    string InstallDir
+);
+
+/// <summary>
 /// Mirror of package object which is returned by xrepo fetch.
 /// </summary>
 [JsonObject(MemberSerialization.OptIn)]
@@ -71,9 +103,6 @@ public record class XRepoPackage(
     [JsonProperty(PropertyName = "license")]
     string? License = null,
 
-    [JsonProperty(PropertyName = "name")]
-    string? Name = null,
-
     [JsonProperty(PropertyName = "links")]
     [JsonConverter(typeof(OneOrManyConverter<string>))]
     List<string>? Links = null,
@@ -81,9 +110,6 @@ public record class XRepoPackage(
     [JsonProperty(PropertyName = "syslinks")]
     [JsonConverter(typeof(OneOrManyConverter<string>))]
     List<string>? SysLinks = null,
-
-    [JsonProperty(PropertyName = "program")]
-    AbsolutePath? Program = null,
 
     [JsonProperty(PropertyName = "static")]
     bool? Static = false,
@@ -107,7 +133,48 @@ public record class XRepoPackage(
     string? CxxFlags = null,
 
     [JsonProperty(PropertyName = "defines")]
-    string? Defines = null
+    [JsonConverter(typeof(OneOrManyConverter<string>))]
+    List<string>? Defines = null,
+
+    // These only appear in system program dependencies
+    [JsonProperty(PropertyName = "name")]
+    string? Name = null,
+
+    [JsonProperty(PropertyName = "program")]
+    AbsolutePath? Program = null,
+
+    // These only appear in auto-environment program dependencies
+    [JsonProperty(PropertyName = "arch")]
+    string? Arch = null,
+
+    [JsonProperty(PropertyName = "configs")]
+    Dictionary<string, string>? Configs = null,
+
+    [JsonProperty(PropertyName = "description")]
+    string? Description = null,
+
+    [JsonProperty(PropertyName = "plat")]
+    string? Plat = null,
+
+    [JsonProperty(PropertyName = "envs")]
+    Dictionary<string, object>? Envs = null,
+
+    [JsonProperty(PropertyName = "repo")]
+    XRepoPackageRepo? Repo = null,
+    
+    // TODO deps and librarydeps
+
+    [JsonProperty(PropertyName = "pathenvs")]
+    string[]? PathEnvs = null,
+
+    [JsonProperty(PropertyName = "kind")]
+    string? Kind = null,
+
+    [JsonProperty(PropertyName = "artifacts")]
+    XRepoPackageArtifact? Artifacts = null,
+
+    [JsonProperty(PropertyName = "mode")]
+    string? Mode = null
 )
 {
     /// <summary>
@@ -133,15 +200,39 @@ public record class XRepoPackage(
     /// do some guess-work
     /// </summary>
     public string? InferredName => Name ?? GetPath()?.Name;
+    
+    public bool IsSystemProgram => Program != null;
+    public bool IsEnvironmentProgram => !IsSystemProgram && (Kind?.EqualsOrdinalIgnoreCase("binary") ?? false);
+    public bool IsProgram => IsSystemProgram || IsEnvironmentProgram;
+    public bool IsLibrary => !IsProgram;
 
     /// <summary>
     /// Is this package a header only library
     /// </summary>
     public bool IsHeaderOnly => (!IncludeDirs.IsNullOrEmpty() || !SysIncludeDirs.IsNullOrEmpty())
-        && Program == null
+        && IsLibrary
         && LinkDirs.IsNullOrEmpty()
         && LibFiles.IsNullOrEmpty()
     ;
+
+    public JObject? GetManifest()
+    {
+        var path = GetPath();
+        if (path == null) return null;
+        var manifestJsonPath = path.PackageFolder / "manifest.json";
+        manifestJsonPath.ExistingFile()?.Delete();
+        var tempLuaPath = path.PackageFolder / "convert_manifest.lua";
+        tempLuaPath.WriteAllText(
+            """
+            import("core.base.json")
+            local manifest = io.load("manifest.txt")
+            json.savefile("manifest.json", manifest)
+            """
+        );
+        XMakeTasks.XMake("lua ./convert_manifest.lua", workingDirectory: path.PackageFolder);
+        Assert.FileExists(manifestJsonPath, "XMake didn't generate a json version of the manifest file. It may have logged why.");
+        return manifestJsonPath.ReadJson();
+    }
 }
 
 public static class XRepoPackageExtensions
@@ -155,7 +246,7 @@ public static class XRepoPackageExtensions
     /// <param name="name"></param>
     /// <returns></returns>
     public static XRepoPackage? GetLibrary(this IEnumerable<XRepoPackage> packages, string name)
-        => packages.Where(p => p.Program == null)
+        => packages.Where(p => p.IsLibrary)
             .FirstOrDefault(p => p.InferredName.EqualsOrdinalIgnoreCase(name));
 
     /// <summary>
@@ -165,7 +256,7 @@ public static class XRepoPackageExtensions
     /// <param name="name"></param>
     /// <returns></returns>
     public static XRepoPackage? GetProgram(this IEnumerable<XRepoPackage> packages, string name)
-        => packages.Where(p => p.Program != null)
+        => packages.Where(p => p.IsProgram)
             .FirstOrDefault(p => p.InferredName.EqualsOrdinalIgnoreCase(name));
 
     /// <summary>
