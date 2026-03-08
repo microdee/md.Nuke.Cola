@@ -6,6 +6,25 @@ using Nuke.Common.Utilities;
 
 namespace Nuke.Cola.Tooling;
 
+/// <summary>
+/// <para>
+///     An interpolated string handler used for comfortably set program arguments. It is an iteration over Nuke's own
+///     `ArgumentStringHandler`. This "Ex" version will not use double quotes automatically making its output more
+///     predictable than Nuke's handler. However, it supports explicit quoting with the `:quote`/`q` and `:singleQuote`/`sq`
+///     format specifiers.
+/// </para>
+/// <para>
+///     `ArgumentStringHandlerEx` also has the following additional features
+/// </para>
+/// <list type="bullet">
+///     <item>Collapse multiline text into a single line joined with space</item>
+///     <item>
+///         Interpret ValueTuples with 2 items as optional parameters. If the second value is empty, the first value
+///         will not expand either. The "key" and "value" are concatenated together directly upon expansion. All format
+///         specifiers work and applied only to "value".
+///     </item>
+/// </list>
+/// </summary>
 [InterpolatedStringHandler]
 public ref struct ArgumentStringHandlerEx
 {

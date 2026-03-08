@@ -3,6 +3,11 @@ using Newtonsoft.Json.Linq;
 
 namespace Nuke.Cola;
 
+/// <summary>
+/// A JSON converter for property which may have a single value or an array of values when de-serializing. It will
+/// always serialize an array.
+/// </summary>
+/// <typeparam name="T">Underlying type of the property</typeparam>
 public class OneOrManyConverter<T> : JsonConverter
 {
     public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
