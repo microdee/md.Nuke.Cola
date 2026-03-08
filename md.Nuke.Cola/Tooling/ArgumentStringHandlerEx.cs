@@ -12,6 +12,11 @@ public ref struct ArgumentStringHandlerEx
     private DefaultInterpolatedStringHandler _builder;
     private readonly List<string> _secretValues;
 
+    public static string Render(ArgumentStringHandlerEx input)
+    {
+        return input.ToStringAndClear();
+    }
+
     public ArgumentStringHandlerEx(
         int literalLength,
         int formattedCount,
