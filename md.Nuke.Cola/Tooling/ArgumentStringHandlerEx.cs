@@ -48,9 +48,7 @@ public ref struct ArgumentStringHandlerEx
 
     public static implicit operator ArgumentStringHandlerEx(string value)
     {
-        if (value.ContainsAnyOrdinalIgnoreCase("\n", "\r"))
-            value = value.AsSingleLine();
-        return $"{value}";
+        return $"{value.AsSingleLine()}";
     }
 
     public void AppendLiteral(string value)
