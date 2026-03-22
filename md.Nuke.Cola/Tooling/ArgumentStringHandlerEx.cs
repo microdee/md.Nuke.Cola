@@ -71,7 +71,6 @@ public ref struct ArgumentStringHandlerEx
                 (var stringArg, format) = GetObjectString(arg, alignment, format);
                 AppendFormatted(param + stringArg, alignment, format);
             break;
-            break;
             default: AppendFormatted(obj?.ToString(), alignment, format); break;
         }
     }
