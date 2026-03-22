@@ -55,7 +55,8 @@ public static class ToolCola
             args.ToolArgs.ExitHandler,
             args.Input,
             args.StandardOutputEncoding,
-            args.StandardInputEncoding
+            args.StandardInputEncoding,
+            args.Retry
         );
 
     /// <summary>
@@ -178,6 +179,7 @@ public static class ToolCola
     /// <param name="input">Handle standard input stream after process creation</param>
     /// <param name="standardOutputEncoding">Encoding for standard output. Default is UTF8 (with BOM)</param>
     /// <param name="standardInputEncoding">Encoding for standard input. Default is UTF8 (without BOM)</param>
+    /// <param name="retry">Return a ToolEx delegate to automatically retry the previous execution</param>
     /// <remarks>
     /// <list>
     /// <item><term>Arguments </term><description> will be concatenated</description></item>
@@ -203,7 +205,8 @@ public static class ToolCola
         Action<IProcess>? exitHandler = null,
         Action<StreamWriter>? input = null,
         Encoding? standardOutputEncoding = null,
-        Encoding? standardInputEncoding = null
+        Encoding? standardInputEncoding = null,
+        ToolExRetry? retry = null
     ) => tool.With(new ToolExArguments(
         new(
             arguments.ToStringAndClear(),
@@ -217,7 +220,8 @@ public static class ToolCola
         ),
         input,
         standardOutputEncoding,
-        standardInputEncoding
+        standardInputEncoding,
+        retry
     ));
 
     /// <summary>

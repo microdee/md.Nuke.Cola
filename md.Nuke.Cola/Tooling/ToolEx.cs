@@ -9,6 +9,8 @@ using Serilog.Events;
 
 namespace Nuke.Cola.Tooling;
 
+public delegate ToolEx? ToolExRetry(ToolEx previousTool, IProcess previousProcess, int attempt);
+
 /// <summary>
 /// Extended copy of Tool delegate of Nuke
 /// </summary>
@@ -26,7 +28,8 @@ public delegate IReadOnlyCollection<Output>? ToolEx(
     // Extension
     Action<StreamWriter>? input = null,
     Encoding? standardOutputEncoding = null,
-    Encoding? standardInputEncoding = null
+    Encoding? standardInputEncoding = null,
+    ToolExRetry? retry = null
 );
 
 /// <summary>
@@ -36,11 +39,13 @@ public delegate IReadOnlyCollection<Output>? ToolEx(
 /// <param name="Input">Handle standard input stream after process creation</param>
 /// <param name="StandardOutputEncoding">Encoding for standard output. Default is UTF8 (with BOM)</param>
 /// <param name="StandardInputEncoding">Encoding for standard input. Default is UTF8 (without BOM)</param>
+/// <param name="Retry">Automatically make another attempt if the returned tool delegate is not null</param>
 public record class ToolExArguments(
     ToolArguments ToolArgs,
     Action<StreamWriter>? Input = null,
     Encoding? StandardOutputEncoding = null,
-    Encoding? StandardInputEncoding = null
+    Encoding? StandardInputEncoding = null,
+    ToolExRetry? Retry = null
 ) {
     
     /// <summary>
@@ -64,7 +69,8 @@ public record class ToolExArguments(
             a?.ToolArgs | b?.ToolArgs,
             a?.Input + b?.Input,
             b?.StandardOutputEncoding ?? a?.StandardOutputEncoding,
-            b?.StandardInputEncoding ?? a?.StandardInputEncoding
+            b?.StandardInputEncoding ?? a?.StandardInputEncoding,
+            b?.Retry ?? a?.Retry
         );
     
     /// <summary>
@@ -88,7 +94,8 @@ public record class ToolExArguments(
             a?.ToolArgs | b,
             a?.Input,
             a?.StandardOutputEncoding,
-            a?.StandardInputEncoding
+            a?.StandardInputEncoding,
+            a?.Retry
         );
     
     /// <summary>
@@ -112,7 +119,8 @@ public record class ToolExArguments(
             a | b?.ToolArgs, 
             b?.Input,
             b?.StandardOutputEncoding,
-            b?.StandardInputEncoding
+            b?.StandardInputEncoding,
+            b?.Retry
         );
 }
 
@@ -137,7 +145,8 @@ public record class PropagateToolExExecution(ToolEx Target, ToolExArguments? Pro
         // Extension
         Action<StreamWriter>? input = null,
         Encoding? standardOutputEncoding = null,
-        Encoding? standardInputEncoding = null
+        Encoding? standardInputEncoding = null,
+        ToolExRetry? retry = null
     ) => Target.ExecuteWith(
         PropagateArguments | new ToolExArguments(
             new(
@@ -152,7 +161,8 @@ public record class PropagateToolExExecution(ToolEx Target, ToolExArguments? Pro
             ),
             input,
             standardOutputEncoding,
-            standardInputEncoding
+            standardInputEncoding,
+            retry
         )
     );
 }
@@ -162,6 +172,8 @@ internal class ToolExExecutor
     private static readonly object _lock = new();
     
     private readonly string _toolPath;
+
+    private int _attempt = 0;
 
     public ToolExExecutor(string toolPath)
     {
@@ -182,7 +194,8 @@ internal class ToolExExecutor
         // Extension
         Action<StreamWriter>? input = null,
         Encoding? standardOutputEncoding = null,
-        Encoding? standardInputEncoding = null
+        Encoding? standardInputEncoding = null,
+        ToolExRetry? retry = null
     )
     {
         workingDirectory ??= EnvironmentInfo.WorkingDirectory;
@@ -191,6 +204,8 @@ internal class ToolExExecutor
         logger ??= ProcessTasks.DefaultLogger;
         standardOutputEncoding ??= Encoding.UTF8;
         standardInputEncoding ??= new UTF8Encoding(false);
+        exitHandler ??= p => p.AssertZeroExitCode();
+
         var outputFilter = arguments.GetFilter();
 
         var toolPath = _toolPath;
@@ -242,8 +257,31 @@ internal class ToolExExecutor
         
         var output = GetOutputCollection(process, logger, outputFilter);
         var proc2 = new Process2(process, outputFilter, timeout, output);
-        
-        (exitHandler ?? (p => p.AssertZeroExitCode())).Invoke(proc2.AssertWaitForExit());
+        proc2.AssertWaitForExit();
+
+        if (retry != null)
+        {
+            var previousTool = new ToolEx(Execute).With(
+                args,
+                workingDirectory,
+                environmentVariables,
+                timeout,
+                logOutput,
+                logInvocation,
+                logger,
+                exitHandler,
+                input,
+                standardOutputEncoding,
+                standardInputEncoding,
+                retry
+            );
+            var nextAttempt = retry(previousTool, proc2, ++_attempt);
+            if (nextAttempt != null)
+            {
+                return nextAttempt();
+            }
+        }
+        exitHandler.Invoke(proc2);
         return proc2.Output;
     }
     
