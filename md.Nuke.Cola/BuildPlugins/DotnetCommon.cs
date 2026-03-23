@@ -66,6 +66,7 @@ internal static class DotnetCommon
             OptimizationLevel.Debug,
             [],
             ScriptEnvironment.Default.RuntimeIdentifier,
+            null,
             false
         ));
 
