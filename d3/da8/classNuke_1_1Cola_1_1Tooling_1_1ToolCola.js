@@ -1,8 +1,8 @@
 var classNuke_1_1Cola_1_1Tooling_1_1ToolCola =
 [
     [ "CloseInput", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#afd30cd5ae0c57a378f8e9073f770b8dd", null ],
-    [ "ElseTrySetup", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#a5f1151e6850cb70e2a9093dd7001cef0", null ],
-    [ "ElseTrySetup", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#afd709d55a652f5c88f59b1fa69bc85dd", null ],
+    [ "ElseTrySetup", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#a944c26db9c9a782fc271bc0bf8a34fea", null ],
+    [ "ElseTrySetup", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#ad40a5e3e2229e8d898e9515738c66aec", null ],
     [ "EnvVar", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#a42282879f49a2835fb418333bb9fb1e9", null ],
     [ "EnvVars", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#a9d48e41be1dc5d79ea1849ea7c75a728", null ],
     [ "EnvVars", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#acec652a8d271eb600c290efe072e29af", null ],
@@ -13,10 +13,10 @@ var classNuke_1_1Cola_1_1Tooling_1_1ToolCola =
     [ "SemanticLogging", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#a04a6b6787f26c6248ab3bbd401bfc830", null ],
     [ "StdErrorIsNotError", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#ada796fb9485ea47187698d5f436b29a2", null ],
     [ "UpdatePathEnvVar", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#a05eb1c77866083afcb65a78791d76bf7", null ],
-    [ "Use", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#aac08602393d11050548d5c9522b6f957", null ],
+    [ "Use", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#a3b867da726d732601f174d16f49ad0f3", null ],
     [ "With", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#abc4c6e9c5c5b80374dde1c1aeb5d0e80", null ],
     [ "With", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#ab71f69147a856b8952628762f0c83fb5", null ],
-    [ "With", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#a508c5350aad231104d4130f510bba559", null ],
+    [ "With", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#a24ef8a456737176138d2445da1876c44", null ],
     [ "With", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#a43a1f2c3bdad0972e2ee7351ff4b8e55", null ],
     [ "With", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#a44794f09edf786fc9c9a4bc659453fa7", null ],
     [ "WithEnvVar", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#ab4188a5ce295f9527efd5f654b11899f", null ],

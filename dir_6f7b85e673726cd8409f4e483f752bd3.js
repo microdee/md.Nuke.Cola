@@ -10,6 +10,7 @@ var dir_6f7b85e673726cd8409f4e483f752bd3 =
     [ "IPublishNugets.cs", "d8/d93/IPublishNugets_8cs_source.html", null ],
     [ "LicenseRegion.cs", "dd/de5/LicenseRegion_8cs_source.html", null ],
     [ "NukeBuildExtensions.cs", "de/da4/NukeBuildExtensions_8cs_source.html", null ],
+    [ "OneOrManyConverter.cs", "d4/d79/OneOrManyConverter_8cs_source.html", null ],
     [ "PathExtensions.cs", "da/d48/PathExtensions_8cs_source.html", null ],
     [ "TextExtensions.cs", "d0/df5/TextExtensions_8cs_source.html", null ]
 ];

@@ -6,5 +6,5 @@ var searchData=
   ['nuke_3a_3acola_3a_3afoldercomposition_3',['FolderComposition',['../d8/d9a/namespaceNuke_1_1Cola_1_1FolderComposition.html',1,'Nuke::Cola']]],
   ['nuke_3a_3acola_3a_3asearch_4',['Search',['../d0/df1/namespaceNuke_1_1Cola_1_1Search.html',1,'Nuke::Cola']]],
   ['nuke_3a_3acola_3a_3atooling_5',['Tooling',['../d4/daf/namespaceNuke_1_1Cola_1_1Tooling.html',1,'Nuke::Cola']]],
-  ['nuke_3a_3acola_3a_3avcpkg_6',['Vcpkg',['../da/d9c/namespaceNuke_1_1Cola_1_1Vcpkg.html',1,'Nuke::Cola']]]
+  ['nuke_3a_3acola_3a_3atooling_3a_3axmake_6',['XMake',['../d7/df9/namespaceNuke_1_1Cola_1_1Tooling_1_1XMake.html',1,'Nuke::Cola::Tooling']]]
 ];

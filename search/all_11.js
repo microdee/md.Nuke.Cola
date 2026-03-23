@@ -1,10 +1,9 @@
 var searchData=
 [
-  ['value_0',['Value',['../dd/dd5/classNuke_1_1Cola_1_1Tooling_1_1XRepoItem.html#a4f0c6aa1c54cfd9a564527e01aaffd20',1,'Nuke.Cola.Tooling.XRepoItem.Value'],['../dd/dd5/classNuke_1_1Cola_1_1Tooling_1_1XRepoItem.html#a004e252fe3b048f8c20756ec486d9d58a689202409e48743b914713f96d93947c',1,'Nuke.Cola.Tooling.XRepoItem.Value']]],
-  ['valueorerror_3c_20t_20_3e_1',['ValueOrError&lt; T &gt;',['../d5/d78/namespaceNuke_1_1Cola.html#a6b4a52d441ee71b5f38660d6aef33262',1,'Nuke::Cola']]],
-  ['vcpkg_2',['VCPKG',['../d7/dd8/ToolSupport.html#autotoc_md12',1,'']]],
-  ['vcpkg_3',['Vcpkg',['../df/d5f/classNuke_1_1Cola_1_1Vcpkg_1_1VcpkgTasks.html#ad557f5f75fe53f51ff833e0a92a362ab',1,'Nuke::Cola::Vcpkg::VcpkgTasks']]],
-  ['vcpkgpathinproject_4',['VcpkgPathInProject',['../df/d5f/classNuke_1_1Cola_1_1Vcpkg_1_1VcpkgTasks.html#aba6eef957068008221acda6a8f7397f1',1,'Nuke::Cola::Vcpkg::VcpkgTasks']]],
-  ['vcpkgpathoverride_5',['VcpkgPathOverride',['../df/d5f/classNuke_1_1Cola_1_1Vcpkg_1_1VcpkgTasks.html#a6dd1e1f51d4a96455a0710cebf4c0cd1',1,'Nuke::Cola::Vcpkg::VcpkgTasks']]],
-  ['vcpkgtasks_6',['VcpkgTasks',['../df/d5f/classNuke_1_1Cola_1_1Vcpkg_1_1VcpkgTasks.html',1,'Nuke::Cola::Vcpkg']]]
+  ['valueorerror_3c_20t_20_3e_0',['ValueOrError&lt; T &gt;',['../d5/d78/namespaceNuke_1_1Cola.html#a6b4a52d441ee71b5f38660d6aef33262',1,'Nuke::Cola']]],
+  ['vcpkg_1',['VCPKG',['../d7/dd8/ToolSupport.html#autotoc_md12',1,'']]],
+  ['vcpkg_2',['Vcpkg',['../db/d57/classNuke_1_1Cola_1_1Tooling_1_1VcpkgTasks.html#a51162c0e4cca22d42d76d3ed739ee39e',1,'Nuke::Cola::Tooling::VcpkgTasks']]],
+  ['vcpkgpathinproject_3',['VcpkgPathInProject',['../db/d57/classNuke_1_1Cola_1_1Tooling_1_1VcpkgTasks.html#adb49b6eb0921e52fcc0a849e8744be01',1,'Nuke::Cola::Tooling::VcpkgTasks']]],
+  ['vcpkgpathoverride_4',['VcpkgPathOverride',['../db/d57/classNuke_1_1Cola_1_1Tooling_1_1VcpkgTasks.html#a13a90a1414122c8635f5f8a7e5e5953b',1,'Nuke::Cola::Tooling::VcpkgTasks']]],
+  ['vcpkgtasks_5',['VcpkgTasks',['../db/d57/classNuke_1_1Cola_1_1Tooling_1_1VcpkgTasks.html',1,'Nuke::Cola::Tooling']]]
 ];

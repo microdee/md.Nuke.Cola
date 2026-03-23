@@ -28,19 +28,19 @@ var annotated_dup =
           [ "SearchFileSystem", "d2/de4/classNuke_1_1Cola_1_1Search_1_1SearchFileSystem.html", "d2/de4/classNuke_1_1Cola_1_1Search_1_1SearchFileSystem" ]
         ] ],
         [ "Tooling", "d4/daf/namespaceNuke_1_1Cola_1_1Tooling.html", [
+          [ "XMake", "d7/df9/namespaceNuke_1_1Cola_1_1Tooling_1_1XMake.html", [
+            [ "XMakeTasks", "d5/dda/classNuke_1_1Cola_1_1Tooling_1_1XMake_1_1XMakeTasks.html", "d5/dda/classNuke_1_1Cola_1_1Tooling_1_1XMake_1_1XMakeTasks" ],
+            [ "XRepoPackageExtensions", "da/df2/classNuke_1_1Cola_1_1Tooling_1_1XMake_1_1XRepoPackageExtensions.html", "da/df2/classNuke_1_1Cola_1_1Tooling_1_1XMake_1_1XRepoPackageExtensions" ],
+            [ "XRepoTasks", "d7/d8f/classNuke_1_1Cola_1_1Tooling_1_1XMake_1_1XRepoTasks.html", "d7/d8f/classNuke_1_1Cola_1_1Tooling_1_1XMake_1_1XRepoTasks" ]
+          ] ],
           [ "ArgumentStringHandlerEx", "db/d9b/structNuke_1_1Cola_1_1Tooling_1_1ArgumentStringHandlerEx.html", null ],
           [ "CMakeTasks", "dc/d54/classNuke_1_1Cola_1_1Tooling_1_1CMakeTasks.html", "dc/d54/classNuke_1_1Cola_1_1Tooling_1_1CMakeTasks" ],
           [ "PythonTasks", "de/d71/classNuke_1_1Cola_1_1Tooling_1_1PythonTasks.html", null ],
           [ "ToolCola", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola" ],
           [ "ToolExExecutor", "d6/d3d/classNuke_1_1Cola_1_1Tooling_1_1ToolExExecutor.html", null ],
           [ "ToolExResolver", "d3/dce/classNuke_1_1Cola_1_1Tooling_1_1ToolExResolver.html", null ],
-          [ "WingetTasks", "d0/d0b/classNuke_1_1Cola_1_1Tooling_1_1WingetTasks.html", "d0/d0b/classNuke_1_1Cola_1_1Tooling_1_1WingetTasks" ],
-          [ "XMakeTasks", "d1/d48/classNuke_1_1Cola_1_1Tooling_1_1XMakeTasks.html", "d1/d48/classNuke_1_1Cola_1_1Tooling_1_1XMakeTasks" ],
-          [ "XRepoItem", "dd/dd5/classNuke_1_1Cola_1_1Tooling_1_1XRepoItem.html", "dd/dd5/classNuke_1_1Cola_1_1Tooling_1_1XRepoItem" ],
-          [ "XRepoTasks", "d2/d8d/classNuke_1_1Cola_1_1Tooling_1_1XRepoTasks.html", "d2/d8d/classNuke_1_1Cola_1_1Tooling_1_1XRepoTasks" ]
-        ] ],
-        [ "Vcpkg", "da/d9c/namespaceNuke_1_1Cola_1_1Vcpkg.html", [
-          [ "VcpkgTasks", "df/d5f/classNuke_1_1Cola_1_1Vcpkg_1_1VcpkgTasks.html", "df/d5f/classNuke_1_1Cola_1_1Vcpkg_1_1VcpkgTasks" ]
+          [ "VcpkgTasks", "db/d57/classNuke_1_1Cola_1_1Tooling_1_1VcpkgTasks.html", "db/d57/classNuke_1_1Cola_1_1Tooling_1_1VcpkgTasks" ],
+          [ "WingetTasks", "d0/d0b/classNuke_1_1Cola_1_1Tooling_1_1WingetTasks.html", "d0/d0b/classNuke_1_1Cola_1_1Tooling_1_1WingetTasks" ]
         ] ],
         [ "Arguments", "d7/d3e/classNuke_1_1Cola_1_1Arguments.html", "d7/d3e/classNuke_1_1Cola_1_1Arguments" ],
         [ "Cola", "de/d59/classNuke_1_1Cola_1_1Cola.html", "de/d59/classNuke_1_1Cola_1_1Cola" ],
@@ -53,6 +53,7 @@ var annotated_dup =
         [ "LicenseRegion", "d5/df5/classNuke_1_1Cola_1_1LicenseRegion.html", null ],
         [ "LicenseRegionStatic", "dd/df3/classNuke_1_1Cola_1_1LicenseRegionStatic.html", null ],
         [ "NukeBuildExtensions", "d8/ddb/classNuke_1_1Cola_1_1NukeBuildExtensions.html", "d8/ddb/classNuke_1_1Cola_1_1NukeBuildExtensions" ],
+        [ "OneOrManyConverter", "d5/d65/classNuke_1_1Cola_1_1OneOrManyConverter.html", null ],
         [ "PathExtensions", "d7/dfa/classNuke_1_1Cola_1_1PathExtensions.html", "d7/dfa/classNuke_1_1Cola_1_1PathExtensions" ],
         [ "TextExtensions", "dc/dd0/classNuke_1_1Cola_1_1TextExtensions.html", "dc/dd0/classNuke_1_1Cola_1_1TextExtensions" ]
       ] ]

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['valueorerror_3c_20t_20_3e_0',['ValueOrError&lt; T &gt;',['../d5/d78/namespaceNuke_1_1Cola.html#a6b4a52d441ee71b5f38660d6aef33262',1,'Nuke::Cola']]]
+  ['updatepathenvvar_0',['UpdatePathEnvVar',['../d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#a05eb1c77866083afcb65a78791d76bf7',1,'Nuke::Cola::Tooling::ToolCola']]],
+  ['use_1',['Use',['../d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html#a3b867da726d732601f174d16f49ad0f3',1,'Nuke::Cola::Tooling::ToolCola']]]
 ];

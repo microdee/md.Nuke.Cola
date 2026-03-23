@@ -1,10 +1,11 @@
 var searchData=
 [
-  ['linkedby_0',['LinkedBy',['../d7/dfa/classNuke_1_1Cola_1_1PathExtensions.html#adfbbdf7a61a698aeda95ee1d114eff10',1,'Nuke::Cola::PathExtensions']]],
-  ['linkedbydirectory_1',['LinkedByDirectory',['../d7/dfa/classNuke_1_1Cola_1_1PathExtensions.html#acf7e54eb0660504d5e5a3b2b3f6f04c0',1,'Nuke::Cola::PathExtensions']]],
-  ['linkedbyfile_2',['LinkedByFile',['../d7/dfa/classNuke_1_1Cola_1_1PathExtensions.html#ab9a4b52ebf29286b210843d865636d27',1,'Nuke::Cola::PathExtensions']]],
-  ['linkedbyorcopyto_3',['LinkedByOrCopyTo',['../d7/dfa/classNuke_1_1Cola_1_1PathExtensions.html#a206e74f801647c3551066d206d4c593f',1,'Nuke::Cola::PathExtensions']]],
-  ['links_4',['Links',['../d7/dfa/classNuke_1_1Cola_1_1PathExtensions.html#a74c8f9bed2348e69be3ead168940d604',1,'Nuke::Cola::PathExtensions']]],
-  ['linksdirectory_5',['LinksDirectory',['../d7/dfa/classNuke_1_1Cola_1_1PathExtensions.html#ab689be4922e342ceba626ac8475e0f2f',1,'Nuke::Cola::PathExtensions']]],
-  ['linksfile_6',['LinksFile',['../d7/dfa/classNuke_1_1Cola_1_1PathExtensions.html#aace82c6e38aae9aff36242d6f118d6c2',1,'Nuke::Cola::PathExtensions']]]
+  ['importable_0',['Importable',['../df/d39/namespaceNuke_1_1Cola_1_1BuildPlugins.html#acd643ae3cc40d4225eaeaf34658b6356',1,'Nuke::Cola::BuildPlugins']]],
+  ['importfolder_1',['ImportFolder',['../d6/dc6/classNuke_1_1Cola_1_1FolderComposition_1_1FolderComposition.html#a69e9bbf22618ad62118558a792e22a59',1,'Nuke::Cola::FolderComposition::FolderComposition']]],
+  ['importfolderitem_2',['ImportFolderItem',['../d8/d9a/namespaceNuke_1_1Cola_1_1FolderComposition.html#af4433ef921fe25eac4c9eaf1301a3fb3',1,'Nuke::Cola::FolderComposition']]],
+  ['importfolders_3',['ImportFolders',['../d6/dc6/classNuke_1_1Cola_1_1FolderComposition_1_1FolderComposition.html#a6c273ebe4201d880984bb37d630d416b',1,'Nuke.Cola.FolderComposition.FolderComposition.ImportFolders(this INukeBuild self, ImportOptions? options, params ImportFolderItem[] imports)'],['../d6/dc6/classNuke_1_1Cola_1_1FolderComposition_1_1FolderComposition.html#a8b2dbac90396d6addfcc78cb684378f3',1,'Nuke.Cola.FolderComposition.FolderComposition.ImportFolders(this INukeBuild self, params ImportFolderItem[] imports)']]],
+  ['importfoldersuffixes_4',['ImportFolderSuffixes',['../d8/d9a/namespaceNuke_1_1Cola_1_1FolderComposition.html#ab0402f06022e81351c4973b10d06ffcf',1,'Nuke::Cola::FolderComposition']]],
+  ['importoptions_5',['ImportOptions',['../d8/d9a/namespaceNuke_1_1Cola_1_1FolderComposition.html#a67abad6b5ec094eabb9dbf0c8717eac4',1,'Nuke::Cola::FolderComposition']]],
+  ['initializeengine_6',['InitializeEngine',['../d5/d57/classNuke_1_1Cola_1_1BuildPlugins_1_1CSharpScriptPluginProvider.html#a2b0bb6447d6bbd48a02d073a5aaf100c',1,'Nuke.Cola.BuildPlugins.CSharpScriptPluginProvider.InitializeEngine()'],['../d4/deb/classNuke_1_1Cola_1_1BuildPlugins_1_1DotnetProjectPluginProvider.html#a1382036c064e7c6e58920bf9175e10ef',1,'Nuke.Cola.BuildPlugins.DotnetProjectPluginProvider.InitializeEngine()'],['../d9/de5/classNuke_1_1Cola_1_1BuildPlugins_1_1ImplicitBuildInterfacePluginProvider.html#af0901f88cec5951f942e652e65ffa8d1',1,'Nuke.Cola.BuildPlugins.ImplicitBuildInterfacePluginProvider.InitializeEngine()'],['../d2/da7/interfaceNuke_1_1Cola_1_1BuildPlugins_1_1IProvidePlugins.html#a722b2230e403db19e4b632e0f2225798',1,'Nuke.Cola.BuildPlugins.IProvidePlugins.InitializeEngine()']]],
+  ['install_7',['Install',['../d7/d8f/classNuke_1_1Cola_1_1Tooling_1_1XMake_1_1XRepoTasks.html#ac9aa6038c620806a1d992dbb134ab30f',1,'Nuke::Cola::Tooling::XMake::XRepoTasks']]]
 ];

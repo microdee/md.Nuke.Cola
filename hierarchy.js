@@ -15,9 +15,6 @@ var hierarchy =
       [ "Nuke.Cola.FolderComposition.ExportManifest", "d9/dd3/classNuke_1_1Cola_1_1FolderComposition_1_1ExportManifest.html", null ],
       [ "Nuke.Cola.FolderComposition.FileOrDirectory", "d8/d27/classNuke_1_1Cola_1_1FolderComposition_1_1FileOrDirectory.html", null ]
     ] ],
-    [ "IEnumerable", null, [
-      [ "Nuke.Cola.Tooling.XRepoItem", "dd/dd5/classNuke_1_1Cola_1_1Tooling_1_1XRepoItem.html", null ]
-    ] ],
     [ "Nuke.Cola.BuildPlugins.IHavePlugin", "da/dda/interfaceNuke_1_1Cola_1_1BuildPlugins_1_1IHavePlugin.html", [
       [ "Nuke.Cola.BuildPlugins.CSharpScriptPlugin", "d5/d75/classNuke_1_1Cola_1_1BuildPlugins_1_1CSharpScriptPlugin.html", null ],
       [ "Nuke.Cola.BuildPlugins.DotnetProjectPlugin", "d5/d3f/classNuke_1_1Cola_1_1BuildPlugins_1_1DotnetProjectPlugin.html", null ],
@@ -41,6 +38,9 @@ var hierarchy =
       [ "Nuke.Cola.Search.EverythingGlobbing", "d0/d8a/classNuke_1_1Cola_1_1Search_1_1EverythingGlobbing.html", null ],
       [ "Nuke.Cola.Search.NukeGlobbing", "d4/db3/classNuke_1_1Cola_1_1Search_1_1NukeGlobbing.html", null ]
     ] ],
+    [ "JsonConverter", null, [
+      [ "Nuke.Cola.OneOrManyConverter< T >", "d5/d65/classNuke_1_1Cola_1_1OneOrManyConverter.html", null ]
+    ] ],
     [ "Nuke.Cola.LicenseRegion", "d5/df5/classNuke_1_1Cola_1_1LicenseRegion.html", null ],
     [ "Nuke.Cola.LicenseRegionStatic", "dd/df3/classNuke_1_1Cola_1_1LicenseRegionStatic.html", null ],
     [ "Nuke.Cola.NukeBuildExtensions", "d8/ddb/classNuke_1_1Cola_1_1NukeBuildExtensions.html", null ],
@@ -52,8 +52,9 @@ var hierarchy =
     [ "Nuke.Cola.Tooling.ToolCola", "d3/da8/classNuke_1_1Cola_1_1Tooling_1_1ToolCola.html", null ],
     [ "Nuke.Cola.Tooling.ToolExExecutor", "d6/d3d/classNuke_1_1Cola_1_1Tooling_1_1ToolExExecutor.html", null ],
     [ "Nuke.Cola.Tooling.ToolExResolver", "d3/dce/classNuke_1_1Cola_1_1Tooling_1_1ToolExResolver.html", null ],
-    [ "Nuke.Cola.Vcpkg.VcpkgTasks", "df/d5f/classNuke_1_1Cola_1_1Vcpkg_1_1VcpkgTasks.html", null ],
+    [ "Nuke.Cola.Tooling.VcpkgTasks", "db/d57/classNuke_1_1Cola_1_1Tooling_1_1VcpkgTasks.html", null ],
     [ "Nuke.Cola.Tooling.WingetTasks", "d0/d0b/classNuke_1_1Cola_1_1Tooling_1_1WingetTasks.html", null ],
-    [ "Nuke.Cola.Tooling.XMakeTasks", "d1/d48/classNuke_1_1Cola_1_1Tooling_1_1XMakeTasks.html", null ],
-    [ "Nuke.Cola.Tooling.XRepoTasks", "d2/d8d/classNuke_1_1Cola_1_1Tooling_1_1XRepoTasks.html", null ]
+    [ "Nuke.Cola.Tooling.XMake.XMakeTasks", "d5/dda/classNuke_1_1Cola_1_1Tooling_1_1XMake_1_1XMakeTasks.html", null ],
+    [ "Nuke.Cola.Tooling.XMake.XRepoPackageExtensions", "da/df2/classNuke_1_1Cola_1_1Tooling_1_1XMake_1_1XRepoPackageExtensions.html", null ],
+    [ "Nuke.Cola.Tooling.XMake.XRepoTasks", "d7/d8f/classNuke_1_1Cola_1_1Tooling_1_1XMake_1_1XRepoTasks.html", null ]
 ];

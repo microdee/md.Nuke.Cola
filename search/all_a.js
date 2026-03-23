@@ -1,9 +1,16 @@
 var searchData=
 [
-  ['mainexecute_3c_20t_20_3e_0',['MainExecute&lt; T &gt;',['../df/d39/namespaceNuke_1_1Cola_1_1BuildPlugins.html#a73e914af0011b3e390572ea5f0ad70b0',1,'Nuke::Cola::BuildPlugins']]],
-  ['makedictionary_3c_20key_2c_20value_20_3e_1',['MakeDictionary&lt; Key, Value &gt;',['../de/d59/classNuke_1_1Cola_1_1Cola.html#af31a21173206fb729b613c2a6e07514e',1,'Nuke::Cola::Cola']]],
-  ['manifest_2',['Folders with export manifest',['../da/d82/FolderComposition.html#autotoc_md5',1,'']]],
-  ['manifestfilepattern_3',['ManifestFilePattern',['../d8/d27/classNuke_1_1Cola_1_1FolderComposition_1_1FileOrDirectory.html#a315617f23046086dce4ee171886e4b56',1,'Nuke::Cola::FolderComposition::FileOrDirectory']]],
-  ['merge_3c_20key_2c_20value_20_3e_4',['Merge&lt; Key, Value &gt;',['../de/d59/classNuke_1_1Cola_1_1Cola.html#a9967b041d8f3e548892a537db8edc0d0',1,'Nuke::Cola::Cola']]],
-  ['mergemutable_3c_20key_2c_20value_20_3e_5',['MergeMutable&lt; Key, Value &gt;',['../de/d59/classNuke_1_1Cola_1_1Cola.html#a4c0f03973717b9e1ac2f720ce7890638',1,'Nuke::Cola::Cola']]]
+  ['not_0',['Not',['../d8/d27/classNuke_1_1Cola_1_1FolderComposition_1_1FileOrDirectory.html#a6d0f13197ac34ef023f06ab65acf113f',1,'Nuke.Cola.FolderComposition.FileOrDirectory.Not'],['../d9/dd3/classNuke_1_1Cola_1_1FolderComposition_1_1ExportManifest.html#a6cf109d9da57ea8d6624ca8838ab3128',1,'Nuke.Cola.FolderComposition.ExportManifest.Not']]],
+  ['nuke_1',['Nuke',['../df/da7/namespaceNuke.html',1,'']]],
+  ['nuke_20cola_2',['Nuke.Cola',['../index.html',1,'']]],
+  ['nuke_20csproj_20c_20project_20plugins_3',['Nuke.csproj C# project plugins',['../de/d4b/BuildPlugins.html#autotoc_md2',1,'']]],
+  ['nuke_20csx_20c_20script_20plugins_4',['nuke.csx C# script plugins',['../de/d4b/BuildPlugins.html#autotoc_md1',1,'']]],
+  ['nuke_3a_3acola_5',['Cola',['../d5/d78/namespaceNuke_1_1Cola.html',1,'Nuke']]],
+  ['nuke_3a_3acola_3a_3abuildplugins_6',['BuildPlugins',['../df/d39/namespaceNuke_1_1Cola_1_1BuildPlugins.html',1,'Nuke::Cola']]],
+  ['nuke_3a_3acola_3a_3afoldercomposition_7',['FolderComposition',['../d8/d9a/namespaceNuke_1_1Cola_1_1FolderComposition.html',1,'Nuke::Cola']]],
+  ['nuke_3a_3acola_3a_3asearch_8',['Search',['../d0/df1/namespaceNuke_1_1Cola_1_1Search.html',1,'Nuke::Cola']]],
+  ['nuke_3a_3acola_3a_3atooling_9',['Tooling',['../d4/daf/namespaceNuke_1_1Cola_1_1Tooling.html',1,'Nuke::Cola']]],
+  ['nuke_3a_3acola_3a_3atooling_3a_3axmake_10',['XMake',['../d7/df9/namespaceNuke_1_1Cola_1_1Tooling_1_1XMake.html',1,'Nuke::Cola::Tooling']]],
+  ['nukebuildextensions_11',['NukeBuildExtensions',['../d8/ddb/classNuke_1_1Cola_1_1NukeBuildExtensions.html',1,'Nuke::Cola']]],
+  ['nukeglobbing_12',['NukeGlobbing',['../d4/db3/classNuke_1_1Cola_1_1Search_1_1NukeGlobbing.html',1,'Nuke::Cola::Search']]]
 ];

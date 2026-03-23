@@ -5,6 +5,8 @@ var searchData=
   ['getargumentblock_2',['GetArgumentBlock',['../d7/d3e/classNuke_1_1Cola_1_1Arguments.html#aae4dc47783573e98acba55892440e173',1,'Nuke::Cola::Arguments']]],
   ['getblock_3',['GetBlock',['../d7/d3e/classNuke_1_1Cola_1_1Arguments.html#a1f3154a80987289ce202958c3a069796',1,'Nuke::Cola::Arguments']]],
   ['getbuildinterfaces_4',['GetBuildInterfaces',['../d2/db5/classNuke_1_1Cola_1_1BuildPlugins_1_1DotnetCommon.html#a97c5d2297188c6939c50323bd4c430e6',1,'Nuke::Cola::BuildPlugins::DotnetCommon']]],
-  ['getroot_5',['GetRoot',['../d7/dfa/classNuke_1_1Cola_1_1PathExtensions.html#ac2872edfb73c88cd5d9e26a52d48aef5',1,'Nuke::Cola::PathExtensions']]],
-  ['globtoregex_6',['GlobToRegex',['../dc/dd0/classNuke_1_1Cola_1_1TextExtensions.html#ab58fa6c2a8246b2c955c3d268574a064',1,'Nuke::Cola::TextExtensions']]]
+  ['getlibrary_5',['GetLibrary',['../da/df2/classNuke_1_1Cola_1_1Tooling_1_1XMake_1_1XRepoPackageExtensions.html#a88f450e0f4426db0bf5fec1e07515155',1,'Nuke::Cola::Tooling::XMake::XRepoPackageExtensions']]],
+  ['getprogram_6',['GetProgram',['../da/df2/classNuke_1_1Cola_1_1Tooling_1_1XMake_1_1XRepoPackageExtensions.html#a51d6536fbd3010d7584135ae699871e8',1,'Nuke::Cola::Tooling::XMake::XRepoPackageExtensions']]],
+  ['getroot_7',['GetRoot',['../d7/dfa/classNuke_1_1Cola_1_1PathExtensions.html#ac2872edfb73c88cd5d9e26a52d48aef5',1,'Nuke::Cola::PathExtensions']]],
+  ['globtoregex_8',['GlobToRegex',['../dc/dd0/classNuke_1_1Cola_1_1TextExtensions.html#ab58fa6c2a8246b2c955c3d268574a064',1,'Nuke::Cola::TextExtensions']]]
 ];
