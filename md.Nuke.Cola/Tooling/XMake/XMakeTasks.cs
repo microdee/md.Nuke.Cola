@@ -60,7 +60,7 @@ public static partial class XMakeTasks
             .With(
                 retry: (tool, process, attempt) =>
                 {
-                    if (attempt >= 2) return null;
+                    if (process.ExitCode == 0 || attempt >= 2) return null;
                     foreach (var line in process.Output)
                     {
                         var mainXMakeFolder = line.GetProblematicMainXMakeFolder();
