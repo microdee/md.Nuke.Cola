@@ -1,24 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
+using System.Text.RegularExpressions;
 using Nuke.Common;
 using Nuke.Common.IO;
 using Nuke.Common.Tooling;
-using Nuke.Common.Tools.PowerShell;
 using Serilog;
-using static Nuke.Cola.Cola;
 
-namespace Nuke.Cola.Tooling;
+namespace Nuke.Cola.Tooling.XMake;
 
 /// <summary>
 /// XMake is a versatile build tool for many languages https://xmake.io/#/?id=supported-languages
 /// scriptable in Lua
 /// </summary>
-public static class XMakeTasks
+public static partial class XMakeTasks
 {
     public const string LatestVersion = "3.0.7";
     internal static string GetBundleAppName(string version = LatestVersion)
@@ -33,10 +26,25 @@ public static class XMakeTasks
             var other => throw new Exception($"Trying to use XMake on an unsupported platform: {other.plat} {other.arch}")
         };
 
+    [GeneratedRegex(
+        """
+        not found main script\:\s(?<PATH>.*)\/core.*\.lua
+        """,
+        RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture
+    )]
+    private static partial Regex ProblematicMainXMakeFolder();
+
+    internal static AbsolutePath? GetProblematicMainXMakeFolder(this Output line)
+    {
+        var text = line.Text.Replace('\\', '/').Replace("//", "/");
+        var result = text.Parse(ProblematicMainXMakeFolder(), forceNullOnWhitespce: true)("PATH");
+        return result.TryAsPath();
+    }
+
     /// <summary>
     /// Get XMake or an error if downloading it has failed.
     /// </summary>
-    public static ValueOrError<Tool> TryGetXMake(string version = LatestVersion) => ErrorHandling.TryGet(() =>
+    public static ValueOrError<ToolEx> TryGetXMake(string version = LatestVersion) => ErrorHandling.TryGet(() =>
     {
         var bundleAppName = GetBundleAppName(version);
         var xmakePath = NukeBuild.TemporaryDirectory / bundleAppName;
@@ -48,13 +56,31 @@ public static class XMakeTasks
                 xmakePath
             );
         }
-        return ToolResolver.GetTool(xmakePath);
+        return ToolExResolver.GetTool(xmakePath)
+            .With(
+                retry: (tool, process, attempt) =>
+                {
+                    if (process.ExitCode == 0 || attempt >= 2) return null;
+                    foreach (var line in process.Output)
+                    {
+                        var mainXMakeFolder = line.GetProblematicMainXMakeFolder();
+                        if (mainXMakeFolder != null)
+                        {
+                            Log.Information("A known issue has occured with XMake where it cannot use {0}", mainXMakeFolder);
+                            Log.Information("Remove it and have another attempt {0}", attempt + 1);
+                            mainXMakeFolder.Parent.DeleteDirectory();
+                            return tool;
+                        }
+                    }
+                    return null;
+                }
+            );
     });
 
-    public static ValueOrError<Tool> EnsureXMake => TryGetXMake();
+    public static ValueOrError<ToolEx> EnsureXMake => TryGetXMake();
 
     /// <summary>
     /// Get XMake. It throws an exception if setup has failed.
     /// </summary>
-    public static Tool XMake => EnsureXMake.Get();
+    public static ToolEx XMake => EnsureXMake.Get();
 }

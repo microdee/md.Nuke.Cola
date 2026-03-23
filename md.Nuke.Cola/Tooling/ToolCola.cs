@@ -55,7 +55,8 @@ public static class ToolCola
             args.ToolArgs.ExitHandler,
             args.Input,
             args.StandardOutputEncoding,
-            args.StandardInputEncoding
+            args.StandardInputEncoding,
+            args.Retry
         );
 
     /// <summary>
@@ -178,6 +179,7 @@ public static class ToolCola
     /// <param name="input">Handle standard input stream after process creation</param>
     /// <param name="standardOutputEncoding">Encoding for standard output. Default is UTF8 (with BOM)</param>
     /// <param name="standardInputEncoding">Encoding for standard input. Default is UTF8 (without BOM)</param>
+    /// <param name="retry">Return a ToolEx delegate to automatically retry the previous execution</param>
     /// <remarks>
     /// <list>
     /// <item><term>Arguments </term><description> will be concatenated</description></item>
@@ -203,7 +205,8 @@ public static class ToolCola
         Action<IProcess>? exitHandler = null,
         Action<StreamWriter>? input = null,
         Encoding? standardOutputEncoding = null,
-        Encoding? standardInputEncoding = null
+        Encoding? standardInputEncoding = null,
+        ToolExRetry? retry = null
     ) => tool.With(new ToolExArguments(
         new(
             arguments.ToStringAndClear(),
@@ -217,7 +220,8 @@ public static class ToolCola
         ),
         input,
         standardOutputEncoding,
-        standardInputEncoding
+        standardInputEncoding,
+        retry
     ));
 
     /// <summary>
@@ -445,14 +449,14 @@ public static class ToolCola
     /// Get a tool which should be in PATH, and provide an optional way to set it up automatically if it wasn't
     /// </summary>
     /// <returns>The Tool or an error if it wasn't in PATH and the setup had failed</returns>
-    public static ValueOrError<Tool> Use(string tool, Action? setup = null)
-        => ErrorHandling.TryGet(() => ToolResolver.GetPathTool(tool))
+    public static ValueOrError<ToolEx> Use(string tool, Action? setup = null)
+        => ErrorHandling.TryGet(() => ToolExResolver.GetPathTool(tool))
             .Else(setup != null, () =>
             {
                 Log.Warning($"{tool} was not installed, but it's OK we're installing it now.");
                 setup!();
                 UpdatePathEnvVar();
-                return ToolResolver.GetPathTool(tool);
+                return ToolExResolver.GetPathTool(tool);
             });
 
     /// <summary>
@@ -462,13 +466,13 @@ public static class ToolCola
     /// <param name="condition">Only attempt this method of setup when condition is met</param>
     /// <param name="tool">The name of the tool</param>
     /// <param name="setup">Setup the tool for the caller</param>
-    /// <returns>The Tool or an error if it this or previous setup attempts have failed</returns>
-    public static ValueOrError<Tool> ElseTrySetup(this ValueOrError<Tool> result, bool condition, string tool, Action setup)
+    /// <returns>The Tool or an error if this or previous setup attempts have failed</returns>
+    public static ValueOrError<ToolEx> ElseTrySetup(this ValueOrError<ToolEx> result, bool condition, string tool, Action setup)
         => result.Else(condition, () =>
         {
             setup();
             UpdatePathEnvVar();
-            return ToolResolver.GetPathTool(tool);
+            return ToolExResolver.GetPathTool(tool);
         });
         
     /// <summary>
@@ -477,7 +481,7 @@ public static class ToolCola
     /// <param name="result">Result of the previous attempt</param>
     /// <param name="tool">The name of the tool</param>
     /// <param name="setup">Setup the tool for the caller</param>
-    /// <returns>The Tool or an error if it this or previous setup attempts have failed</returns>
-    public static ValueOrError<Tool> ElseTrySetup(this ValueOrError<Tool> result, string tool, Action setup)
+    /// <returns>The Tool or an error if this or previous setup attempts have failed</returns>
+    public static ValueOrError<ToolEx> ElseTrySetup(this ValueOrError<ToolEx> result, string tool, Action setup)
         => result.ElseTrySetup(true, tool, setup);
 }
