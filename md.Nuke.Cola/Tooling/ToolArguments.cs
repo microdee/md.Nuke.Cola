@@ -72,7 +72,7 @@ public record class ToolArguments(
 
             Logger = a?.Logger + b?.Logger,
 
-            ExitHandler = a?.ExitHandler + b?.ExitHandler
+            ExitHandler = b?.ExitHandler ?? a?.ExitHandler
         };
     }
 }
