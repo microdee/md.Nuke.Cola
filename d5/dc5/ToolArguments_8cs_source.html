@@ -191,7 +191,7 @@ $(function(){initNavTree('d5/dc5/ToolArguments_8cs_source.html','../../'); initR
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            Logger = a?.Logger + b?.Logger,</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            ExitHandler = a?.ExitHandler + b?.ExitHandler</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            ExitHandler = b?.ExitHandler ?? a?.ExitHandler</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        };</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    }</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>}</div>
